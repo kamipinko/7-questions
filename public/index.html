@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>7 Questions</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Site Banner -->
+  <header class="site-banner">
+    <div class="banner-inner">
+      <span class="banner-logo">7</span>
+      <span class="banner-title">Questions</span>
+    </div>
+  </header>
+
+  <!-- Step 1: Relation -->
+  <div id="screen-relation" class="screen active">
+    <div class="header">
+      <h1>Start a Conversation</h1>
+      <p class="subtitle">Who are you with?</p>
+    </div>
+    <div class="card-grid">
+      <button class="relation-card" data-relation="family">
+        <span class="card-icon">👨‍👩‍👧</span>
+        <span class="card-label">Family</span>
+      </button>
+      <button class="relation-card" data-relation="friends">
+        <span class="card-icon">👥</span>
+        <span class="card-label">Friends</span>
+      </button>
+      <button class="relation-card" data-relation="date">
+        <span class="card-icon">💕</span>
+        <span class="card-label">Date</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Tier -->
+  <div id="screen-tier" class="screen">
+    <div class="header">
+      <button class="back-btn" id="back-to-relation">← Back</button>
+      <p class="step-label">Step 2 of 2</p>
+      <h2>How deep do you want to go?</h2>
+    </div>
+    <div class="card-grid vertical">
+      <button class="tier-card" data-tier="1">
+        <div class="tier-badge">Tier 1</div>
+        <div class="tier-info">
+          <span class="tier-name">🌱 Casual</span>
+          <span class="tier-desc">Light, fun &amp; easy icebreakers</span>
+        </div>
+      </button>
+      <button class="tier-card" data-tier="2">
+        <div class="tier-badge">Tier 2</div>
+        <div class="tier-info">
+          <span class="tier-name">🔥 Deeper</span>
+          <span class="tier-desc">Values, dilemmas &amp; life choices</span>
+        </div>
+      </button>
+      <button class="tier-card" data-tier="3">
+        <div class="tier-badge">Tier 3</div>
+        <div class="tier-info">
+          <span class="tier-name">💫 Intimate</span>
+          <span class="tier-desc">Personal, philosophical &amp; raw</span>
+        </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3: Question display -->
+  <div id="screen-question" class="screen">
+    <div class="question-header">
+      <button class="back-btn" id="back-to-tier">← Back</button>
+      <div class="question-meta">
+        <span id="relation-badge" class="badge"></span>
+        <span id="tier-badge" class="badge"></span>
+      </div>
+    </div>
+
+    <div class="question-container">
+      <div class="question-counter" id="question-counter">1 / 12</div>
+      <div class="question-card">
+        <p id="question-text">Loading...</p>
+      </div>
+    </div>
+
+    <div class="question-nav">
+      <button class="nav-btn" id="btn-prev">← Prev</button>
+      <button class="nav-btn primary" id="btn-next">Next →</button>
+    </div>
+
+    <div class="shuffle-row">
+      <button class="shuffle-btn" id="btn-shuffle">🔀 Reshuffle</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

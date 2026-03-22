@@ -1,0 +1,12 @@
+{
+  "name": "questions-app",
+  "version": "1.0.0",
+  "description": "Tiered conversation questions by relationship type",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
