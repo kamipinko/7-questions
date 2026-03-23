@@ -16,7 +16,7 @@
     </div>
   </header>
 
-  <!-- Step 1: Relation -->
+  <!-- Screen 1: Relation -->
   <div id="screen-relation" class="screen active">
     <div class="header">
       <h1>Start a Conversation</h1>
@@ -57,42 +57,23 @@
     </div>
   </div>
 
-  <!-- Step 2: Tier -->
-  <div id="screen-tier" class="screen">
-    <div class="header">
-      <button class="back-btn" id="back-to-relation">← Back</button>
-      <p class="step-label">Step 2 of 2</p>
-      <h2>How deep do you want to go?</h2>
-    </div>
-    <div class="card-grid vertical">
-      <button class="tier-card" data-tier="1">
-        <div class="tier-badge">Tier 1</div>
-        <div class="tier-info">
-          <span class="tier-name">🌱 Casual</span>
-          <span class="tier-desc">Light, fun &amp; easy icebreakers</span>
-        </div>
-      </button>
-      <button class="tier-card" data-tier="2">
-        <div class="tier-badge">Tier 2</div>
-        <div class="tier-info">
-          <span class="tier-name">🔥 Deeper</span>
-          <span class="tier-desc">Values, dilemmas &amp; life choices</span>
-        </div>
-      </button>
-      <button class="tier-card" data-tier="3">
-        <div class="tier-badge">Tier 3</div>
-        <div class="tier-info">
-          <span class="tier-name">💫 Intimate</span>
-          <span class="tier-desc">Personal, philosophical &amp; raw</span>
-        </div>
-      </button>
+  <!-- Depth Prompt Modal -->
+  <div id="depth-prompt" class="modal-overlay" style="display:none;">
+    <div class="modal-box depth-box">
+      <div class="modal-icon">✨</div>
+      <h2 class="modal-title">How's it feeling?</h2>
+      <p class="modal-desc">You're finding a rhythm. Want to go a little deeper?</p>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" id="depth-keep">Keep it Casual</button>
+        <button class="modal-btn depth-primary" id="depth-advance">Go to Deeper</button>
+      </div>
     </div>
   </div>
 
-  <!-- Step 3: Question display -->
+  <!-- Screen 2: Question -->
   <div id="screen-question" class="screen">
     <div class="question-header">
-      <button class="back-btn" id="back-to-tier">← Back</button>
+      <button class="back-btn" id="back-to-relation">← Home</button>
       <div class="question-meta">
         <span id="relation-badge" class="badge"></span>
         <span id="tier-badge" class="badge"></span>
@@ -100,18 +81,33 @@
     </div>
 
     <div class="question-container">
-<div class="question-card">
+      <div class="question-card">
         <p id="question-text">Loading...</p>
       </div>
     </div>
 
     <div class="question-nav">
-      <button class="nav-btn" id="btn-prev">← Prev</button>
+      <button class="nav-btn skip-btn" id="btn-skip">Skip</button>
       <button class="nav-btn primary" id="btn-next">Next →</button>
     </div>
+  </div>
 
-    <div class="shuffle-row">
-      <button class="shuffle-btn" id="btn-shuffle">🔀 Reshuffle</button>
+  <!-- Screen 3: Done / Email Capture -->
+  <div id="screen-done" class="screen">
+    <div class="done-content">
+      <div class="done-icon">💫</div>
+      <h2 class="done-title">That was something.</h2>
+      <p class="done-desc">Real conversations are rare. Want to stay in the loop as we build more?</p>
+
+      <form id="email-form" class="email-form">
+        <input type="email" id="email-input" class="email-input" placeholder="your@email.com" />
+        <button type="submit" class="email-submit-btn">Keep me posted</button>
+      </form>
+      <button type="button" id="email-skip" class="skip-link">Maybe later</button>
+
+      <p id="email-thanks" class="email-thanks" style="display:none;"></p>
+
+      <button id="done-restart" class="restart-btn">Play again →</button>
     </div>
   </div>
 
