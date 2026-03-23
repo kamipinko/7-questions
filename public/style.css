@@ -32,6 +32,7 @@ body {
   border-bottom: 1px solid rgba(124,106,247,0.3);
   padding: 0.9rem 2rem;
   display: flex;
+  cursor: pointer;
   justify-content: center;
   box-shadow: 0 2px 20px rgba(124,106,247,0.15);
 }
@@ -134,7 +135,53 @@ body {
 .relation-card[data-relation="friends"]:hover { border-color: var(--friends); }
 .relation-card[data-relation="date"]:hover { border-color: var(--date); }
 .relation-card[data-relation="spicy"]:hover { border-color: var(--spicy); }
-.spicy-card { border-color: rgba(255,77,77,0.2); background: linear-gradient(135deg, #1a1a24 0%, #201018 100%); }
+
+/* Relation wrapper — positions the spicy btn relative to the card grid */
+.relation-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 3rem;
+}
+
+/* Spicy corner button */
+.spicy-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #2a0808;
+  border: 2px solid #6b1212;
+  border-radius: 10px;
+  color: #e87070;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.4px;
+  transition: all 0.2s ease;
+}
+.spicy-btn:hover {
+  background: #4a0e0e;
+  border-color: #b52020;
+  color: #ffaaaa;
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 6px 20px rgba(180, 20, 20, 0.45);
+}
+
+@keyframes spicy-select {
+  0%   { transform: scale(1)    translateY(0);   box-shadow: none; }
+  35%  { transform: scale(1.18) translateY(-5px); box-shadow: 0 8px 28px rgba(200,30,30,0.65); }
+  65%  { transform: scale(1.1)  translateY(-3px); box-shadow: 0 6px 20px rgba(200,30,30,0.45); }
+  100% { transform: scale(1)    translateY(0);   box-shadow: none; }
+}
+.spicy-btn.tapped {
+  animation: spicy-select 0.4s ease forwards;
+  background: #5a1010;
+  border-color: #cc2222;
+  color: #ffcccc;
+}
 
 .card-icon { font-size: 2.5rem; }
 .card-label { font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; }
@@ -215,12 +262,6 @@ body {
 .question-container {
   width: 100%;
   margin-bottom: 2rem;
-}
-.question-counter {
-  font-size: 0.8rem;
-  color: var(--muted);
-  text-align: right;
-  margin-bottom: 0.75rem;
 }
 .question-card {
   background: var(--surface);

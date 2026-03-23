@@ -22,22 +22,24 @@
       <h1>Start a Conversation</h1>
       <p class="subtitle">Who are you with?</p>
     </div>
-    <div class="card-grid">
-      <button class="relation-card" data-relation="family">
-        <span class="card-icon">👨‍👩‍👧</span>
-        <span class="card-label">Family</span>
-      </button>
-      <button class="relation-card" data-relation="friends">
-        <span class="card-icon">👥</span>
-        <span class="card-label">Friends</span>
-      </button>
-      <button class="relation-card" data-relation="date">
-        <span class="card-icon">💕</span>
-        <span class="card-label">Date</span>
-      </button>
-      <button class="relation-card spicy-card" data-relation="spicy">
-        <span class="card-icon">🌶️</span>
-        <span class="card-label">Spicy</span>
+    <div class="relation-wrapper">
+      <div class="card-grid">
+        <button class="relation-card" data-relation="family">
+          <span class="card-icon">👨‍👩‍👧</span>
+          <span class="card-label">Family</span>
+        </button>
+        <button class="relation-card" data-relation="friends">
+          <span class="card-icon">👥</span>
+          <span class="card-label">Friends</span>
+        </button>
+        <button class="relation-card" data-relation="date">
+          <span class="card-icon">💕</span>
+          <span class="card-label">Date</span>
+        </button>
+      </div>
+      <button class="spicy-btn" data-relation="spicy">
+        <span>🌶️</span>
+        <span>Spicy</span>
       </button>
     </div>
   </div>
@@ -98,8 +100,7 @@
     </div>
 
     <div class="question-container">
-      <div class="question-counter" id="question-counter">1 / 12</div>
-      <div class="question-card">
+<div class="question-card">
         <p id="question-text">Loading...</p>
       </div>
     </div>

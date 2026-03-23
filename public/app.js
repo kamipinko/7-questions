@@ -34,12 +34,19 @@ document.getElementById('age-gate-cancel').addEventListener('click', () => {
 document.querySelectorAll('.relation-card').forEach(btn => {
   btn.addEventListener('click', () => {
     state.relation = btn.dataset.relation;
-    if (state.relation === 'spicy') {
-      ageGate.style.display = 'flex';
-    } else {
-      showScreen('tier');
-    }
+    showScreen('tier');
   });
+});
+
+// Spicy corner button
+const spicyBtn = document.querySelector('.spicy-btn');
+spicyBtn.addEventListener('click', () => {
+  state.relation = 'spicy';
+  spicyBtn.classList.add('tapped');
+  spicyBtn.addEventListener('animationend', () => {
+    spicyBtn.classList.remove('tapped');
+    ageGate.style.display = 'flex';
+  }, { once: true });
 });
 
 // Step 2: Pick tier
@@ -50,6 +57,15 @@ document.querySelectorAll('.tier-card').forEach(btn => {
     renderQuestion();
     showScreen('question');
   });
+});
+
+// Banner → home
+document.querySelector('.site-banner').addEventListener('click', () => {
+  state.relation = null;
+  state.tier = null;
+  state.questions = [];
+  state.index = 0;
+  showScreen('relation');
 });
 
 // Back buttons
@@ -87,10 +103,6 @@ function renderQuestion() {
 
   // Question text
   document.getElementById('question-text').textContent = q.text;
-
-  // Counter
-  document.getElementById('question-counter').textContent =
-    `${state.index + 1} / ${state.questions.length}`;
 
   // Badges
   const relBadge = document.getElementById('relation-badge');
