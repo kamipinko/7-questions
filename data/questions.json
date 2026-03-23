@@ -1,265 +1,2663 @@
 [
-  { "id": 1, "text": "Are you a lucky person? What's a small lucky or unlucky event that's happened to you recently? Do you believe in spirits or entities?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 2, "text": "Would you sacrifice your physical appearance to become extremely unattractive if it meant you could live for a thousand years at any age you choose?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 3, "text": "How do you envision the world in 100 years — better or worse than it is today?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 4, "text": "If you knew of a way to use your estate, following your death, to greatly benefit humanity, would you do it and leave only a minimal amount to your family?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 5, "text": "Who do you look up to the most, and how does this person motivate or inspire you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 6, "text": "Would you consider relocating to a faraway country for someone you love deeply, even if it meant rarely seeing your friends or family again?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 7, "text": "If you had the power to cause someone's death by simply thinking of it and saying 'goodbye' twice, are there any instances where you'd use this power?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 8, "text": "Would you prefer being part of a team that wins a world championship or being an individual champion in your sport of choice? Which sport attracts you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 9, "text": "If you were to pass away tonight without a chance to communicate with anyone, what unsaid thing would you regret the most? Why haven't you expressed it yet?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 10, "text": "In your view, which gender enjoys more advantages in our society? Have you ever wished you were the opposite gender?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 11, "text": "If a new drug could cure arthritis but had a 1% chance of causing a fatal reaction, would you support its public release?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 12, "text": "Would you choose to live a year in complete happiness if you knew you'd remember none of it afterward? Why or why not?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 13, "text": "What does an ideal evening look like for you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 14, "text": "If you could choose to maintain the body or mind of a 30-year-old until age 90, which would you choose?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 15, "text": "If you could instantly gain one ability or quality upon waking tomorrow, what would you wish for?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 16, "text": "Upon discovering a mix-up at the hospital means your beloved one-year-old child isn't biologically yours, would you want to switch back to your biological child?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 17, "text": "Would you take $1,000,000 on the condition that you'd have to leave your country and never return?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 18, "text": "Would you rather achieve great professional success but have a mundane personal life, or have a fulfilling personal life but an unremarkable career?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 19, "text": "If you could decide your child's future career at birth, would you choose to? What would you pick?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 20, "text": "Would you choose to meet and fall head over heels for someone, knowing they will pass away in six months? What if the alternative was that they live, but eventually betray you?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 21, "text": "When it comes to spending time with others, do you prefer male or female company? Are your closest friendships generally with men or women?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 22, "text": "If you had the chance to use a voodoo doll to harm someone of your choice, would you take it?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 23, "text": "Imagine your partner has a one-night encounter while away in another city, and you'd never find out otherwise. Would you want them to confess? If the roles were reversed, would you admit it?", "tier": 2, "relations": ["date"] },
-  { "id": 24, "text": "Is there anyone you envy so much that you'd consider trading lives with them? Who would that be?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 25, "text": "For an all-expense-paid trip anywhere in the world, would you agree to kill a beautiful butterfly by tearing off its wings? Would your decision change if it were stepping on a cockroach instead?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 26, "text": "Would you consider taking the life of an innocent person if it meant world hunger would be permanently eradicated?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 27, "text": "If you experienced vivid dreams where God instructed you to abandon everything and become a fisherman, how would you respond? What if the directive involved sacrificing your child?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 28, "text": "Which memory do you cherish the most?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 29, "text": "Have you ever held a deep resentment or hatred toward someone? What initiated it and how long did it last?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 30, "text": "Would you choose to receive $10,000 for yourself or anonymously give $100,000 to strangers? Would your answer change if the choice was between keeping $1,000,000 or donating $20,000,000?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 31, "text": "If you learned a nuclear war would occur in one week, what actions would you take?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 32, "text": "Would you agree to 20 years of intense happiness and fulfillment if it meant your life would end when that period concluded?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 33, "text": "What do you consider your greatest achievement in life? Is there a goal you aspire to that surpasses it?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 34, "text": "What dream have you enjoyed the most, and what nightmare has been the most unsettling for you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 35, "text": "Would you relinquish half of your current possessions in exchange for a pill that ensures one hour of sleep each day would completely refresh you?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 36, "text": "If you could excel and achieve worldwide success in any profession — music, writing, acting, business, or medicine — what would you choose? Would you still pursue it if your chances of success were only 10%?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 37, "text": "Can you describe your best and worst experiences with drugs or alcohol?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 38, "text": "At a dinner party, if offered a dish you've never had before and it seemed unusual or unappealing, would you be curious to try it?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 39, "text": "Are your close friends typically older or younger than you?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 40, "text": "If your fiancé experienced an accident that left them paraplegic, would you still want to go through with the marriage?", "tier": 2, "relations": ["date", "friends"] },
-  { "id": 41, "text": "Your home catches fire, and after rescuing your loved ones and pets, you have time to grab one last item. What would you choose to save?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 42, "text": "How would you feel if you discovered your partner had been involved with someone of the same sex before you met? What if the situation was reversed?", "tier": 2, "relations": ["date"] },
-  { "id": 43, "text": "Can you recall the last time you got into a fight? What triggered it, and who emerged victorious?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 44, "text": "You are presented with a chance to win $1,000,000 by choosing one of ten pistols — only one is loaded — and pulling the trigger against your forehead. Would you take the chance?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 45, "text": "A loved one who is suffering and has only a month to live asks you to provide poison to end their pain. Would you comply? What if it were your parent?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 46, "text": "When was the last time you found yourself singing, either to yourself or to someone else?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 47, "text": "If you had the chance to travel far into the future and return with knowledge — without physical objects — would you take that risk if there was a 50% chance of death?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 48, "text": "If you could invite anyone in the world to join you for dinner, who would you choose? How about for a close friend or a romantic partner?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 49, "text": "Late at night while parking, you accidentally scratch a parked Porsche slightly. Knowing the damage is minor and no one saw, would you leave a note?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 50, "text": "How would you prefer to choose your own death?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 51, "text": "Do you have any long-term aspirations? What is one goal you have, and what steps do you plan to take to achieve it?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 52, "text": "What is the thing in your life for which you feel the most gratitude?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 53, "text": "How do you typically respond when others sing 'Happy Birthday' to you at a restaurant?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 54, "text": "In your imagination, what would be the worst form of psychological torture you could endure that doesn't involve any physical harm?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 55, "text": "Would you prefer your spouse to be more intelligent and attractive than you?", "tier": 2, "relations": ["date", "friends"] },
-  { "id": 56, "text": "If you discovered a good friend had AIDS, would you distance yourself from them? What if it were a close family member?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 57, "text": "Would you be willing to abstain from sex for a year if it meant you would achieve a profound sense of peace?", "tier": 2, "relations": ["date", "friends"] },
-  { "id": 58, "text": "If a good friend pulled a clever prank on you that made you look silly, how would you react?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 59, "text": "If you could control medical research funding to ensure a cure is developed for one specific disease within 15 years, knowing no other diseases would receive attention during that time, which illness would you target?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 60, "text": "Would you accept an additional year of life if it meant randomly shortening someone else's life by a year? Does it matter to you who that person would be?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 61, "text": "Are you comfortable being physically vulnerable in front of another person?", "tier": 2, "relations": ["date"] },
-  { "id": 62, "text": "If you stumbled upon a bird with a broken wing hiding in nearby bushes, how would you respond?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 63, "text": "Imagine a technological advancement enables easy and affordable travel between continents, but it results in 100,000 deaths annually. Would you oppose its use?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 64, "text": "If you and a loved one were placed in separate rooms with a button each, knowing that pressing the button would save the other but result in your own death, what would you do?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 65, "text": "When recounting a story, do you find yourself embellishing or exaggerating the details frequently?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 66, "text": "Do you think older individuals offer valuable advice due to their life experiences?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 67, "text": "If you could save a close family member's life by donating a kidney, knowing your chances of survival from the operation are only 50%, would you agree to do it?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 68, "text": "Can you reflect on a moment when your life significantly changed due to an unexpected external event? How much control do you believe you have over your life's direction?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 69, "text": "If a friend is frequently late, how do you handle it? Would you feel annoyed, or simply accept it? Are you punctual yourself?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 70, "text": "When was the last time you raised your voice at someone? What led to that moment, and did you regret it afterward?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 71, "text": "Would you tolerate having nightmarish dreams every night for a year if it came with the promise of immense wealth?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 72, "text": "If you could have unlimited free service for five years from a top-notch cook, chauffeur, housekeeper, masseuse, or personal assistant, which would you opt for?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 73, "text": "Would you be comfortable going to a slaughterhouse and killing a cow? Do you consume meat?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 74, "text": "Would you find enjoyment in spending a month in complete solitude in a beautiful natural setting, where food and shelter are provided but you won't see another human being?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 75, "text": "If your doctor told you that you had incurable cancer and only months to live, then five days later revealed it was a lab error, do you believe the experience would give you valuable insights worth the initial pain?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 76, "text": "One sweltering summer day, you observe a dog trapped inside a locked car suffering from the heat. What actions would you take?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 77, "text": "Do you feel uneasy going out to dinner or a movie by yourself? What about traveling alone for a vacation?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 78, "text": "If you learned you would unexpectedly die in a year, would you alter your current lifestyle in any way?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 79, "text": "Would you agree to go without washing, brushing your teeth, or using deodorant for three months in exchange for $20,000, knowing you couldn't explain your reasoning to anyone?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 80, "text": "Would you rather pass away peacefully surrounded by friends at age 50, or suffer alone at age 80, assuming most of your last three decades were pleasant?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 81, "text": "If you discovered that your best friend was dealing heroin, how would you respond?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 82, "text": "Is it easy for you to accept help when it's offered? Are you inclined to ask for assistance when you need it?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 83, "text": "If you were asked to perform at a fundraising event for a charity, would you do it? If so, what would be your act for an audience of around 1,000 people?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 84, "text": "Would you consider having a finger surgically removed if it meant you would gain immunity from all major diseases?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 85, "text": "Do you aspire to fame? If so, in what manner?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 86, "text": "How do you envision your funeral? Is it important to you that people mourn your passing?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 87, "text": "Which situation would you find easier to endure: permanently leaving your country or never leaving your home state again?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 88, "text": "While on a vacation, your closest friend and your parent are both bitten by venomous snakes. You have the only dose of anti-venom. What would you do?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 89, "text": "If you could choose any place on a scale of one to ten — where one represents hardship and extraordinary achievement, and ten signifies comfort and peace — where would you choose? Where do you see yourself currently?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 90, "text": "If you had the option to dictate the sex and physical appearance of your unborn child, would you take it?", "tier": 2, "relations": ["family", "date"] },
-  { "id": 91, "text": "Would you prefer playing a game against someone less skilled than you, or against a more talented opponent? Does the opponent's identity matter to you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 92, "text": "Is there a long-held dream you have yet to pursue? What has held you back from making it a reality?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 93, "text": "If you uncovered evidence of serious crimes committed by the President, and exposing it would lead to significant consequences for your own career, would you choose to come forward?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 94, "text": "On a busy street, a well-dressed stranger approaches you saying they lost their wallet and need a dollar for the bus. How would you react? What if the person looked ragged and claimed to be hungry?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 95, "text": "Would you be willing to sacrifice your life if it meant making a profound impact on the world? Would you feel the same if someone you disliked received the accolades while you remained unrecognized?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 96, "text": "If you had a 50% chance of winning a bet that would reward you tenfold, how much of what you currently possess would you be willing to wager?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 97, "text": "What compulsive habits do you struggle with? Do you find it challenging to overcome these habits?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 98, "text": "If you had three months to live due to an incurable illness, would you permit yourself to be frozen in hopes of being revived in a thousand years for an extended life?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 99, "text": "One night while driving, a dog suddenly runs in front of your vehicle and you hit it despite slamming on the brakes. Would you stop to check on the dog? If it had died and had a name tag, would you reach out to the owner?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 100, "text": "What do you primarily strive for in life: achievement, security, love, influence, excitement, knowledge, or something else?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 101, "text": "A quirky millionaire offers to donate a significant sum to charity if you're willing to walk completely naked from a car onto a busy street and back again. Knowing there's no risk of physical harm, would you accept?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 102, "text": "How close and warm is your family? Do you feel your childhood was happier than most other people's?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 103, "text": "Does the fact that you have never done something before increase or decrease its appeal to you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 104, "text": "Would you be willing to give up sex for five years if you could have wonderfully sensual and erotic dreams any night you wished?", "tier": 2, "relations": ["date"] },
-  { "id": 105, "text": "At a meal, your friends start belittling a common acquaintance. If you felt their criticisms were unjustified, would you defend the person?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 106, "text": "Do you usually make a special effort to thank someone who does you a favor? How do you react when you aren't thanked for going out of your way for someone?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 107, "text": "Would you like to have your rate of physical aging slowed by a factor of thirty so as to give you a life expectancy of about 2,000 years?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 108, "text": "You are invited to a party that will be attended by many fascinating people you've never met. Would you want to go if you had to go by yourself?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 109, "text": "Since adolescence, in what three-year period do you feel you experienced the most personal growth and change?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 110, "text": "If you were having difficulty on an important test and could safely cheat by looking at someone else's paper, would you do so?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 111, "text": "If your parents became infirm and the only alternative to bringing them into your home was a nursing home, would you do so? What about a sibling with a permanently crippling injury?", "tier": 2, "relations": ["family", "friends"] },
-  { "id": 112, "text": "If you were at a friend's house for Thanksgiving dinner and you found a dead cockroach in your salad, what would you do?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 113, "text": "If you could take a one-month trip anywhere in the world and money were not a consideration, where would you go and what would you do?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 114, "text": "Would you be willing to reduce your life expectancy by five years to become extremely attractive?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 115, "text": "Given the ability to project yourself into the past but not return, would you do so? Where would you go and what would you try to accomplish if you knew you might change the course of history?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 116, "text": "How many different sexual partners have you had in your life? Would you prefer to have had more or fewer?", "tier": 2, "relations": ["date", "friends"] },
-  { "id": 117, "text": "Have you ever considered suicide? What is so important to you that without it life would not be worth living?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 118, "text": "If your friends and acquaintances were willing to bluntly and honestly tell you what they really thought of you, would you want them to?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 119, "text": "If this country were to suffer an unprovoked nuclear attack and would be totally obliterated in minutes, would you favor unleashing the nuclear arsenal upon the attackers?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 120, "text": "Would you accept $10,000 to shave your head and continue your normal activities without a hat or wig, without explaining the reason for your haircut?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 121, "text": "Were you able to wake up tomorrow in the body of someone else, would you do so? Whom would you pick?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 122, "text": "If you were happily married, and then met someone you felt was certain to always bring you deeply passionate love, would you leave your spouse? What if you had kids?", "tier": 2, "relations": ["date"] },
-  { "id": 123, "text": "When you do something ridiculous, how much does it bother you to have other people notice it and laugh at you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 124, "text": "Who is the most important person in your life? What could you do to improve the relationship?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 125, "text": "Assuming that complete recovery were instantaneous, would you be willing to accept a year of complete paralysis below the neck to prevent the otherwise certain extinction of the blue whale?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 126, "text": "Do you believe in capital punishment? Would you be willing to execute someone sentenced to death by the courts if you were selected by lot to do so?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 127, "text": "If you could change anything about the way you were raised, what would it be?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 128, "text": "You are at a lake with some friends; the sun is warm and the water is cold. Going into the water would temporarily chill you but afterward the warm sun would be even more enjoyable. Would you take the plunge?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 129, "text": "Do you believe in any sort of God? If not, do you think you might still pray if you were in a life-threatening situation?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 130, "text": "While out one day, you see your mother holding hands with someone who is clearly her lover. She begs you not to say anything to your father. How would you respond?", "tier": 2, "relations": ["family", "friends"] },
-  { "id": 131, "text": "If 100 people your age were chosen at random, how many do you think you'd find leading a more satisfying life than yours?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 132, "text": "If you went to a beach and it turned out to be a nude beach, would you stay and go swimming? Would you swim nude?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 133, "text": "Have you had satisfying sex within the last three months?", "tier": 2, "relations": ["date"] },
-  { "id": 134, "text": "Would it disturb you much if, upon your death, your body were simply thrown into the woods and left to rot? Why?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 135, "text": "Which would you prefer: a wild, turbulent life filled with joy, sorrow, passion, and adventure — intoxicating successes and stunning setbacks; or a happy, secure, predictable life surrounded by friends and family without such wide swings of fortune and mood?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 136, "text": "If you knew your child would be severely disabled and would die by the age of five, would you decide to have an abortion?", "tier": 3, "relations": ["family", "date"] },
-  { "id": 137, "text": "Do you find it so hard to say 'no' that you regularly do favors you do not want to do? If so, why?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 138, "text": "If you began to be very attracted to someone of another race, how would your behavior differ from what it would be toward someone of your own race?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 139, "text": "Would you rather spend a month on vacation with your parents or put in overtime at your current job for four weeks without extra compensation?", "tier": 1, "relations": ["family", "friends"] },
-  { "id": 140, "text": "Would you like to know the precise date of your death?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 141, "text": "Would you accept a guaranteed, lifetime allowance of $50,000 per year if accepting it meant you could never again earn money from either work or investments?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 142, "text": "What, if anything, is too serious to be joked about?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 143, "text": "Do you ever spit or pick your nose in public? What about cleaning your teeth with a toothpick?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 144, "text": "A close friend genuinely wants your opinion about something, but your honest answer would be quite painful for them — for example, telling an artist they have no chance of success. What would you do?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 145, "text": "Do you have a favorite sexual fantasy? Would you like to have it fulfilled?", "tier": 3, "relations": ["date"] },
-  { "id": 146, "text": "If you knew a thermonuclear holocaust would occur in precisely 20 years and no one would survive it, how would you change your present life?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 147, "text": "When did you last cry in front of another person? When did you last cry by yourself?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 148, "text": "If, by having a small tattoo, you could save five lives and prevent a terrorist attack, would you do so? Where would you have it and what would the design be?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 149, "text": "Someone you love deeply is brutally murdered and you know the identity of the murderer, who is acquitted of the crime. Would you seek revenge?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 150, "text": "Would you be willing to give up all television for the next five years if it would induce someone to provide for 1,000 starving children?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 151, "text": "While arguing with a close friend on the telephone, she gets angry and hangs up. Assuming she is at fault and makes no attempt to contact you, how long would you wait to get in touch with her?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 152, "text": "What do you value most in a relationship?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 153, "text": "If you learned you would die in a few days, what regrets would you have? Were you given five extra years of life, could you avoid those same regrets?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 154, "text": "Do you judge others by higher or lower standards than you use to judge yourself?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 155, "text": "Would you be willing to make a substantial sacrifice to have any of the following: your picture on a postage stamp, your statue in a park, a college named after you, a Nobel prize, or a national holiday in your honor?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 156, "text": "On a flight you are talking pleasantly to a stranger of average appearance. They offer you $10,000 for one night of sex. Knowing there is no danger and payment is certain, would you accept the offer?", "tier": 3, "relations": ["date", "friends"] },
-  { "id": 157, "text": "If you had to spend the next two years inside a small but fully provisioned Antarctic shelter with one other person, whom would you like to have with you?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 158, "text": "You notice a self-destructive behavior pattern in a friend who is clearly unaware of it. Would you point it out?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 159, "text": "If you had the choice of one intimate soulmate and no other close friends, or of no such soulmate and many friends and acquaintances, which would you choose?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 160, "text": "You become involved romantically but after six months realize you need to end the relationship. If you were certain the person would commit suicide if you were to leave, and equally certain you could not be happy with them, what would you do?", "tier": 3, "relations": ["date", "friends"] },
-  { "id": 161, "text": "If you wanted to look very sexy, how would you dress?", "tier": 2, "relations": ["date"] },
-  { "id": 162, "text": "For $2,000, would you be willing to stand up in a crowded restaurant and loudly berate a waitress for some trivial imperfection in the service?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 163, "text": "If there were a public execution on television, would you watch it?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 164, "text": "If someone offered you a large amount of money for information about one of your company's products, would you accept it? Assume you know you won't be discovered.", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 165, "text": "Do you consider yourself well organized? How often do you have to look for your keys?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 166, "text": "If you could increase your IQ by forty points by having an ugly scar stretching from your mouth to your eye, would you do so?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 167, "text": "Would you be willing to do something very unsatisfying for five years if you were certain that the experience would bring you a deep sense of personal fulfillment for the rest of your life?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 168, "text": "What things are too personal to discuss with others?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 169, "text": "How many times during the day do you look at yourself in the mirror?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 170, "text": "Walking along an empty street, you notice a wallet. It contains $5,000 in cash but no name or address. What would you do? Would it change if inside you found the name and picture of either a wealthy young man or a frail elderly woman?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 171, "text": "Would you prefer to be blind or deaf?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 172, "text": "Would you be content with a marriage of the highest quality in all respects but one — it completely lacked sex?", "tier": 2, "relations": ["date"] },
-  { "id": 173, "text": "When was the last time you stole something? Why haven't you stolen anything since then?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 174, "text": "How many of your friendships have lasted more than ten years? Which of your current friends do you feel will still be important to you ten years from now?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 175, "text": "If you could mold to your liking your memories of any past experience, would you do so?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 176, "text": "Before making a telephone call, do you ever rehearse what you are going to say?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 177, "text": "How old were you when you first had sexual intercourse? Looking back, do you feel you were too young, too old, or about right?", "tier": 3, "relations": ["date"] },
-  { "id": 178, "text": "You are leading 100 people whose lives are in danger and you must choose between two courses of action. One would save 90 people; the other has a 50% chance of saving everyone but were it to fail, everyone would die. Which would you choose?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 179, "text": "If you went to a movie with a friend and it was lousy, would you leave?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 180, "text": "For $1,000,000, would you be willing to never again see or talk to your best friend?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 181, "text": "What do you like best about your life? What do you like least?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 182, "text": "Have you ever disliked someone for being luckier or more successful than you?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 183, "text": "A cave-in occurs while you and a stranger are in a concrete room deep in a mine shaft. You learn the entire mine is sealed and the air hole being drilled won't reach you for 30 hours. If you both take sleeping pills, the oxygen will last only 20 hours. One of you can't survive. The stranger takes sleeping pills and falls asleep. You have a pistol. What do you do?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 184, "text": "When you are given a compliment do you usually acknowledge it or suggest that you really do not deserve it?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 185, "text": "What sorts of things would you do if you could be as outgoing and uninhibited as you wished? Do you usually initiate friendships or wait to be approached?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 186, "text": "If you decided to do something and your friends strongly advised you not to, could you do it anyway?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 187, "text": "In a nice restaurant, after getting the check for an excellent meal, you notice that you were not charged for one of the items you ate. Would you tell the server?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 188, "text": "Do you establish routines in your life? For example, do you usually sleep in the same place in your bed? Eat meals at the same time? Regularly return to the same vacation spot?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 189, "text": "Can you be counted on to do what you say you'll do? What does it take for you to trust someone?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 190, "text": "Do you feel you have much impact on the lives of people you come in contact with? Can you think of someone who, over a short period of time, significantly influenced your life?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 191, "text": "Would you rather be happy yet slow-witted and unimaginative, or unhappy yet bright and creative? For example, would you rather live the life of a brilliant yet tortured artist, or that of a happy but simple-minded soul?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 192, "text": "When you are with your friends, does your interaction include much touching — for example, hugging, kissing, roughhousing? Would you like to have more of this?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 193, "text": "Given the ability to project yourself into the future but not return, would you do so? If not, would you change your mind if you could take someone along? How far would you go?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 194, "text": "Would you generally rather be overdressed or underdressed at a party?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 195, "text": "Of all the people close to you, whose death would you find most disturbing?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 196, "text": "You have arranged an evening with a friend, but on the day preceding your date a special opportunity arises to do something much more exciting. How would you handle the situation?", "tier": 1, "relations": ["friends", "date"] },
-  { "id": 197, "text": "What has been your biggest disappointment in life? Your biggest failure?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 198, "text": "If you could pass your whole life cared for in every way as you slumbered peacefully, entranced by wonderful dreams, would you do so?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 199, "text": "You are given $1,000,000 to donate anonymously to charity or to a stranger. How would you dispose of it?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 200, "text": "In conversations, do you tend to listen or talk more?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 201, "text": "Do you frequently find yourself — just to be polite — saying things you don't mean? For example, when you say good-bye to someone who does not interest you, do you act as though you enjoyed their company?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 202, "text": "Would you be willing to commit perjury for a close friend? For example, might you testify that they were driving carefully when they were actually joking around and not paying attention?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 203, "text": "Relative to the population at large, how do you rate your physical attractiveness? Your intelligence? Your personality?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 204, "text": "Running too quickly on an icy sidewalk in front of a neighbor's house, you slip and break your leg. Would you be likely to sue the owner of the house if you were confident you could win?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 205, "text": "If you could prevent either an earthquake in Peru that would kill 40,000 people, a crash at your local airport that would kill 200 people, or an automobile accident that would kill an acquaintance of yours — which would you choose?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 206, "text": "Would you be willing to eat a bowl of live crickets for $40,000?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 207, "text": "Do you enjoy sleeping in physical contact with your partner?", "tier": 2, "relations": ["date"] },
-  { "id": 208, "text": "If you came upon the scene of a terrible highway accident just after the ambulances arrived, would you stop to watch? Assume that your presence would neither help nor hinder the rescuers.", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 209, "text": "If you could script the basic plot for the dream you will have tonight, what would the story be?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 210, "text": "You are given a chance to return to any previous point in your life and change a decision you made, but you will lose everything that has happened since then. Is there a time you would return to?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 211, "text": "Would $50,000 be enough money to induce you to take a loyal, healthy pet to the vet to be put to sleep?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 212, "text": "Ignoring all financial considerations, would you rather spend the next five years confined to a major city or to a beautiful, isolated coastal town?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 213, "text": "What would you like to be doing five years from now? What do you think you will actually be doing five years from now?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 214, "text": "What important decision in your professional life have you based largely upon your intuitive feelings? What about in your personal life?", "tier": 2, "relations": ["friends", "date"] },
-  { "id": 215, "text": "Would you like to be elected president of this country? Why? If so, would you still choose to be president if it meant your sleep would always be fitful and disturbed, punctuated by frequent nightmares?", "tier": 2, "relations": ["family", "friends", "date"] },
-  { "id": 216, "text": "If a crystal ball would tell you the truth about any one thing you wish to know concerning yourself, life, or the future, what would you want to know?", "tier": 1, "relations": ["family", "friends", "date"] },
-  { "id": 217, "text": "If you were guaranteed honest responses to any three questions, whom would you question and what would you ask?", "tier": 1, "relations": ["family", "friends", "date"] },
-
-  { "id": 301, "text": "If you can imagine yourself killing someone indirectly, could you still see doing so if you had to look into the person's eyes? Have you ever genuinely wanted to kill someone, or wished someone dead?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 302, "text": "Since so many place great emphasis on a happy private life, why do people often wind up putting more energy into their professional lives? If you feel your private life is more important, do your priorities actually support this?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 303, "text": "How much are you affected by a person's physical appearance? How would it change your life if something happened to make you much less attractive than you are now?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 304, "text": "In love, is intensity or permanence more important to you? What would make you feel betrayed by your partner — indifference, dishonesty, or infidelity?", "tier": 3, "relations": ["date"] },
-  { "id": 305, "text": "How serious would an affair need to be before you would want and expect to be told about it? Is this kind of honesty more likely to be destructive or lead to greater intimacy and trust? How much can you be trusted?", "tier": 3, "relations": ["date"] },
-  { "id": 306, "text": "Why does a beautiful creature merit more compassion than an ugly one? Does it damage us psychologically when we destroy something we find beautiful?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 307, "text": "Would it torment you more to have the blood of an innocent person on your hands or to know you let millions of people die? Is anything so important you would sacrifice your very soul for it?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 308, "text": "Do you feel you have enough time? If not, what would give you that feeling? How much has your attitude about time changed since you've aged?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 309, "text": "What kind of people do you like to spend time with? What can people learn about you by looking at your friends? What do such people bring out in you that others do not?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 310, "text": "Have you ever been sexually attracted to someone of the same sex? To someone in your family? If so, how did you deal with it?", "tier": 3, "relations": ["date"] },
-  { "id": 311, "text": "Should it be illegal to help a terminally-ill person die? If someone is not dying but has chronic pain, should the person be allowed to commit suicide? What if the person is in emotional rather than physical pain?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 312, "text": "What do you seek in a friend yet neither expect nor want in a lover? Are you attracted to people who are healthy for you to be around?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 313, "text": "Would you prefer to die a hero's death, die a martyr for some great cause, die in a natural catastrophe, or die peacefully? How do your feelings about death influence the way you lead your life?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 314, "text": "How often do you step back and reflect upon the way you are living and where you are headed? In what way will reaching your goals make your life more satisfying?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 315, "text": "How forgiving are you when your friends let you down? Is there a limit to how many times someone gets a second chance?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 316, "text": "Is there scientific knowledge that is best left undiscovered? What areas of research do you feel should be restricted?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 317, "text": "Would you risk your life for someone close to you out of feelings of obligation or out of feelings of love? Would it matter if you could refuse without anyone ever knowing?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 318, "text": "Does living as though you control your own destiny lead to a more powerful life? Or is accepting what you can't control a form of wisdom?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 319, "text": "Is there anything worse than the worst nightmare you have ever had? What are the limits of what the mind can put itself through?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 320, "text": "Is our more permissive sexual attitude a healthy development compared to a century ago? How important is culture and advertising in shaping what we consider normal?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 321, "text": "How would you like to be remembered after you die? What would you like said at your funeral, and who would you like to speak?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 322, "text": "Would you like to have a child much brighter and more attractive than yourself? Would a baby designed through genetic modification still feel like your child?", "tier": 3, "relations": ["family", "date"] },
-  { "id": 323, "text": "Is it better to have dreams that will never come to pass, or to have no dreams at all? How much better would your life be if the things you dream of doing or having were granted to you?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 324, "text": "Do you feel children should be sheltered from unhappiness? What from your childhood has proved most valuable? What has been most difficult to overcome?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 325, "text": "How hard would it be to outlive and lose each person you grew close to if you had a greatly lengthened life? Would you soon grow jaded, feeling there was nothing interesting left?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 326, "text": "If you saw someone cheating on a test, what would you do? What if you had signed an honor code? Does the context change your answer?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 327, "text": "How might the world be different if you could change some historical event? How sure are you that the long-term consequences would be positive?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 328, "text": "Would your friends agree with one another about the kind of person you are? How much energy do you spend trying to favorably impress other people?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 329, "text": "When you make a big sacrifice, do you tell people about it or keep it to yourself? What would you never willingly sacrifice — your life, your health, your integrity, your dreams?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 330, "text": "In what ways will you treat your children differently from how you were raised? If you could do it again knowing what you know now, what would you do differently?", "tier": 3, "relations": ["family", "date"] },
-  { "id": 331, "text": "How much do you like your body? If you awoke alone on a warm morning and were going to laze around home, how long would you wait to get dressed?", "tier": 3, "relations": ["date", "friends"] },
-  { "id": 332, "text": "What are your true feelings about abortion? Should a woman have the right to have an abortion for any reason she wants? What rights should the father have?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 333, "text": "How might knowing when you'll die help you plan your life? Is life enhanced by feeling that death could strike at any time, or by not thinking about death at all?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 334, "text": "Would you accept a much less enjoyable job paying twice what you make now? If you were financially independent, would you continue to work? If not, what would you do?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 335, "text": "Can you envision how you are likely to look back upon the things you are doing today? How much do you try to live now as you think you will one day wish you had lived?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 336, "text": "Are honors more likely to come to those who seek them or those who think only of their work? Does just knowing you've accomplished something worthwhile mean as much as getting attention and praise for it?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 337, "text": "Since many are willing to have sex for money, why is such a strong stigma attached to prostitution? Is there much difference between having sex for cash and having sex in hope of getting some future benefit?", "tier": 3, "relations": ["date", "friends"] },
-  { "id": 338, "text": "How do you feel about taking a sick day at work when you aren't ill? Have you ever made unauthorized personal calls or taken supplies from work? Do you see such moral choices as black-and-white issues?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 339, "text": "Most people say if they found a wallet full of cash they would return the money — do you believe them? Most also think their own lost wallets would not be returned. How do you explain this contradiction?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 340, "text": "Are you able to separate sex from love? Could you be content satisfying your sexual needs from people other than your partner? When you think of intimacy, do you focus on a broad range of closeness or mainly on sex itself?", "tier": 3, "relations": ["date"] },
-  { "id": 341, "text": "Is there anything anyone could have told you that would have made your first sexual experience better? Do you think you would be better off if you had waited longer to have sex, or started earlier?", "tier": 3, "relations": ["date"] },
-  { "id": 342, "text": "If you had to choose which 10 people out of 100 would die, would you rather have someone else in the group make the decision — even though you might be picked to die?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 343, "text": "If you were offered a much better job in another city and knew you would, over the years, drift away from your closest friend if you took it, would you go?", "tier": 3, "relations": ["friends", "date"] },
-  { "id": 344, "text": "What would induce you to give up life as you know it and face the unknown? Were people in previous centuries more adventurous than we are today, or was it simply harder to avoid risk and adventure?", "tier": 3, "relations": ["family", "friends", "date"] },
-  { "id": 345, "text": "What are you looking for when you converse with people? What kinds of things do you usually discuss? Are there topics you wish you could explore more deeply with others?", "tier": 3, "relations": ["family", "friends", "date"] }
+  {
+    "id": 1,
+    "text": "Are you a lucky person? What's a small lucky or unlucky event that's happened to you recently? Do you believe in spirits or entities?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 2,
+    "text": "Would you sacrifice your physical appearance to become extremely unattractive if it meant you could live for a thousand years at any age you choose?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 3,
+    "text": "How do you envision the world in 100 years — better or worse than it is today?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 4,
+    "text": "If you knew of a way to use your estate, following your death, to greatly benefit humanity, would you do it and leave only a minimal amount to your family?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 5,
+    "text": "Who do you look up to the most, and how does this person motivate or inspire you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 6,
+    "text": "Would you consider relocating to a faraway country for someone you love deeply, even if it meant rarely seeing your friends or family again?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 7,
+    "text": "If you had the power to cause someone's death by simply thinking of it and saying 'goodbye' twice, are there any instances where you'd use this power?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 8,
+    "text": "Would you prefer being part of a team that wins a world championship or being an individual champion in your sport of choice? Which sport attracts you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 9,
+    "text": "If you were to pass away tonight without a chance to communicate with anyone, what unsaid thing would you regret the most? Why haven't you expressed it yet?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 10,
+    "text": "In your view, which gender enjoys more advantages in our society? Have you ever wished you were the opposite gender?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 11,
+    "text": "If a new drug could cure arthritis but had a 1% chance of causing a fatal reaction, would you support its public release?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 12,
+    "text": "Would you choose to live a year in complete happiness if you knew you'd remember none of it afterward? Why or why not?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 13,
+    "text": "What does an ideal evening look like for you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 14,
+    "text": "If you could choose to maintain the body or mind of a 30-year-old until age 90, which would you choose?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 15,
+    "text": "If you could instantly gain one ability or quality upon waking tomorrow, what would you wish for?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 16,
+    "text": "Upon discovering a mix-up at the hospital means your beloved one-year-old child isn't biologically yours, would you want to switch back to your biological child?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 17,
+    "text": "Would you take $1,000,000 on the condition that you'd have to leave your country and never return?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 18,
+    "text": "Would you rather achieve great professional success but have a mundane personal life, or have a fulfilling personal life but an unremarkable career?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 19,
+    "text": "If you could decide your child's future career at birth, would you choose to? What would you pick?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 20,
+    "text": "Would you choose to meet and fall head over heels for someone, knowing they will pass away in six months? What if the alternative was that they live, but eventually betray you?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 21,
+    "text": "When it comes to spending time with others, do you prefer male or female company? Are your closest friendships generally with men or women?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 22,
+    "text": "If you had the chance to use a voodoo doll to harm someone of your choice, would you take it?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 23,
+    "text": "Imagine your partner has a one-night encounter while away in another city, and you'd never find out otherwise. Would you want them to confess? If the roles were reversed, would you admit it?",
+    "tier": 2,
+    "relations": [
+      "date"
+    ]
+  },
+  {
+    "id": 24,
+    "text": "Is there anyone you envy so much that you'd consider trading lives with them? Who would that be?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 25,
+    "text": "For an all-expense-paid trip anywhere in the world, would you agree to kill a beautiful butterfly by tearing off its wings? Would your decision change if it were stepping on a cockroach instead?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 26,
+    "text": "Would you consider taking the life of an innocent person if it meant world hunger would be permanently eradicated?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 27,
+    "text": "If you experienced vivid dreams where God instructed you to abandon everything and become a fisherman, how would you respond? What if the directive involved sacrificing your child?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 28,
+    "text": "Which memory do you cherish the most?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 29,
+    "text": "Have you ever held a deep resentment or hatred toward someone? What initiated it and how long did it last?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 30,
+    "text": "Would you choose to receive $10,000 for yourself or anonymously give $100,000 to strangers? Would your answer change if the choice was between keeping $1,000,000 or donating $20,000,000?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 31,
+    "text": "If you learned a nuclear war would occur in one week, what actions would you take?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 32,
+    "text": "Would you agree to 20 years of intense happiness and fulfillment if it meant your life would end when that period concluded?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 33,
+    "text": "What do you consider your greatest achievement in life? Is there a goal you aspire to that surpasses it?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 34,
+    "text": "What dream have you enjoyed the most, and what nightmare has been the most unsettling for you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 35,
+    "text": "Would you relinquish half of your current possessions in exchange for a pill that ensures one hour of sleep each day would completely refresh you?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 36,
+    "text": "If you could excel and achieve worldwide success in any profession — music, writing, acting, business, or medicine — what would you choose? Would you still pursue it if your chances of success were only 10%?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 37,
+    "text": "Can you describe your best and worst experiences with drugs or alcohol?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 38,
+    "text": "At a dinner party, if offered a dish you've never had before and it seemed unusual or unappealing, would you be curious to try it?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 39,
+    "text": "Are your close friends typically older or younger than you?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 40,
+    "text": "If your fiancé experienced an accident that left them paraplegic, would you still want to go through with the marriage?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "friends"
+    ]
+  },
+  {
+    "id": 41,
+    "text": "Your home catches fire, and after rescuing your loved ones and pets, you have time to grab one last item. What would you choose to save?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 42,
+    "text": "How would you feel if you discovered your partner had been involved with someone of the same sex before you met? What if the situation was reversed?",
+    "tier": 2,
+    "relations": [
+      "date"
+    ]
+  },
+  {
+    "id": 43,
+    "text": "Can you recall the last time you got into a fight? What triggered it, and who emerged victorious?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 44,
+    "text": "You are presented with a chance to win $1,000,000 by choosing one of ten pistols — only one is loaded — and pulling the trigger against your forehead. Would you take the chance?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 45,
+    "text": "A loved one who is suffering and has only a month to live asks you to provide poison to end their pain. Would you comply? What if it were your parent?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 46,
+    "text": "When was the last time you found yourself singing, either to yourself or to someone else?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 47,
+    "text": "If you had the chance to travel far into the future and return with knowledge — without physical objects — would you take that risk if there was a 50% chance of death?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 48,
+    "text": "If you could invite anyone in the world to join you for dinner, who would you choose? How about for a close friend or a romantic partner?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 49,
+    "text": "Late at night while parking, you accidentally scratch a parked Porsche slightly. Knowing the damage is minor and no one saw, would you leave a note?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 50,
+    "text": "How would you prefer to choose your own death?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 51,
+    "text": "Do you have any long-term aspirations? What is one goal you have, and what steps do you plan to take to achieve it?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 52,
+    "text": "What is the thing in your life for which you feel the most gratitude?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 53,
+    "text": "How do you typically respond when others sing 'Happy Birthday' to you at a restaurant?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 54,
+    "text": "In your imagination, what would be the worst form of psychological torture you could endure that doesn't involve any physical harm?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 55,
+    "text": "Would you prefer your spouse to be more intelligent and attractive than you?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "friends"
+    ]
+  },
+  {
+    "id": 56,
+    "text": "If you discovered a good friend had AIDS, would you distance yourself from them? What if it were a close family member?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 57,
+    "text": "Would you be willing to abstain from sex for a year if it meant you would achieve a profound sense of peace?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "friends",
+      "spicy"
+    ]
+  },
+  {
+    "id": 58,
+    "text": "If a good friend pulled a clever prank on you that made you look silly, how would you react?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 59,
+    "text": "If you could control medical research funding to ensure a cure is developed for one specific disease within 15 years, knowing no other diseases would receive attention during that time, which illness would you target?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 60,
+    "text": "Would you accept an additional year of life if it meant randomly shortening someone else's life by a year? Does it matter to you who that person would be?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 61,
+    "text": "Are you comfortable being physically vulnerable in front of another person?",
+    "tier": 2,
+    "relations": [
+      "date"
+    ]
+  },
+  {
+    "id": 62,
+    "text": "If you stumbled upon a bird with a broken wing hiding in nearby bushes, how would you respond?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 63,
+    "text": "Imagine a technological advancement enables easy and affordable travel between continents, but it results in 100,000 deaths annually. Would you oppose its use?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 64,
+    "text": "If you and a loved one were placed in separate rooms with a button each, knowing that pressing the button would save the other but result in your own death, what would you do?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 65,
+    "text": "When recounting a story, do you find yourself embellishing or exaggerating the details frequently?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 66,
+    "text": "Do you think older individuals offer valuable advice due to their life experiences?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 67,
+    "text": "If you could save a close family member's life by donating a kidney, knowing your chances of survival from the operation are only 50%, would you agree to do it?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 68,
+    "text": "Can you reflect on a moment when your life significantly changed due to an unexpected external event? How much control do you believe you have over your life's direction?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 69,
+    "text": "If a friend is frequently late, how do you handle it? Would you feel annoyed, or simply accept it? Are you punctual yourself?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 70,
+    "text": "When was the last time you raised your voice at someone? What led to that moment, and did you regret it afterward?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 71,
+    "text": "Would you tolerate having nightmarish dreams every night for a year if it came with the promise of immense wealth?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 72,
+    "text": "If you could have unlimited free service for five years from a top-notch cook, chauffeur, housekeeper, masseuse, or personal assistant, which would you opt for?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 73,
+    "text": "Would you be comfortable going to a slaughterhouse and killing a cow? Do you consume meat?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 74,
+    "text": "Would you find enjoyment in spending a month in complete solitude in a beautiful natural setting, where food and shelter are provided but you won't see another human being?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 75,
+    "text": "If your doctor told you that you had incurable cancer and only months to live, then five days later revealed it was a lab error, do you believe the experience would give you valuable insights worth the initial pain?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 76,
+    "text": "One sweltering summer day, you observe a dog trapped inside a locked car suffering from the heat. What actions would you take?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 77,
+    "text": "Do you feel uneasy going out to dinner or a movie by yourself? What about traveling alone for a vacation?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 78,
+    "text": "If you learned you would unexpectedly die in a year, would you alter your current lifestyle in any way?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 79,
+    "text": "Would you agree to go without washing, brushing your teeth, or using deodorant for three months in exchange for $20,000, knowing you couldn't explain your reasoning to anyone?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 80,
+    "text": "Would you rather pass away peacefully surrounded by friends at age 50, or suffer alone at age 80, assuming most of your last three decades were pleasant?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 81,
+    "text": "If you discovered that your best friend was dealing heroin, how would you respond?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 82,
+    "text": "Is it easy for you to accept help when it's offered? Are you inclined to ask for assistance when you need it?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 83,
+    "text": "If you were asked to perform at a fundraising event for a charity, would you do it? If so, what would be your act for an audience of around 1,000 people?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 84,
+    "text": "Would you consider having a finger surgically removed if it meant you would gain immunity from all major diseases?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 85,
+    "text": "Do you aspire to fame? If so, in what manner?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 86,
+    "text": "How do you envision your funeral? Is it important to you that people mourn your passing?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 87,
+    "text": "Which situation would you find easier to endure: permanently leaving your country or never leaving your home state again?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 88,
+    "text": "While on a vacation, your closest friend and your parent are both bitten by venomous snakes. You have the only dose of anti-venom. What would you do?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 89,
+    "text": "If you could choose any place on a scale of one to ten — where one represents hardship and extraordinary achievement, and ten signifies comfort and peace — where would you choose? Where do you see yourself currently?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 90,
+    "text": "If you had the option to dictate the sex and physical appearance of your unborn child, would you take it?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "date"
+    ]
+  },
+  {
+    "id": 91,
+    "text": "Would you prefer playing a game against someone less skilled than you, or against a more talented opponent? Does the opponent's identity matter to you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 92,
+    "text": "Is there a long-held dream you have yet to pursue? What has held you back from making it a reality?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 93,
+    "text": "If you uncovered evidence of serious crimes committed by the President, and exposing it would lead to significant consequences for your own career, would you choose to come forward?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 94,
+    "text": "On a busy street, a well-dressed stranger approaches you saying they lost their wallet and need a dollar for the bus. How would you react? What if the person looked ragged and claimed to be hungry?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 95,
+    "text": "Would you be willing to sacrifice your life if it meant making a profound impact on the world? Would you feel the same if someone you disliked received the accolades while you remained unrecognized?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 96,
+    "text": "If you had a 50% chance of winning a bet that would reward you tenfold, how much of what you currently possess would you be willing to wager?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 97,
+    "text": "What compulsive habits do you struggle with? Do you find it challenging to overcome these habits?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 98,
+    "text": "If you had three months to live due to an incurable illness, would you permit yourself to be frozen in hopes of being revived in a thousand years for an extended life?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 99,
+    "text": "One night while driving, a dog suddenly runs in front of your vehicle and you hit it despite slamming on the brakes. Would you stop to check on the dog? If it had died and had a name tag, would you reach out to the owner?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 100,
+    "text": "What do you primarily strive for in life: achievement, security, love, influence, excitement, knowledge, or something else?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 101,
+    "text": "A quirky millionaire offers to donate a significant sum to charity if you're willing to walk completely naked from a car onto a busy street and back again. Knowing there's no risk of physical harm, would you accept?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 102,
+    "text": "How close and warm is your family? Do you feel your childhood was happier than most other people's?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 103,
+    "text": "Does the fact that you have never done something before increase or decrease its appeal to you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 104,
+    "text": "Would you be willing to give up sex for five years if you could have wonderfully sensual and erotic dreams any night you wished?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 105,
+    "text": "At a meal, your friends start belittling a common acquaintance. If you felt their criticisms were unjustified, would you defend the person?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 106,
+    "text": "Do you usually make a special effort to thank someone who does you a favor? How do you react when you aren't thanked for going out of your way for someone?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 107,
+    "text": "Would you like to have your rate of physical aging slowed by a factor of thirty so as to give you a life expectancy of about 2,000 years?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 108,
+    "text": "You are invited to a party that will be attended by many fascinating people you've never met. Would you want to go if you had to go by yourself?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 109,
+    "text": "Since adolescence, in what three-year period do you feel you experienced the most personal growth and change?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 110,
+    "text": "If you were having difficulty on an important test and could safely cheat by looking at someone else's paper, would you do so?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 111,
+    "text": "If your parents became infirm and the only alternative to bringing them into your home was a nursing home, would you do so? What about a sibling with a permanently crippling injury?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends"
+    ]
+  },
+  {
+    "id": 112,
+    "text": "If you were at a friend's house for Thanksgiving dinner and you found a dead cockroach in your salad, what would you do?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 113,
+    "text": "If you could take a one-month trip anywhere in the world and money were not a consideration, where would you go and what would you do?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 114,
+    "text": "Would you be willing to reduce your life expectancy by five years to become extremely attractive?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 115,
+    "text": "Given the ability to project yourself into the past but not return, would you do so? Where would you go and what would you try to accomplish if you knew you might change the course of history?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 116,
+    "text": "How many different sexual partners have you had in your life? Would you prefer to have had more or fewer?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "friends",
+      "spicy"
+    ]
+  },
+  {
+    "id": 117,
+    "text": "Have you ever considered suicide? What is so important to you that without it life would not be worth living?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 118,
+    "text": "If your friends and acquaintances were willing to bluntly and honestly tell you what they really thought of you, would you want them to?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 119,
+    "text": "If this country were to suffer an unprovoked nuclear attack and would be totally obliterated in minutes, would you favor unleashing the nuclear arsenal upon the attackers?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 120,
+    "text": "Would you accept $10,000 to shave your head and continue your normal activities without a hat or wig, without explaining the reason for your haircut?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 121,
+    "text": "Were you able to wake up tomorrow in the body of someone else, would you do so? Whom would you pick?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 122,
+    "text": "If you were happily married, and then met someone you felt was certain to always bring you deeply passionate love, would you leave your spouse? What if you had kids?",
+    "tier": 2,
+    "relations": [
+      "date"
+    ]
+  },
+  {
+    "id": 123,
+    "text": "When you do something ridiculous, how much does it bother you to have other people notice it and laugh at you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 124,
+    "text": "Who is the most important person in your life? What could you do to improve the relationship?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 125,
+    "text": "Assuming that complete recovery were instantaneous, would you be willing to accept a year of complete paralysis below the neck to prevent the otherwise certain extinction of the blue whale?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 126,
+    "text": "Do you believe in capital punishment? Would you be willing to execute someone sentenced to death by the courts if you were selected by lot to do so?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 127,
+    "text": "If you could change anything about the way you were raised, what would it be?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 128,
+    "text": "You are at a lake with some friends; the sun is warm and the water is cold. Going into the water would temporarily chill you but afterward the warm sun would be even more enjoyable. Would you take the plunge?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 129,
+    "text": "Do you believe in any sort of God? If not, do you think you might still pray if you were in a life-threatening situation?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 130,
+    "text": "While out one day, you see your mother holding hands with someone who is clearly her lover. She begs you not to say anything to your father. How would you respond?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends"
+    ]
+  },
+  {
+    "id": 131,
+    "text": "If 100 people your age were chosen at random, how many do you think you'd find leading a more satisfying life than yours?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 132,
+    "text": "If you went to a beach and it turned out to be a nude beach, would you stay and go swimming? Would you swim nude?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 133,
+    "text": "Have you had satisfying sex within the last three months?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 134,
+    "text": "Would it disturb you much if, upon your death, your body were simply thrown into the woods and left to rot? Why?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 135,
+    "text": "Which would you prefer: a wild, turbulent life filled with joy, sorrow, passion, and adventure — intoxicating successes and stunning setbacks; or a happy, secure, predictable life surrounded by friends and family without such wide swings of fortune and mood?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 136,
+    "text": "If you knew your child would be severely disabled and would die by the age of five, would you decide to have an abortion?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "date"
+    ]
+  },
+  {
+    "id": 137,
+    "text": "Do you find it so hard to say 'no' that you regularly do favors you do not want to do? If so, why?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 138,
+    "text": "If you began to be very attracted to someone of another race, how would your behavior differ from what it would be toward someone of your own race?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 139,
+    "text": "Would you rather spend a month on vacation with your parents or put in overtime at your current job for four weeks without extra compensation?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends"
+    ]
+  },
+  {
+    "id": 140,
+    "text": "Would you like to know the precise date of your death?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 141,
+    "text": "Would you accept a guaranteed, lifetime allowance of $50,000 per year if accepting it meant you could never again earn money from either work or investments?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 142,
+    "text": "What, if anything, is too serious to be joked about?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 143,
+    "text": "Do you ever spit or pick your nose in public? What about cleaning your teeth with a toothpick?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 144,
+    "text": "A close friend genuinely wants your opinion about something, but your honest answer would be quite painful for them — for example, telling an artist they have no chance of success. What would you do?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 145,
+    "text": "Do you have a favorite sexual fantasy? Would you like to have it fulfilled?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 146,
+    "text": "If you knew a thermonuclear holocaust would occur in precisely 20 years and no one would survive it, how would you change your present life?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 147,
+    "text": "When did you last cry in front of another person? When did you last cry by yourself?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 148,
+    "text": "If, by having a small tattoo, you could save five lives and prevent a terrorist attack, would you do so? Where would you have it and what would the design be?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 149,
+    "text": "Someone you love deeply is brutally murdered and you know the identity of the murderer, who is acquitted of the crime. Would you seek revenge?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 150,
+    "text": "Would you be willing to give up all television for the next five years if it would induce someone to provide for 1,000 starving children?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 151,
+    "text": "While arguing with a close friend on the telephone, she gets angry and hangs up. Assuming she is at fault and makes no attempt to contact you, how long would you wait to get in touch with her?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 152,
+    "text": "What do you value most in a relationship?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 153,
+    "text": "If you learned you would die in a few days, what regrets would you have? Were you given five extra years of life, could you avoid those same regrets?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 154,
+    "text": "Do you judge others by higher or lower standards than you use to judge yourself?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 155,
+    "text": "Would you be willing to make a substantial sacrifice to have any of the following: your picture on a postage stamp, your statue in a park, a college named after you, a Nobel prize, or a national holiday in your honor?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 156,
+    "text": "On a flight you are talking pleasantly to a stranger of average appearance. They offer you $10,000 for one night of sex. Knowing there is no danger and payment is certain, would you accept the offer?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "friends",
+      "spicy"
+    ]
+  },
+  {
+    "id": 157,
+    "text": "If you had to spend the next two years inside a small but fully provisioned Antarctic shelter with one other person, whom would you like to have with you?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 158,
+    "text": "You notice a self-destructive behavior pattern in a friend who is clearly unaware of it. Would you point it out?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 159,
+    "text": "If you had the choice of one intimate soulmate and no other close friends, or of no such soulmate and many friends and acquaintances, which would you choose?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 160,
+    "text": "You become involved romantically but after six months realize you need to end the relationship. If you were certain the person would commit suicide if you were to leave, and equally certain you could not be happy with them, what would you do?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "friends"
+    ]
+  },
+  {
+    "id": 161,
+    "text": "If you wanted to look very sexy, how would you dress?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 162,
+    "text": "For $2,000, would you be willing to stand up in a crowded restaurant and loudly berate a waitress for some trivial imperfection in the service?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 163,
+    "text": "If there were a public execution on television, would you watch it?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 164,
+    "text": "If someone offered you a large amount of money for information about one of your company's products, would you accept it? Assume you know you won't be discovered.",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 165,
+    "text": "Do you consider yourself well organized? How often do you have to look for your keys?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 166,
+    "text": "If you could increase your IQ by forty points by having an ugly scar stretching from your mouth to your eye, would you do so?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 167,
+    "text": "Would you be willing to do something very unsatisfying for five years if you were certain that the experience would bring you a deep sense of personal fulfillment for the rest of your life?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 168,
+    "text": "What things are too personal to discuss with others?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 169,
+    "text": "How many times during the day do you look at yourself in the mirror?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 170,
+    "text": "Walking along an empty street, you notice a wallet. It contains $5,000 in cash but no name or address. What would you do? Would it change if inside you found the name and picture of either a wealthy young man or a frail elderly woman?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 171,
+    "text": "Would you prefer to be blind or deaf?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 172,
+    "text": "Would you be content with a marriage of the highest quality in all respects but one — it completely lacked sex?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 173,
+    "text": "When was the last time you stole something? Why haven't you stolen anything since then?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 174,
+    "text": "How many of your friendships have lasted more than ten years? Which of your current friends do you feel will still be important to you ten years from now?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 175,
+    "text": "If you could mold to your liking your memories of any past experience, would you do so?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 176,
+    "text": "Before making a telephone call, do you ever rehearse what you are going to say?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 177,
+    "text": "How old were you when you first had sexual intercourse? Looking back, do you feel you were too young, too old, or about right?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 178,
+    "text": "You are leading 100 people whose lives are in danger and you must choose between two courses of action. One would save 90 people; the other has a 50% chance of saving everyone but were it to fail, everyone would die. Which would you choose?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 179,
+    "text": "If you went to a movie with a friend and it was lousy, would you leave?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 180,
+    "text": "For $1,000,000, would you be willing to never again see or talk to your best friend?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 181,
+    "text": "What do you like best about your life? What do you like least?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 182,
+    "text": "Have you ever disliked someone for being luckier or more successful than you?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 183,
+    "text": "A cave-in occurs while you and a stranger are in a concrete room deep in a mine shaft. You learn the entire mine is sealed and the air hole being drilled won't reach you for 30 hours. If you both take sleeping pills, the oxygen will last only 20 hours. One of you can't survive. The stranger takes sleeping pills and falls asleep. You have a pistol. What do you do?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 184,
+    "text": "When you are given a compliment do you usually acknowledge it or suggest that you really do not deserve it?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 185,
+    "text": "What sorts of things would you do if you could be as outgoing and uninhibited as you wished? Do you usually initiate friendships or wait to be approached?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 186,
+    "text": "If you decided to do something and your friends strongly advised you not to, could you do it anyway?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 187,
+    "text": "In a nice restaurant, after getting the check for an excellent meal, you notice that you were not charged for one of the items you ate. Would you tell the server?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 188,
+    "text": "Do you establish routines in your life? For example, do you usually sleep in the same place in your bed? Eat meals at the same time? Regularly return to the same vacation spot?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 189,
+    "text": "Can you be counted on to do what you say you'll do? What does it take for you to trust someone?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 190,
+    "text": "Do you feel you have much impact on the lives of people you come in contact with? Can you think of someone who, over a short period of time, significantly influenced your life?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 191,
+    "text": "Would you rather be happy yet slow-witted and unimaginative, or unhappy yet bright and creative? For example, would you rather live the life of a brilliant yet tortured artist, or that of a happy but simple-minded soul?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 192,
+    "text": "When you are with your friends, does your interaction include much touching — for example, hugging, kissing, roughhousing? Would you like to have more of this?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 193,
+    "text": "Given the ability to project yourself into the future but not return, would you do so? If not, would you change your mind if you could take someone along? How far would you go?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 194,
+    "text": "Would you generally rather be overdressed or underdressed at a party?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 195,
+    "text": "Of all the people close to you, whose death would you find most disturbing?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 196,
+    "text": "You have arranged an evening with a friend, but on the day preceding your date a special opportunity arises to do something much more exciting. How would you handle the situation?",
+    "tier": 1,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 197,
+    "text": "What has been your biggest disappointment in life? Your biggest failure?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 198,
+    "text": "If you could pass your whole life cared for in every way as you slumbered peacefully, entranced by wonderful dreams, would you do so?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 199,
+    "text": "You are given $1,000,000 to donate anonymously to charity or to a stranger. How would you dispose of it?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 200,
+    "text": "In conversations, do you tend to listen or talk more?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 201,
+    "text": "Do you frequently find yourself — just to be polite — saying things you don't mean? For example, when you say good-bye to someone who does not interest you, do you act as though you enjoyed their company?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 202,
+    "text": "Would you be willing to commit perjury for a close friend? For example, might you testify that they were driving carefully when they were actually joking around and not paying attention?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 203,
+    "text": "Relative to the population at large, how do you rate your physical attractiveness? Your intelligence? Your personality?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 204,
+    "text": "Running too quickly on an icy sidewalk in front of a neighbor's house, you slip and break your leg. Would you be likely to sue the owner of the house if you were confident you could win?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 205,
+    "text": "If you could prevent either an earthquake in Peru that would kill 40,000 people, a crash at your local airport that would kill 200 people, or an automobile accident that would kill an acquaintance of yours — which would you choose?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 206,
+    "text": "Would you be willing to eat a bowl of live crickets for $40,000?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 207,
+    "text": "Do you enjoy sleeping in physical contact with your partner?",
+    "tier": 2,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 208,
+    "text": "If you came upon the scene of a terrible highway accident just after the ambulances arrived, would you stop to watch? Assume that your presence would neither help nor hinder the rescuers.",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 209,
+    "text": "If you could script the basic plot for the dream you will have tonight, what would the story be?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 210,
+    "text": "You are given a chance to return to any previous point in your life and change a decision you made, but you will lose everything that has happened since then. Is there a time you would return to?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 211,
+    "text": "Would $50,000 be enough money to induce you to take a loyal, healthy pet to the vet to be put to sleep?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 212,
+    "text": "Ignoring all financial considerations, would you rather spend the next five years confined to a major city or to a beautiful, isolated coastal town?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 213,
+    "text": "What would you like to be doing five years from now? What do you think you will actually be doing five years from now?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 214,
+    "text": "What important decision in your professional life have you based largely upon your intuitive feelings? What about in your personal life?",
+    "tier": 2,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 215,
+    "text": "Would you like to be elected president of this country? Why? If so, would you still choose to be president if it meant your sleep would always be fitful and disturbed, punctuated by frequent nightmares?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 216,
+    "text": "If a crystal ball would tell you the truth about any one thing you wish to know concerning yourself, life, or the future, what would you want to know?",
+    "tier": 2,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 217,
+    "text": "If you were guaranteed honest responses to any three questions, whom would you question and what would you ask?",
+    "tier": 1,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 301,
+    "text": "If you can imagine yourself killing someone indirectly, could you still see doing so if you had to look into the person's eyes? Have you ever genuinely wanted to kill someone, or wished someone dead?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 302,
+    "text": "Since so many place great emphasis on a happy private life, why do people often wind up putting more energy into their professional lives? If you feel your private life is more important, do your priorities actually support this?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 303,
+    "text": "How much are you affected by a person's physical appearance? How would it change your life if something happened to make you much less attractive than you are now?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 304,
+    "text": "In love, is intensity or permanence more important to you? What would make you feel betrayed by your partner — indifference, dishonesty, or infidelity?",
+    "tier": 3,
+    "relations": [
+      "date"
+    ]
+  },
+  {
+    "id": 305,
+    "text": "How serious would an affair need to be before you would want and expect to be told about it? Is this kind of honesty more likely to be destructive or lead to greater intimacy and trust? How much can you be trusted?",
+    "tier": 3,
+    "relations": [
+      "date"
+    ]
+  },
+  {
+    "id": 306,
+    "text": "Why does a beautiful creature merit more compassion than an ugly one? Does it damage us psychologically when we destroy something we find beautiful?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 307,
+    "text": "Would it torment you more to have the blood of an innocent person on your hands or to know you let millions of people die? Is anything so important you would sacrifice your very soul for it?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 308,
+    "text": "Do you feel you have enough time? If not, what would give you that feeling? How much has your attitude about time changed since you've aged?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 309,
+    "text": "What kind of people do you like to spend time with? What can people learn about you by looking at your friends? What do such people bring out in you that others do not?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 310,
+    "text": "Have you ever been sexually attracted to someone of the same sex? To someone in your family? If so, how did you deal with it?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 311,
+    "text": "Should it be illegal to help a terminally-ill person die? If someone is not dying but has chronic pain, should the person be allowed to commit suicide? What if the person is in emotional rather than physical pain?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 312,
+    "text": "What do you seek in a friend yet neither expect nor want in a lover? Are you attracted to people who are healthy for you to be around?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 313,
+    "text": "Would you prefer to die a hero's death, die a martyr for some great cause, die in a natural catastrophe, or die peacefully? How do your feelings about death influence the way you lead your life?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 314,
+    "text": "How often do you step back and reflect upon the way you are living and where you are headed? In what way will reaching your goals make your life more satisfying?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 315,
+    "text": "How forgiving are you when your friends let you down? Is there a limit to how many times someone gets a second chance?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 316,
+    "text": "Is there scientific knowledge that is best left undiscovered? What areas of research do you feel should be restricted?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 317,
+    "text": "Would you risk your life for someone close to you out of feelings of obligation or out of feelings of love? Would it matter if you could refuse without anyone ever knowing?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 318,
+    "text": "Does living as though you control your own destiny lead to a more powerful life? Or is accepting what you can't control a form of wisdom?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 319,
+    "text": "Is there anything worse than the worst nightmare you have ever had? What are the limits of what the mind can put itself through?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 320,
+    "text": "Is our more permissive sexual attitude a healthy development compared to a century ago? How important is culture and advertising in shaping what we consider normal?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 321,
+    "text": "How would you like to be remembered after you die? What would you like said at your funeral, and who would you like to speak?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 322,
+    "text": "Would you like to have a child much brighter and more attractive than yourself? Would a baby designed through genetic modification still feel like your child?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "date"
+    ]
+  },
+  {
+    "id": 323,
+    "text": "Is it better to have dreams that will never come to pass, or to have no dreams at all? How much better would your life be if the things you dream of doing or having were granted to you?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 324,
+    "text": "Do you feel children should be sheltered from unhappiness? What from your childhood has proved most valuable? What has been most difficult to overcome?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 325,
+    "text": "How hard would it be to outlive and lose each person you grew close to if you had a greatly lengthened life? Would you soon grow jaded, feeling there was nothing interesting left?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 326,
+    "text": "If you saw someone cheating on a test, what would you do? What if you had signed an honor code? Does the context change your answer?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 327,
+    "text": "How might the world be different if you could change some historical event? How sure are you that the long-term consequences would be positive?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 328,
+    "text": "Would your friends agree with one another about the kind of person you are? How much energy do you spend trying to favorably impress other people?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 329,
+    "text": "When you make a big sacrifice, do you tell people about it or keep it to yourself? What would you never willingly sacrifice — your life, your health, your integrity, your dreams?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 330,
+    "text": "In what ways will you treat your children differently from how you were raised? If you could do it again knowing what you know now, what would you do differently?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "date"
+    ]
+  },
+  {
+    "id": 331,
+    "text": "How much do you like your body? If you awoke alone on a warm morning and were going to laze around home, how long would you wait to get dressed?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "friends"
+    ]
+  },
+  {
+    "id": 332,
+    "text": "What are your true feelings about abortion? Should a woman have the right to have an abortion for any reason she wants? What rights should the father have?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 333,
+    "text": "How might knowing when you'll die help you plan your life? Is life enhanced by feeling that death could strike at any time, or by not thinking about death at all?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 334,
+    "text": "Would you accept a much less enjoyable job paying twice what you make now? If you were financially independent, would you continue to work? If not, what would you do?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 335,
+    "text": "Can you envision how you are likely to look back upon the things you are doing today? How much do you try to live now as you think you will one day wish you had lived?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 336,
+    "text": "Are honors more likely to come to those who seek them or those who think only of their work? Does just knowing you've accomplished something worthwhile mean as much as getting attention and praise for it?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 337,
+    "text": "Since many are willing to have sex for money, why is such a strong stigma attached to prostitution? Is there much difference between having sex for cash and having sex in hope of getting some future benefit?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "friends",
+      "spicy"
+    ]
+  },
+  {
+    "id": 338,
+    "text": "How do you feel about taking a sick day at work when you aren't ill? Have you ever made unauthorized personal calls or taken supplies from work? Do you see such moral choices as black-and-white issues?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 339,
+    "text": "Most people say if they found a wallet full of cash they would return the money — do you believe them? Most also think their own lost wallets would not be returned. How do you explain this contradiction?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 340,
+    "text": "Are you able to separate sex from love? Could you be content satisfying your sexual needs from people other than your partner? When you think of intimacy, do you focus on a broad range of closeness or mainly on sex itself?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 341,
+    "text": "Is there anything anyone could have told you that would have made your first sexual experience better? Do you think you would be better off if you had waited longer to have sex, or started earlier?",
+    "tier": 3,
+    "relations": [
+      "date",
+      "spicy"
+    ]
+  },
+  {
+    "id": 342,
+    "text": "If you had to choose which 10 people out of 100 would die, would you rather have someone else in the group make the decision — even though you might be picked to die?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 343,
+    "text": "If you were offered a much better job in another city and knew you would, over the years, drift away from your closest friend if you took it, would you go?",
+    "tier": 3,
+    "relations": [
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 344,
+    "text": "What would induce you to give up life as you know it and face the unknown? Were people in previous centuries more adventurous than we are today, or was it simply harder to avoid risk and adventure?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 345,
+    "text": "What are you looking for when you converse with people? What kinds of things do you usually discuss? Are there topics you wish you could explore more deeply with others?",
+    "tier": 3,
+    "relations": [
+      "family",
+      "friends",
+      "date"
+    ]
+  },
+  {
+    "id": 346,
+    "text": "What's the most flirtatious thing someone has ever done to get your attention? Did it work?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 347,
+    "text": "Do you consider yourself a good kisser? What do you think makes someone an unforgettable one?",
+    "tier": 2,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 348,
+    "text": "What's something small and unexpected that you find surprisingly attractive in a person?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 349,
+    "text": "Have you ever caught yourself daydreaming about someone you definitely shouldn't have?",
+    "tier": 2,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 350,
+    "text": "What does physical chemistry feel like to you — is it instant or does it build over time?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 351,
+    "text": "Do you think you come across as flirtatious without meaning to? Has anyone called you out on it?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 352,
+    "text": "What's the most romantic or seductive thing someone has ever done for you?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 353,
+    "text": "If someone wanted to make you feel genuinely desired, what would be the most effective way?",
+    "tier": 2,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 354,
+    "text": "Have you ever ended a relationship partly because of physical incompatibility? How did that feel to admit?",
+    "tier": 2,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 355,
+    "text": "What's something you've always wanted to say to a partner in the heat of the moment but held back?",
+    "tier": 2,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 356,
+    "text": "What's something you've always wanted to try intimately but haven't worked up the courage to ask for?",
+    "tier": 3,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 357,
+    "text": "What's the most vulnerable you've ever felt after a physical encounter with someone? Did it bring you closer or create distance?",
+    "tier": 3,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 358,
+    "text": "Would you rather be a great kisser or a great hugger?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 359,
+    "text": "What's the most embarrassing crush you've ever had?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  },
+  {
+    "id": 360,
+    "text": "Would you rather be the one doing the chasing or the one being chased?",
+    "tier": 1,
+    "relations": [
+      "spicy"
+    ]
+  }
 ]

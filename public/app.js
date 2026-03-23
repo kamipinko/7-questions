@@ -11,7 +11,7 @@ let state = {
   index: 0,
 };
 
-const relationLabels = { family: '👨‍👩‍👧 Family', friends: '👥 Friends', date: '💕 Date' };
+const relationLabels = { family: '👨‍👩‍👧 Family', friends: '👥 Friends', date: '💕 Date', spicy: '🌶️ Spicy' };
 const tierLabels = { 1: '🌱 Casual', 2: '🔥 Deeper', 3: '💫 Intimate' };
 
 function showScreen(name) {
@@ -19,11 +19,26 @@ function showScreen(name) {
   screens[name].classList.add('active');
 }
 
+// Age gate
+const ageGate = document.getElementById('age-gate');
+document.getElementById('age-gate-confirm').addEventListener('click', () => {
+  ageGate.style.display = 'none';
+  showScreen('tier');
+});
+document.getElementById('age-gate-cancel').addEventListener('click', () => {
+  ageGate.style.display = 'none';
+  state.relation = null;
+});
+
 // Step 1: Pick relation
 document.querySelectorAll('.relation-card').forEach(btn => {
   btn.addEventListener('click', () => {
     state.relation = btn.dataset.relation;
-    showScreen('tier');
+    if (state.relation === 'spicy') {
+      ageGate.style.display = 'flex';
+    } else {
+      showScreen('tier');
+    }
   });
 });
 
