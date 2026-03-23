@@ -63,6 +63,39 @@ spicyBtn.addEventListener('click', () => {
   }, { once: true });
 });
 
+// --- Theme toggle ---
+(function() {
+  const btn = document.getElementById('theme-toggle');
+  const mq  = window.matchMedia('(prefers-color-scheme: light)');
+
+  function effectiveTheme() {
+    const saved = document.documentElement.getAttribute('data-theme');
+    if (saved) return saved;
+    return mq.matches ? 'light' : 'dark';
+  }
+
+  function updateIcon() {
+    btn.textContent = effectiveTheme() === 'dark' ? '☀️' : '🌙';
+  }
+
+  // Apply saved preference if any; otherwise CSS media query handles it
+  // Key is '7q_theme' — avoids picking up any old auto-saved values
+  const saved = localStorage.getItem('7q_theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  updateIcon();
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('7q_theme', next);
+    updateIcon();
+  });
+
+  // Update icon if system preference changes while on the page
+  mq.addEventListener('change', updateIcon);
+})();
+
 // --- Banner / Back → home ---
 document.querySelector('.site-banner').addEventListener('click', goHome);
 document.getElementById('back-to-relation').addEventListener('click', goHome);
