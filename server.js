@@ -36,12 +36,8 @@ app.post('/api/subscribe', async (req, res) => {
 
   if (SHEETS_WEBHOOK_URL) {
     try {
-      await fetch(SHEETS_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-        redirect: 'follow',
-      });
+      const url = `${SHEETS_WEBHOOK_URL}?email=${encodeURIComponent(email)}`;
+      await fetch(url, { redirect: 'follow' });
     } catch (err) {
       console.error('Sheets webhook error:', err.message);
     }
