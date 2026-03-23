@@ -48,6 +48,28 @@ app.post('/api/subscribe', async (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/feedback', async (req, res) => {
+  const { message, email } = req.body;
+
+  if (!message) {
+    return res.status(400).json({ error: 'Message is required' });
+  }
+
+  if (SHEETS_WEBHOOK_URL) {
+    try {
+      const params = new URLSearchParams({ type: 'feedback', message });
+      if (email) params.append('email', email);
+      await fetch(`${SHEETS_WEBHOOK_URL}?${params.toString()}`, { redirect: 'follow' });
+    } catch (err) {
+      console.error('Sheets webhook error:', err.message);
+    }
+  } else {
+    console.log('New feedback:', { message, email });
+  }
+
+  res.json({ success: true });
+});
+
 app.listen(PORT, () => {
   console.log(`Questions app running at http://localhost:${PORT}`);
 });

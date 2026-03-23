@@ -223,3 +223,47 @@ document.getElementById('done-restart').addEventListener('click', () => {
   state.relation = null;
   showScreen('relation');
 });
+
+// --- Feedback ---
+const feedbackModal = document.getElementById('feedback-modal');
+
+document.getElementById('feedback-tab').addEventListener('click', () => {
+  feedbackModal.style.display = 'flex';
+});
+
+document.getElementById('feedback-close').addEventListener('click', () => {
+  feedbackModal.style.display = 'none';
+});
+
+feedbackModal.addEventListener('click', (e) => {
+  if (e.target === feedbackModal) feedbackModal.style.display = 'none';
+});
+
+document.getElementById('feedback-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const message = document.getElementById('feedback-message').value.trim();
+  const email = document.getElementById('feedback-email').value.trim();
+  if (!message) return;
+
+  try {
+    await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, email }),
+    });
+  } catch (_) {}
+
+  document.getElementById('feedback-form').style.display = 'none';
+  document.getElementById('feedback-close').style.display = 'none';
+  document.getElementById('feedback-thanks').style.display = 'block';
+
+  setTimeout(() => {
+    feedbackModal.style.display = 'none';
+    // Reset for next time
+    document.getElementById('feedback-form').style.display = '';
+    document.getElementById('feedback-close').style.display = '';
+    document.getElementById('feedback-thanks').style.display = 'none';
+    document.getElementById('feedback-message').value = '';
+    document.getElementById('feedback-email').value = '';
+  }, 2000);
+});

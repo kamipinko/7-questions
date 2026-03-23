@@ -111,6 +111,25 @@
     </div>
   </div>
 
+  <!-- Feedback Button (fixed, always visible) -->
+  <button id="feedback-tab" class="feedback-tab">Feedback</button>
+
+  <!-- Feedback Modal -->
+  <div id="feedback-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box feedback-box">
+      <div class="modal-icon">💬</div>
+      <h2 class="modal-title">Leave Feedback</h2>
+      <p class="modal-desc">What's on your mind? I'll follow up personally.</p>
+      <form id="feedback-form" class="feedback-form">
+        <textarea id="feedback-message" class="feedback-textarea" placeholder="What do you think? Suggestions, bugs, ideas..." rows="4"></textarea>
+        <input type="email" id="feedback-email" class="email-input" placeholder="your@email.com (optional)" />
+        <button type="submit" class="email-submit-btn">Send Feedback</button>
+      </form>
+      <button type="button" id="feedback-close" class="skip-link">Never mind</button>
+      <p id="feedback-thanks" class="email-thanks" style="display:none;">Thanks! I'll be in touch. ✓</p>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
