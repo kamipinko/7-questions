@@ -16,7 +16,7 @@
   --bg:           #000000;
   --surface:      #111111;
   --surface2:     #1e1e1e;
-  --text:         #f0eef8;
+  --text:         #e05252;
   --muted:        #888888;
   --accent:       #ECAA27;   /* gold — primary buttons / highlights */
   --accent-hover: #ffc84d;
@@ -569,6 +569,9 @@ body {
   z-index: 50;
   transition: all 0.2s;
   letter-spacing: 0.5px;
+  /* Force GPU layer — fixes iOS Safari fixed-position scroll bug */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 .feedback-tab:hover {
   background: var(--surface);
@@ -624,4 +627,11 @@ body {
   #question-text { font-size: 1.1rem; }
   .question-card { padding: 1.8rem 1.2rem; }
   .theme-toggle { right: 1rem; }
+
+  /* Move feedback to bottom-left on mobile so it never overlaps the spicy button (bottom-right) */
+  .feedback-tab {
+    right: auto;
+    left: 1rem;
+    bottom: 1rem;
+  }
 }

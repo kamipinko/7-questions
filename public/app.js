@@ -78,10 +78,15 @@ spicyBtn.addEventListener('click', () => {
     btn.textContent = effectiveTheme() === 'dark' ? '☀️' : '🌙';
   }
 
-  // Apply saved preference if any; otherwise CSS media query handles it
-  // Key is '7q_theme' — avoids picking up any old auto-saved values
+  // Only apply saved preference if it actually overrides the system theme.
+  // If saved matches system, clear it so auto-switching continues to work.
   const saved = localStorage.getItem('7q_theme');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const systemTheme = mq.matches ? 'light' : 'dark';
+  if (saved && saved !== systemTheme) {
+    document.documentElement.setAttribute('data-theme', saved);
+  } else if (saved) {
+    localStorage.removeItem('7q_theme');
+  }
   updateIcon();
 
   btn.addEventListener('click', (e) => {
@@ -92,8 +97,19 @@ spicyBtn.addEventListener('click', () => {
     updateIcon();
   });
 
-  // Update icon if system preference changes while on the page
-  mq.addEventListener('change', updateIcon);
+  // When system preference changes, clear any override that now matches it
+  // so auto-switching resumes naturally.
+  mq.addEventListener('change', () => {
+    const override = localStorage.getItem('7q_theme');
+    if (override) {
+      const newSystem = mq.matches ? 'light' : 'dark';
+      if (override === newSystem) {
+        localStorage.removeItem('7q_theme');
+        document.documentElement.removeAttribute('data-theme');
+      }
+    }
+    updateIcon();
+  });
 })();
 
 // --- Banner / Back → home ---
