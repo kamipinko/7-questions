@@ -2,6 +2,7 @@
 
 /* ===== Shared palette tokens ===== */
 :root {
+  color-scheme: light;
   --radius:  16px;
   --family:  #f4a261;
   --friends: #52b788;
@@ -31,37 +32,35 @@
   --modal-bg:     #111111;
 }
 
-/* ===== Light theme variables (shared by media query + manual override) ===== */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --bg:           #680707;
-    --surface:      rgba(255,255,255,0.13);
-    --surface2:     rgba(255,255,255,0.25);
-    --text:         #ECAA27;
-    --muted:        rgba(236,170,39,0.6);
-    --accent:       #158080;
-    --accent-hover: #1aadad;
-    --heading:      #ECAA27;
-    --box-border:   #ECAA27;
-    --banner-bg:    #ECAA27;
-    --banner-border:#ECAA27;
-    --banner-text:  #680707;
-    --logo-bg:      #000000;   /* black chip for the "7" logo */
-    --logo-text:    #ECAA27;   /* gold "7" */
-    --btn-text:     #ffffff;
-    --modal-bg:     #680707;
-  }
+/* ===== Dark theme (explicit) ===== */
+[data-theme="dark"] {
+  --bg:           #000000;
+  --surface:      #111111;
+  --surface2:     #1e1e1e;
+  --text:         #e05252;
+  --muted:        #888888;
+  --accent:       #ECAA27;
+  --accent-hover: #ffc84d;
+  --heading:      #680707;
+  --box-border:   #ECAA27;
+  --banner-bg:    #000000;
+  --banner-border:#ECAA27;
+  --banner-text:  #680707;
+  --logo-bg:      #680707;
+  --logo-text:    #ECAA27;
+  --btn-text:     #000000;
+  --modal-bg:     #111111;
 }
 
 [data-theme="light"] {
   --bg:           #680707;
   --surface:      rgba(255,255,255,0.13);
   --surface2:     rgba(255,255,255,0.25);
-  --text:         #ECAA27;
-  --muted:        rgba(236,170,39,0.6);
+  --text:         #000000;
+  --muted:        rgba(0,0,0,0.55);
   --accent:       #158080;
   --accent-hover: #1aadad;
-  --heading:      #ECAA27;
+  --heading:      #000000;
   --box-border:   #ECAA27;
   --banner-bg:    #ECAA27;
   --banner-border:#ECAA27;
@@ -171,7 +170,7 @@ body {
   margin-bottom: 0.4rem;
 }
 .header h2 { font-size: 1.5rem; font-weight: 600; color: var(--text); }
-.subtitle   { color: var(--muted); font-size: 1.05rem; }
+.subtitle   { color: var(--text); font-size: 1.15rem; font-weight: 600; }
 .step-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
 
 /* ── Card Grid ────────────────────── */
@@ -614,10 +613,30 @@ body {
 [data-theme="light"] .nav-btn.skip-btn:hover { border-color: var(--spiral); color: var(--spiral); }
 [data-theme="light"] .shuffle-btn:hover { background: rgba(40,255,133,0.15); color: var(--spiral); }
 
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) .badge.tier1 { background: rgba(40,255,133,0.2); color: var(--spiral); }
-  :root:not([data-theme="dark"]) .nav-btn.skip-btn:hover { border-color: var(--spiral); color: var(--spiral); }
-  :root:not([data-theme="dark"]) .shuffle-btn:hover { background: rgba(40,255,133,0.15); color: var(--spiral); }
+
+/* ── Secret tap zone (reveals spicy button after 10 taps) ────────────────────── */
+#spicy-tap-zone {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 64px;
+  z-index: 49; /* below feedback tab (z-index: 50) */
+  /* completely invisible — no background, no border */
+  pointer-events: auto;
+}
+
+/* Spicy button reveal animation */
+.spicy-btn {
+  animation: none;
+}
+.spicy-btn[style*="flex"] {
+  animation: spicy-fade-in 0.5s ease;
+}
+@keyframes spicy-fade-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 /* ── Responsive ────────────────────── */

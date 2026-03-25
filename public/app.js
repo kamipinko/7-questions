@@ -54,13 +54,39 @@ document.querySelectorAll('.relation-card').forEach(btn => {
 });
 
 const spicyBtn = document.querySelector('.spicy-btn');
+const lustWarning = document.getElementById('lust-warning');
+
 spicyBtn.addEventListener('click', () => {
   state.relation = 'spicy';
   spicyBtn.classList.add('tapped');
-  spicyBtn.addEventListener('animationend', () => {
+  setTimeout(() => {
     spicyBtn.classList.remove('tapped');
-    ageGate.style.display = 'flex';
-  }, { once: true });
+    lustWarning.style.display = 'flex';
+  }, 420); // matches spicy-select 0.4s animation
+});
+
+document.getElementById('lust-back').addEventListener('click', () => {
+  lustWarning.style.display = 'none';
+  state.relation = null;
+});
+
+document.getElementById('lust-continue').addEventListener('click', () => {
+  lustWarning.style.display = 'none';
+  ageGate.style.display = 'flex';
+});
+
+// --- Secret spicy reveal: 10 taps at bottom center of screen ---
+let spicyTapCount = 0;
+const TAP_REVEAL = 10;
+const tapZone = document.getElementById('spicy-tap-zone');
+
+tapZone.addEventListener('click', () => {
+  if (!screens.relation.classList.contains('active')) return;
+  spicyTapCount++;
+  if (spicyTapCount >= TAP_REVEAL) {
+    spicyBtn.style.display = 'flex';
+    tapZone.style.display = 'none';
+  }
 });
 
 // --- Theme toggle ---
@@ -78,15 +104,7 @@ spicyBtn.addEventListener('click', () => {
     btn.textContent = effectiveTheme() === 'dark' ? '☀️' : '🌙';
   }
 
-  // Only apply saved preference if it actually overrides the system theme.
-  // If saved matches system, clear it so auto-switching continues to work.
-  const saved = localStorage.getItem('7q_theme');
-  const systemTheme = mq.matches ? 'light' : 'dark';
-  if (saved && saved !== systemTheme) {
-    document.documentElement.setAttribute('data-theme', saved);
-  } else if (saved) {
-    localStorage.removeItem('7q_theme');
-  }
+  // data-theme is already set by the inline head script — just sync the icon.
   updateIcon();
 
   btn.addEventListener('click', (e) => {
@@ -97,15 +115,16 @@ spicyBtn.addEventListener('click', () => {
     updateIcon();
   });
 
-  // When system preference changes, clear any override that now matches it
-  // so auto-switching resumes naturally.
+  // When system preference changes, follow it if there's no manual override.
   mq.addEventListener('change', () => {
     const override = localStorage.getItem('7q_theme');
-    if (override) {
+    if (!override) {
+      document.documentElement.setAttribute('data-theme', mq.matches ? 'light' : 'dark');
+    } else {
       const newSystem = mq.matches ? 'light' : 'dark';
       if (override === newSystem) {
+        // Manual override now matches system — clear it and keep following system
         localStorage.removeItem('7q_theme');
-        document.documentElement.removeAttribute('data-theme');
       }
     }
     updateIcon();
