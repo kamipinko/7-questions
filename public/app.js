@@ -199,7 +199,7 @@ function showQuestion() {
   relBadge.textContent = RELATION_LABELS[state.relation];
   relBadge.className = `badge ${state.relation}`;
 
-state.questionStartTime = Date.now();
+  state.questionStartTime = Date.now();
 }
 
 // --- Next: track time, check engagement, advance ---
