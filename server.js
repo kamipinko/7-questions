@@ -48,6 +48,27 @@ app.post('/api/subscribe', async (req, res) => {
   res.json({ success: true });
 });
 
+app.post('/api/log', async (req, res) => {
+  const { event, session, duration } = req.body;
+  if (!['enter', 'exit'].includes(event)) {
+    return res.status(400).json({ error: 'Invalid event' });
+  }
+
+  if (SHEETS_WEBHOOK_URL) {
+    try {
+      const params = new URLSearchParams({ type: 'visit', event, session: session || '' });
+      if (duration !== undefined) params.append('duration', duration);
+      await fetch(`${SHEETS_WEBHOOK_URL}?${params.toString()}`, { redirect: 'follow' });
+    } catch (err) {
+      console.error('Visit log error:', err.message);
+    }
+  } else {
+    console.log('Visit:', { event, session, duration });
+  }
+
+  res.json({ success: true });
+});
+
 app.post('/api/feedback', async (req, res) => {
   const { message, email } = req.body;
 

@@ -1,3 +1,21 @@
+// --- Visit logging ---
+const SESSION_ID = Math.random().toString(36).slice(2, 10);
+const SESSION_START = Date.now();
+
+function logVisit(event) {
+  const payload = { event, session: SESSION_ID };
+  if (event === 'exit') payload.duration = Math.round((Date.now() - SESSION_START) / 1000);
+  const body = JSON.stringify(payload);
+  if (event === 'exit') {
+    navigator.sendBeacon('/api/log', new Blob([body], { type: 'application/json' }));
+  } else {
+    fetch('/api/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body }).catch(() => {});
+  }
+}
+
+logVisit('enter');
+window.addEventListener('pagehide', () => logVisit('exit'));
+
 const screens = {
   relation: document.getElementById('screen-relation'),
   question: document.getElementById('screen-question'),
@@ -45,11 +63,29 @@ document.getElementById('age-gate-cancel').addEventListener('click', () => {
   state.relation = null;
 });
 
+// --- Start Modal ---
+const startModal = document.getElementById('start-modal');
+
+function showStartModal(relation, onConfirm) {
+  startModal.style.display = 'flex';
+  startModal._onConfirm = onConfirm;
+}
+
+document.getElementById('start-modal-back').addEventListener('click', () => {
+  startModal.style.display = 'none';
+  state.relation = null;
+});
+
+document.getElementById('start-modal-confirm').addEventListener('click', () => {
+  startModal.style.display = 'none';
+  if (startModal._onConfirm) startModal._onConfirm();
+});
+
 // --- Relation Selection (always starts at Casual) ---
 document.querySelectorAll('.relation-card').forEach(btn => {
   btn.addEventListener('click', () => {
     state.relation = btn.dataset.relation;
-    startGame();
+    showStartModal(state.relation, () => startGame());
   });
 });
 
@@ -61,7 +97,7 @@ spicyBtn.addEventListener('click', () => {
   spicyBtn.classList.add('tapped');
   setTimeout(() => {
     spicyBtn.classList.remove('tapped');
-    lustWarning.style.display = 'flex';
+    showStartModal('spicy', () => { lustWarning.style.display = 'flex'; });
   }, 420); // matches spicy-select 0.4s animation
 });
 
