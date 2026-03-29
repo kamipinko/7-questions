@@ -22,8 +22,6 @@ const screens = {
   done:     document.getElementById('screen-done'),
 };
 
-const TIER_NAMES = { 1: 'Casual', 2: 'Deeper', 3: 'Intimate' };
-const TIER_ICONS = { 1: '🌱', 2: '🔥', 3: '💫' };
 const RELATION_LABELS = {
   family: '👨‍👩‍👧 Family',
   friends: '👥 Friends',
@@ -31,20 +29,19 @@ const RELATION_LABELS = {
   spicy: '🌶️ Spicy',
 };
 
-// Temperature thresholds
-const LINGER_SECS     = 120; // 2 min = lingering (deep convo)
-const RUSH_SECS       = 30;  // under 30s = rushing (not warmed up)
-const STREAK_TO_PROMPT = 2;  // consecutive lingers before offering advance
-const MAX_PER_ROUND   = 4;   // max questions before forcing the prompt
+// Engagement thresholds (seconds, avg per question answered)
+const ENGAGE_DEEP = 60;  // ≥60s avg → encouraging popup from Q2
+const ENGAGE_MID  = 30;  // 30–60s avg → encouraging popup from Q3
+
+const TOTAL_QUESTIONS = 7;
 
 let state = {
   relation: null,
-  tier: 1,
-  questions: [],    // all shuffled questions for current tier
-  tierIndex: 0,     // position in questions array
-  roundCount: 0,    // questions answered (not skipped) since last prompt
-  lingerStreak: 0,  // consecutive lingered questions
+  questions: [],
+  currentIndex: 0,
   questionStartTime: null,
+  elapsedTimes: [],
+  shownEngagePopup: false,
 };
 
 function showScreen(name) {
@@ -81,7 +78,7 @@ document.getElementById('start-modal-confirm').addEventListener('click', () => {
   if (startModal._onConfirm) startModal._onConfirm();
 });
 
-// --- Relation Selection (always starts at Casual) ---
+// --- Relation Selection ---
 document.querySelectorAll('.relation-card').forEach(btn => {
   btn.addEventListener('click', () => {
     state.relation = btn.dataset.relation;
@@ -98,7 +95,7 @@ spicyBtn.addEventListener('click', () => {
   setTimeout(() => {
     spicyBtn.classList.remove('tapped');
     showStartModal('spicy', () => { lustWarning.style.display = 'flex'; });
-  }, 420); // matches spicy-select 0.4s animation
+  }, 420);
 });
 
 document.getElementById('lust-back').addEventListener('click', () => {
@@ -140,7 +137,6 @@ tapZone.addEventListener('click', () => {
     btn.textContent = effectiveTheme() === 'dark' ? '☀️' : '🌙';
   }
 
-  // data-theme is already set by the inline head script — just sync the icon.
   updateIcon();
 
   btn.addEventListener('click', (e) => {
@@ -151,7 +147,6 @@ tapZone.addEventListener('click', () => {
     updateIcon();
   });
 
-  // When system preference changes, follow it if there's no manual override.
   mq.addEventListener('change', () => {
     const override = localStorage.getItem('7q_theme');
     if (!override) {
@@ -159,7 +154,6 @@ tapZone.addEventListener('click', () => {
     } else {
       const newSystem = mq.matches ? 'light' : 'dark';
       if (override === newSystem) {
-        // Manual override now matches system — clear it and keep following system
         localStorage.removeItem('7q_theme');
       }
     }
@@ -176,128 +170,109 @@ function goHome() {
   showScreen('relation');
 }
 
-// --- Start game (always tier 1) ---
+// --- Start game ---
 async function startGame() {
-  state.tier = 1;
   state.questions = [];
-  state.tierIndex = 0;
-  state.roundCount = 0;
-  state.lingerStreak = 0;
+  state.currentIndex = 0;
   state.questionStartTime = null;
-  resetDoneScreen();
-  await loadTier();
+  state.elapsedTimes = [];
+  state.shownEngagePopup = false;
+  await loadQuestions();
   showQuestion();
   showScreen('question');
 }
 
-function resetDoneScreen() {
-  document.getElementById('email-form').style.display = '';
-  document.getElementById('email-skip').style.display = '';
-  document.getElementById('email-thanks').style.display = 'none';
-  document.getElementById('email-input').value = '';
+// --- Load 7 questions (tier 1, server-shuffled) ---
+async function loadQuestions() {
+  const res = await fetch(`/api/questions?relation=${state.relation}&tier=1`);
+  const all = await res.json();
+  state.questions = all.slice(0, TOTAL_QUESTIONS);
+  state.currentIndex = 0;
 }
 
-// --- Load all questions for current tier (server shuffles them) ---
-async function loadTier() {
-  const res = await fetch(`/api/questions?relation=${state.relation}&tier=${state.tier}`);
-  state.questions = await res.json();
-  state.tierIndex = 0;
-  state.roundCount = 0;
-  state.lingerStreak = 0;
-}
-
-// --- Render current question and start timer ---
+// --- Render current question ---
 function showQuestion() {
-  const q = state.questions[state.tierIndex];
+  const q = state.questions[state.currentIndex];
   document.getElementById('question-text').textContent = q.text;
 
   const relBadge = document.getElementById('relation-badge');
   relBadge.textContent = RELATION_LABELS[state.relation];
   relBadge.className = `badge ${state.relation}`;
 
-  const tierBadge = document.getElementById('tier-badge');
-  tierBadge.textContent = `${TIER_ICONS[state.tier]} ${TIER_NAMES[state.tier]}`;
-  tierBadge.className = `badge tier${state.tier}`;
+  const counter = document.getElementById('question-counter');
+  counter.textContent = `${state.currentIndex + 1} / ${TOTAL_QUESTIONS}`;
 
   state.questionStartTime = Date.now();
 }
 
-// --- Next: measure time and update temperature ---
+// --- Next: track time, check engagement, advance ---
 document.getElementById('btn-next').addEventListener('click', () => {
   const elapsed = (Date.now() - state.questionStartTime) / 1000;
+  state.elapsedTimes.push(elapsed);
 
-  if (elapsed >= LINGER_SECS) {
-    state.lingerStreak++;          // long convo → warmer
-  } else if (elapsed < RUSH_SECS) {
-    state.lingerStreak = 0;        // rushed → reset streak
+  const nextIndex = state.currentIndex + 1;
+
+  if (nextIndex >= TOTAL_QUESTIONS) {
+    showPreDoneModal();
+    return;
   }
-  // 30–120s neutral zone: no change
 
-  state.roundCount++;
-  state.tierIndex++;
-  checkAndAdvance(false);
+  state.currentIndex = nextIndex;
+
+  if (!state.shownEngagePopup && shouldShowEngagePopup()) {
+    state.shownEngagePopup = true;
+    showEngagePopup();
+    return;
+  }
+
+  showQuestion();
 });
 
-// --- Skip: kills the linger streak, no prompt trigger ---
+// --- Skip: advance without time tracking ---
 document.getElementById('btn-skip').addEventListener('click', () => {
-  state.lingerStreak = 0;  // skip resets streak — they're not ready
-  state.tierIndex++;
-  // note: roundCount not incremented on skip
-  checkAndAdvance(true);
-});
+  const nextIndex = state.currentIndex + 1;
 
-function checkAndAdvance(isSkip) {
-  const outOfQuestions = state.tierIndex >= state.questions.length;
-  const warmEnough = !isSkip && (
-    state.lingerStreak >= STREAK_TO_PROMPT ||
-    state.roundCount >= MAX_PER_ROUND
-  );
-
-  if (outOfQuestions || warmEnough) {
-    if (state.tier >= 3) {
-      showScreen('done');
-    } else {
-      showDepthPrompt();
-    }
-  } else {
-    showQuestion();
+  if (nextIndex >= TOTAL_QUESTIONS) {
+    showPreDoneModal();
+    return;
   }
-}
 
-// --- Depth Prompt ---
-const depthPrompt = document.getElementById('depth-prompt');
-
-function showDepthPrompt() {
-  document.getElementById('depth-keep').textContent = `Keep it ${TIER_NAMES[state.tier]}`;
-  document.getElementById('depth-advance').textContent = `Go to ${TIER_NAMES[state.tier + 1]}`;
-  depthPrompt.style.display = 'flex';
-}
-
-document.getElementById('depth-keep').addEventListener('click', async () => {
-  depthPrompt.style.display = 'none';
-  if (state.tierIndex >= state.questions.length) {
-    // Exhausted this tier's questions — reload (fresh shuffle from server)
-    await loadTier();
-  } else {
-    // Still have questions — just reset counters and keep going
-    state.roundCount = 0;
-    state.lingerStreak = 0;
-  }
+  state.currentIndex = nextIndex;
   showQuestion();
 });
 
-document.getElementById('depth-advance').addEventListener('click', async () => {
-  depthPrompt.style.display = 'none';
-  state.tier++;
-  await loadTier();
+// --- Engagement popup logic ---
+function shouldShowEngagePopup() {
+  const times = state.elapsedTimes;
+  if (times.length === 0) return false;
+  const avg = times.reduce((a, b) => a + b, 0) / times.length;
+
+  if (avg >= ENGAGE_DEEP && state.currentIndex >= 1) return true;  // slow: popup from Q2
+  if (avg >= ENGAGE_MID  && state.currentIndex >= 2) return true;  // medium: popup from Q3
+  return false;
+}
+
+const engageModal = document.getElementById('engage-modal');
+
+function showEngagePopup() {
+  engageModal.style.display = 'flex';
+}
+
+document.getElementById('engage-continue').addEventListener('click', () => {
+  engageModal.style.display = 'none';
   showQuestion();
-  // Stay on question screen — badge updates automatically in showQuestion
 });
 
-// --- Email capture ---
-document.getElementById('email-form').addEventListener('submit', async (e) => {
+// --- Pre-done email modal (after question 7) ---
+const preDoneModal = document.getElementById('pre-done-modal');
+
+function showPreDoneModal() {
+  preDoneModal.style.display = 'flex';
+}
+
+document.getElementById('pre-done-email-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const email = document.getElementById('email-input').value.trim();
+  const email = document.getElementById('pre-done-email-input').value.trim();
   if (!email) return;
 
   try {
@@ -308,21 +283,33 @@ document.getElementById('email-form').addEventListener('submit', async (e) => {
     });
   } catch (_) {}
 
-  document.getElementById('email-form').style.display = 'none';
-  document.getElementById('email-skip').style.display = 'none';
-  const thanks = document.getElementById('email-thanks');
+  document.getElementById('pre-done-email-form').style.display = 'none';
+  document.getElementById('pre-done-skip').style.display = 'none';
+  const thanks = document.getElementById('pre-done-thanks');
   thanks.textContent = "You're on the list ✓";
   thanks.style.display = 'block';
+
+  setTimeout(() => {
+    preDoneModal.style.display = 'none';
+    resetPreDoneModal();
+    showScreen('done');
+  }, 1500);
 });
 
-document.getElementById('email-skip').addEventListener('click', () => {
-  document.getElementById('email-form').style.display = 'none';
-  document.getElementById('email-skip').style.display = 'none';
-  const thanks = document.getElementById('email-thanks');
-  thanks.textContent = 'See you next time.';
-  thanks.style.display = 'block';
+document.getElementById('pre-done-skip').addEventListener('click', () => {
+  preDoneModal.style.display = 'none';
+  resetPreDoneModal();
+  showScreen('done');
 });
 
+function resetPreDoneModal() {
+  document.getElementById('pre-done-email-form').style.display = '';
+  document.getElementById('pre-done-skip').style.display = '';
+  document.getElementById('pre-done-thanks').style.display = 'none';
+  document.getElementById('pre-done-email-input').value = '';
+}
+
+// --- Done screen ---
 document.getElementById('done-restart').addEventListener('click', () => {
   state.relation = null;
   showScreen('relation');
@@ -363,7 +350,6 @@ document.getElementById('feedback-form').addEventListener('submit', async (e) =>
 
   setTimeout(() => {
     feedbackModal.style.display = 'none';
-    // Reset for next time
     document.getElementById('feedback-form').style.display = '';
     document.getElementById('feedback-close').style.display = '';
     document.getElementById('feedback-thanks').style.display = 'none';
