@@ -199,10 +199,7 @@ function showQuestion() {
   relBadge.textContent = RELATION_LABELS[state.relation];
   relBadge.className = `badge ${state.relation}`;
 
-  const counter = document.getElementById('question-counter');
-  counter.textContent = `${state.currentIndex + 1} / ${TOTAL_QUESTIONS}`;
-
-  state.questionStartTime = Date.now();
+state.questionStartTime = Date.now();
 }
 
 // --- Next: track time, check engagement, advance ---

@@ -324,7 +324,6 @@ body {
 .badge.tier1   { background: rgba(236,170,39,0.15);  color: #ECAA27; }
 .badge.tier2   { background: rgba(255,160,80,0.12);  color: #ffb347; }
 .badge.tier3   { background: rgba(228,111,160,0.12); color: var(--date); }
-.badge.counter { background: rgba(136,136,136,0.12); color: var(--muted); }
 
 /* ── Question Card ────────────────────── */
 .question-container {
