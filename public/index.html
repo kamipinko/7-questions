@@ -92,14 +92,15 @@
     </div>
   </div>
 
-  <!-- Engage Modal (mid-session encouragement based on time spent) -->
+  <!-- Depth Prompt Modal (shown when user is engaged — offers to go deeper) -->
   <div id="engage-modal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
-      <div class="modal-icon">🕊️</div>
-      <h2 class="modal-title">You're really sitting with this.</h2>
-      <p class="modal-desc">That's exactly what this is for. Take all the time you need. The slower you go, the more opens up.</p>
+      <div class="modal-icon">🌊</div>
+      <h2 class="modal-title">You're really in it.</h2>
+      <p class="modal-desc">Want to go a little deeper?</p>
       <div class="modal-actions">
-        <button class="modal-btn depth-primary" id="engage-continue">Keep going →</button>
+        <button class="modal-btn secondary" id="depth-keep">Keep it here</button>
+        <button class="modal-btn primary" id="depth-go-deeper">Go deeper →</button>
       </div>
     </div>
   </div>

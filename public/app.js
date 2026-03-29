@@ -39,9 +39,11 @@ let state = {
   relation: null,
   questions: [],
   currentIndex: 0,
+  tier: 1,
+  totalAnswered: 0,
   questionStartTime: null,
   elapsedTimes: [],
-  shownEngagePopup: false,
+  depthOffered: [],
 };
 
 function showScreen(name) {
@@ -174,19 +176,22 @@ function goHome() {
 async function startGame() {
   state.questions = [];
   state.currentIndex = 0;
+  state.tier = 1;
+  state.totalAnswered = 0;
   state.questionStartTime = null;
   state.elapsedTimes = [];
-  state.shownEngagePopup = false;
-  await loadQuestions();
+  state.depthOffered = [];
+  await loadQuestionsForTier(1);
   showQuestion();
   showScreen('question');
 }
 
-// --- Load 7 questions (tier 1, server-shuffled) ---
-async function loadQuestions() {
-  const res = await fetch(`/api/questions?relation=${state.relation}&tier=1`);
+// --- Load questions for a given tier (server-shuffled, sliced to remaining count) ---
+async function loadQuestionsForTier(tier) {
+  const res = await fetch(`/api/questions?relation=${state.relation}&tier=${tier}`);
   const all = await res.json();
-  state.questions = all.slice(0, TOTAL_QUESTIONS);
+  const remaining = TOTAL_QUESTIONS - state.totalAnswered;
+  state.questions = all.slice(0, Math.max(remaining, 1));
   state.currentIndex = 0;
 }
 
@@ -202,22 +207,26 @@ function showQuestion() {
   state.questionStartTime = Date.now();
 }
 
-// --- Next: track time, check engagement, advance ---
+// --- Next: track time, check depth prompt, advance ---
 document.getElementById('btn-next').addEventListener('click', () => {
   const elapsed = (Date.now() - state.questionStartTime) / 1000;
   state.elapsedTimes.push(elapsed);
+  state.totalAnswered++;
 
-  const nextIndex = state.currentIndex + 1;
-
-  if (nextIndex >= TOTAL_QUESTIONS) {
+  if (state.totalAnswered >= TOTAL_QUESTIONS) {
     showPreDoneModal();
     return;
   }
 
-  state.currentIndex = nextIndex;
+  state.currentIndex++;
 
-  if (!state.shownEngagePopup && shouldShowEngagePopup()) {
-    state.shownEngagePopup = true;
+  if (state.currentIndex >= state.questions.length) {
+    showPreDoneModal();
+    return;
+  }
+
+  if (shouldShowDepthPrompt()) {
+    state.depthOffered.push(state.tier);
     showEngagePopup();
     return;
   }
@@ -227,25 +236,34 @@ document.getElementById('btn-next').addEventListener('click', () => {
 
 // --- Skip: advance without time tracking ---
 document.getElementById('btn-skip').addEventListener('click', () => {
-  const nextIndex = state.currentIndex + 1;
+  state.totalAnswered++;
 
-  if (nextIndex >= TOTAL_QUESTIONS) {
+  if (state.totalAnswered >= TOTAL_QUESTIONS) {
     showPreDoneModal();
     return;
   }
 
-  state.currentIndex = nextIndex;
+  state.currentIndex++;
+
+  if (state.currentIndex >= state.questions.length) {
+    showPreDoneModal();
+    return;
+  }
+
   showQuestion();
 });
 
-// --- Engagement popup logic ---
-function shouldShowEngagePopup() {
+// --- Depth prompt logic ---
+function shouldShowDepthPrompt() {
+  if (state.tier >= 3) return false;
+  if (state.depthOffered.includes(state.tier)) return false;
+
   const times = state.elapsedTimes;
   if (times.length === 0) return false;
   const avg = times.reduce((a, b) => a + b, 0) / times.length;
 
-  if (avg >= ENGAGE_DEEP && state.currentIndex >= 1) return true;  // slow: popup from Q2
-  if (avg >= ENGAGE_MID  && state.currentIndex >= 2) return true;  // medium: popup from Q3
+  if (avg >= ENGAGE_DEEP && state.currentIndex >= 1) return true;  // slow: prompt from Q2
+  if (avg >= ENGAGE_MID  && state.currentIndex >= 2) return true;  // medium: prompt from Q3
   return false;
 }
 
@@ -255,8 +273,16 @@ function showEngagePopup() {
   engageModal.style.display = 'flex';
 }
 
-document.getElementById('engage-continue').addEventListener('click', () => {
+document.getElementById('depth-keep').addEventListener('click', () => {
   engageModal.style.display = 'none';
+  showQuestion();
+});
+
+document.getElementById('depth-go-deeper').addEventListener('click', async () => {
+  engageModal.style.display = 'none';
+  state.tier++;
+  state.elapsedTimes = [];
+  await loadQuestionsForTier(state.tier);
   showQuestion();
 });
 
