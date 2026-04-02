@@ -3,30 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Choose Your Story</title>
+  <title>Stop & Connect</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('sc_theme');
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (dark ? 'dark' : 'light'));
+    })();
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Palette ── */
     :root {
-      --gold:    #ECAA27;
-      --gold-h:  #ffc84d;
-      --red:     #680707;
-      --black:   #000000;
-      --surface: #111111;
-      --text:    #e05252;
-      --muted:   #888888;
+      --gold:       #ECAA27;
+      --gold-h:     #ffc84d;
+      --red:        #680707;
       --font-serif: 'Playfair Display', Georgia, serif;
       --font-sans:  'Inter', system-ui, sans-serif;
     }
 
+    /* ── Dark theme ── */
+    :root,
+    [data-theme="dark"] {
+      --bg:         #000000;
+      --surface:    #111111;
+      --text:       #e05252;
+      --text-sub:   #888888;
+      --border:     #ECAA27;
+      --intro-bg:   #000000;
+      --intro-title:#ECAA27;
+      --intro-sub:  #888888;
+      --btn-bg:     #ECAA27;
+      --btn-text:   #000000;
+    }
+
+    /* ── Light theme ── */
+    [data-theme="light"] {
+      --bg:         #680707;
+      --surface:    rgba(255,255,255,0.13);
+      --text:       #000000;
+      --text-sub:   rgba(0,0,0,0.6);
+      --border:     #ECAA27;
+      --intro-bg:   #680707;
+      --intro-title:#ECAA27;
+      --intro-sub:  rgba(255,255,255,0.75);
+      --btn-bg:     #ECAA27;
+      --btn-text:   #000000;
+    }
+
     html, body {
       height: 100%;
-      background: var(--black);
+      background: var(--bg);
       color: var(--text);
       font-family: var(--font-sans);
       overflow: hidden;
+      transition: background 0.3s, color 0.3s;
     }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      color: var(--gold);
+    }
+    .theme-toggle:hover { background: rgba(236,170,39,0.1); }
 
     /* ── Intro screen ── */
     #intro {
@@ -38,8 +93,8 @@
       justify-content: center;
       gap: 28px;
       z-index: 10;
-      background: var(--black);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      background: var(--intro-bg);
+      transition: opacity 0.5s ease, transform 0.5s ease, background 0.3s;
     }
 
     #intro.hidden {
@@ -49,26 +104,25 @@
     }
 
     .intro-eyebrow {
-      font-family: var(--font-sans);
       font-size: 0.75rem;
       font-weight: 500;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--muted);
+      color: var(--intro-sub);
     }
 
     .intro-title {
       font-family: var(--font-serif);
       font-size: clamp(2rem, 5vw, 3.5rem);
       font-weight: 700;
-      color: var(--gold);
+      color: var(--intro-title);
       text-align: center;
       line-height: 1.15;
     }
 
     .intro-sub {
       font-size: 1rem;
-      color: var(--muted);
+      color: var(--intro-sub);
       text-align: center;
       max-width: 360px;
       line-height: 1.6;
@@ -77,8 +131,8 @@
     .intro-btn {
       margin-top: 8px;
       padding: 14px 40px;
-      background: var(--gold);
-      color: var(--black);
+      background: var(--btn-bg);
+      color: var(--btn-text);
       font-family: var(--font-sans);
       font-size: 0.95rem;
       font-weight: 600;
@@ -88,15 +142,8 @@
       cursor: pointer;
       transition: background 0.2s, transform 0.15s;
     }
-
-    .intro-btn:hover {
-      background: var(--gold-h);
-      transform: translateY(-1px);
-    }
-
-    .intro-btn:active {
-      transform: translateY(0);
-    }
+    .intro-btn:hover  { background: var(--gold-h); transform: translateY(-1px); }
+    .intro-btn:active { transform: translateY(0); }
 
     /* ── Split screen ── */
     #split {
@@ -107,11 +154,7 @@
       pointer-events: none;
       transition: opacity 0.5s ease 0.1s;
     }
-
-    #split.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    #split.visible { opacity: 1; pointer-events: auto; }
 
     /* ── Panels ── */
     .panel {
@@ -140,30 +183,17 @@
     .panel:hover { flex: 1.3; }
     .panel:hover::before { opacity: 1; }
 
-    /* Left panel — Auto-Biography */
-    .panel-auto {
-      border-right: 1px solid #222;
-      background: linear-gradient(160deg, #0a0a0a 0%, #000 100%);
-    }
+    [data-theme="dark"] .panel-auto  { border-right: 1px solid #222; background: linear-gradient(160deg, #0a0a0a 0%, #000 100%); }
+    [data-theme="dark"] .panel-7q   { background: linear-gradient(200deg, #000 0%, #0a0a0a 100%); }
+    [data-theme="light"] .panel-auto { border-right: 1px solid rgba(236,170,39,0.3); background: rgba(0,0,0,0.25); }
+    [data-theme="light"] .panel-7q  { background: rgba(0,0,0,0.15); }
 
-    .panel-auto::before {
-      background: radial-gradient(ellipse at center, rgba(104,7,7,0.15) 0%, transparent 70%);
-    }
+    .panel-auto::before { background: radial-gradient(ellipse at center, rgba(104,7,7,0.2) 0%, transparent 70%); }
+    .panel-7q::before   { background: radial-gradient(ellipse at center, rgba(236,170,39,0.12) 0%, transparent 70%); }
 
-    .panel-auto:hover {
-      border-right-color: var(--gold);
-    }
+    .panel-auto:hover { border-right-color: var(--gold); }
 
-    /* Right panel — 7 Questions */
-    .panel-7q {
-      background: linear-gradient(200deg, #000 0%, #0a0a0a 100%);
-    }
-
-    .panel-7q::before {
-      background: radial-gradient(ellipse at center, rgba(236,170,39,0.1) 0%, transparent 70%);
-    }
-
-    /* ── Divider line ── */
+    /* ── Divider ── */
     .divider {
       position: absolute;
       left: 50%;
@@ -176,7 +206,6 @@
       z-index: 5;
       transition: opacity 0.3s;
     }
-
     #split.visible .divider { opacity: 0.4; }
 
     /* ── Panel content ── */
@@ -193,49 +222,31 @@
       opacity: 0;
       transition: transform 0.5s ease, opacity 0.5s ease;
     }
-
-    #split.visible .panel-inner {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
+    #split.visible .panel-inner { transform: translateY(0); opacity: 1; }
     #split.visible .panel-auto .panel-inner { transition-delay: 0.15s; }
     #split.visible .panel-7q .panel-inner   { transition-delay: 0.25s; }
 
-    /* ── Auto-Bio logo ── */
-    .logo-book {
-      width: 72px;
-      height: 72px;
+    /* ── Logos ── */
+    .logo-book, .logo-7q {
+      width: 72px; height: 72px;
       background: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .logo-book {
       border: 2px solid var(--gold);
       border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       font-family: var(--font-serif);
       font-size: 2rem;
       color: var(--gold);
-      flex-shrink: 0;
-      transition: transform 0.2s;
     }
-
-    .panel-auto:hover .logo-book { transform: scale(1.06); }
-
-    /* ── 7Q logo ── */
     .logo-7q {
-      width: 72px;
-      height: 72px;
-      background: var(--red);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: transform 0.2s;
       box-shadow: 0 0 0 2px var(--gold);
     }
-
-    .panel-7q:hover .logo-7q { transform: scale(1.06); }
+    .panel-auto:hover .logo-book { transform: scale(1.06); }
+    .panel-7q:hover   .logo-7q   { transform: scale(1.06); }
 
     .logo-7q-num {
       font-family: var(--font-serif);
@@ -260,22 +271,20 @@
       line-height: 1.65;
     }
 
+    [data-theme="light"] .panel-tagline { color: rgba(255,255,255,0.9); }
+
     .panel-time {
       display: inline-flex;
       align-items: center;
       gap: 7px;
       font-size: 0.8rem;
-      color: var(--muted);
+      color: var(--text-sub);
       background: var(--surface);
-      border: 1px solid #333;
+      border: 1px solid rgba(236,170,39,0.3);
       border-radius: 100px;
       padding: 5px 14px;
     }
-
-    .panel-time svg {
-      opacity: 0.7;
-      flex-shrink: 0;
-    }
+    .panel-time svg { opacity: 0.7; flex-shrink: 0; }
 
     .panel-cta {
       margin-top: 4px;
@@ -286,70 +295,149 @@
       transform: translateY(4px);
       transition: opacity 0.2s, transform 0.2s;
     }
+    .panel:hover .panel-cta { opacity: 1; transform: translateY(0); }
 
-    .panel:hover .panel-cta {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ── Arrow on hover ── */
     .panel-arrow {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       border: 1px solid var(--gold);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       color: var(--gold);
       opacity: 0;
       transform: scale(0.8);
       transition: opacity 0.2s, transform 0.2s;
       margin-top: 4px;
     }
+    .panel:hover .panel-arrow { opacity: 1; transform: scale(1); }
 
-    .panel:hover .panel-arrow {
-      opacity: 1;
-      transform: scale(1);
+    /* ── Feedback FAB ── */
+    .feedback-fab {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      background: var(--red);
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      border-radius: 100px;
+      padding: 9px 18px;
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: background 0.2s, transform 0.15s;
     }
+    .feedback-fab:hover { background: #8a0a0a; transform: translateY(-1px); }
+
+    /* ── Feedback modal ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding: 20px;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transform: translateY(12px);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal-card { transform: translateY(0); }
+
+    .modal-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      color: var(--gold);
+    }
+    .modal-desc {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+    .modal-input, .modal-textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      font-family: var(--font-sans);
+      color: var(--text);
+      outline: none;
+      resize: none;
+      transition: border-color 0.2s;
+    }
+    [data-theme="light"] .modal-input,
+    [data-theme="light"] .modal-textarea { color: #fff; border-color: rgba(236,170,39,0.4); }
+    .modal-input:focus, .modal-textarea:focus { border-color: var(--gold); }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .btn-cancel {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 8px 4px;
+    }
+    .btn-send {
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-send:hover { background: var(--gold-h); }
+    .modal-status { font-size: 0.82rem; color: var(--gold); min-height: 18px; }
 
     /* ── Mobile ── */
     @media (max-width: 600px) {
       html, body { overflow: auto; }
-
-      #split {
-        flex-direction: column;
-        position: relative;
-        min-height: 100vh;
-      }
-
-      .panel {
-        min-height: 50vh;
-        padding: 48px 28px;
-      }
-
+      #split { flex-direction: column; position: relative; min-height: 100vh; }
+      .panel { min-height: 50vh; padding: 48px 28px; }
       .panel:hover { flex: 1; }
-
-      .panel-auto { border-right: none; border-bottom: 1px solid #222; }
-      .panel-auto:hover { border-bottom-color: var(--gold); }
-
+      [data-theme="dark"] .panel-auto,
+      [data-theme="light"] .panel-auto { border-right: none; border-bottom: 1px solid rgba(236,170,39,0.3); }
       .divider {
-        left: 10%;
-        right: 10%;
-        top: 50%;
-        bottom: auto;
-        width: auto;
-        height: 1px;
+        left: 10%; right: 10%; top: 50%; bottom: auto;
+        width: auto; height: 1px;
         background: linear-gradient(to right, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
       }
-
       .panel-inner { max-width: 280px; }
-
       .intro-title { font-size: 1.9rem; }
+      .modal-overlay { align-items: center; justify-content: center; padding: 16px; }
+      .modal-card { max-width: 100%; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ── Theme toggle ── -->
+  <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">🌙</button>
 
   <!-- ── Intro screen ── -->
   <div id="intro">
@@ -371,10 +459,9 @@
         <h2 class="panel-name">Auto-Biography</h2>
         <p class="panel-tagline">
           Answer guided prompts about someone you love — or yourself.
-          Claude writes the full story as a book you can print or email.
+          Together, we help you turn those answers into a full book you can print or email.
         </p>
         <span class="panel-time">
-          <!-- clock icon -->
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
           </svg>
@@ -417,24 +504,77 @@
 
   </div>
 
+  <!-- ── Feedback FAB ── -->
+  <button class="feedback-fab" id="feedbackFab">💬 Feedback</button>
+
+  <!-- ── Feedback Modal ── -->
+  <div class="modal-overlay" id="feedbackModal">
+    <div class="modal-card">
+      <h2 class="modal-title">Leave Feedback</h2>
+      <p class="modal-desc">What's on your mind? Suggestions, bugs, ideas — all welcome.</p>
+      <textarea class="modal-textarea" id="feedbackMsg" rows="3" placeholder="Tell us what you think..."></textarea>
+      <input class="modal-input" type="email" id="feedbackEmail" placeholder="your@email.com (optional)" />
+      <div class="modal-status" id="feedbackStatus"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="feedbackCancel">Cancel</button>
+        <button class="btn-send" id="feedbackSend">Send →</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // ── URL config ──
-    // Replace these with your Railway deployment URLs (or relative paths on a combined server)
-    const URLS = {
-      autobiography:  '/autobiography',
-      sevenQuestions: '/play'
-    };
+    // ── Theme ──
+    const toggle = document.getElementById('themeToggle');
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '🌙' : '☀️';
+    }
+    applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
 
-    // Wire up href values
-    document.getElementById('panelAuto').href = URLS.autobiography;
-    document.getElementById('panel7q').href   = URLS.sevenQuestions;
+    toggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('sc_theme', next);
+      applyTheme(next);
+    });
 
-    // ── Reveal split on button click ──
+    // ── Reveal split ──
     document.getElementById('startBtn').addEventListener('click', () => {
       document.getElementById('intro').classList.add('hidden');
-      setTimeout(() => {
-        document.getElementById('split').classList.add('visible');
-      }, 200);
+      setTimeout(() => document.getElementById('split').classList.add('visible'), 200);
+    });
+
+    // ── Feedback ──
+    const modal    = document.getElementById('feedbackModal');
+    const fab      = document.getElementById('feedbackFab');
+    const cancelBtn= document.getElementById('feedbackCancel');
+    const sendBtn  = document.getElementById('feedbackSend');
+    const status   = document.getElementById('feedbackStatus');
+
+    fab.addEventListener('click', () => modal.classList.add('open'));
+    cancelBtn.addEventListener('click', () => modal.classList.remove('open'));
+    modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+    sendBtn.addEventListener('click', async () => {
+      const message = document.getElementById('feedbackMsg').value.trim();
+      const email   = document.getElementById('feedbackEmail').value.trim();
+      if (!message) { status.textContent = 'Please write something first.'; return; }
+
+      sendBtn.disabled = true;
+      status.textContent = 'Sending...';
+      try {
+        await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message, email, app: 'hub' })
+        });
+        status.textContent = 'Thanks! We\'ll read every word. ✓';
+        document.getElementById('feedbackMsg').value = '';
+        document.getElementById('feedbackEmail').value = '';
+        setTimeout(() => { modal.classList.remove('open'); status.textContent = ''; sendBtn.disabled = false; }, 2000);
+      } catch {
+        status.textContent = 'Something went wrong. Try again.';
+        sendBtn.disabled = false;
+      }
     });
   </script>
 
