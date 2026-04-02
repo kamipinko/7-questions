@@ -2683,5 +2683,405 @@
     "relations": [
       "spicy"
     ]
+  },
+  {
+    "id": 361,
+    "text": "What's one thing {p2} does that {p1} secretly admires but has never said out loud?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 362,
+    "text": "If {p1} could change one thing about how {p2} sees the world, what would it be?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 363,
+    "text": "What's a moment with {p2} that {p1} thinks about more than {p2} would ever expect?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 364,
+    "text": "What does {p1} think is {p2}'s biggest strength — and what's the shadow side of that strength?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 365,
+    "text": "What's something {p2} said once that stayed with {p1} long after the conversation ended?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 366,
+    "text": "If {p1} had to describe {p2} to a total stranger in three words, what would they be — and does {p2} agree?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 367,
+    "text": "What's one decision {p2} made that {p1} quietly admired, even if they disagreed with it at the time?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 368,
+    "text": "What do {p1} and {p2} both know is true about each other that neither has ever actually said out loud?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 369,
+    "text": "What talent does {p2} have that {p1} thinks the world doesn't see nearly enough of?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 370,
+    "text": "What does {p1} think would genuinely surprise most people about who {p2} really is?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 371,
+    "text": "If {p2} could redo one decision in their life, what does {p1} think it would be — and why?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 372,
+    "text": "What's something {p1} wishes they could protect {p2} from — and does {p2} know?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 373,
+    "text": "What does {p1} think {p2} is most proud of — and is {p1} right?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 374,
+    "text": "If {p2} had to sum up {p1}'s entire life philosophy in one sentence, what would it be?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 375,
+    "text": "What dream does {p1} know {p2} carries quietly that {p2} doesn't talk about enough?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 376,
+    "text": "What's something about how {p2} was raised that {p1} thinks quietly shaped who they became?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 377,
+    "text": "If {p1} and {p2} had to survive a serious crisis together, what would each person's role be?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 378,
+    "text": "What's a belief {p1} held for a long time that {p2} slowly changed — or vice versa?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 379,
+    "text": "What's one moment when {p1} saw a completely unexpected side of {p2}?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 380,
+    "text": "What does {p1} think {p2} needs to hear more often from the people who know them?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 381,
+    "text": "If {p2} were being completely honest, what would they say is the hardest part of knowing {p1}?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 382,
+    "text": "What's the most {p1} has ever pushed {p2} past their comfort zone — and was it the right call?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 383,
+    "text": "What's something {p1} has learned from {p2} that changed the way they move through life?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 384,
+    "text": "When {p2} is struggling, how does {p1} know — and what do they usually do about it?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 385,
+    "text": "What's the funniest or most embarrassing thing between {p1} and {p2} that most people don't know about?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 386,
+    "text": "If {p1} could say one completely honest thing to {p2} with everyone listening, what would it be?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 387,
+    "text": "What's a habit or quirk of {p2} that slightly annoys {p1} — but also kind of defines who {p2} is?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 388,
+    "text": "How has knowing {p2} actually changed who {p1} is as a person?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 389,
+    "text": "What's something {p2} handles better than almost anyone else {p1} knows?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 390,
+    "text": "What's a story about {p2} that {p1} loves telling — and how does {p2} feel when {p1} tells it?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 391,
+    "text": "What's a belief you hold that most people in this room would probably disagree with?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 392,
+    "text": "What completely changed how you see the world — and why did it hit that hard?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 393,
+    "text": "What's a rule you actually live by that you've never said out loud until right now?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 394,
+    "text": "What do people almost always get wrong about you the first time they meet you?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 395,
+    "text": "What's something you used to judge people for that you now completely understand?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 396,
+    "text": "What's a question you're afraid to ask yourself — and what do you think the honest answer is?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 397,
+    "text": "What does success actually look like to you — not the version you say out loud, the real one?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 398,
+    "text": "What's the most honest thing you've ever said directly to someone — and how did it land?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 399,
+    "text": "What's something about modern life you privately think is broken but almost no one will admit?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 400,
+    "text": "When did you last completely change your mind about something you were certain of — and what moved you?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 401,
+    "text": "What's the version of yourself you're most afraid of slowly becoming?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 402,
+    "text": "If this were the last real conversation you'd ever have, what's one thing you'd want people here to know about who you actually are?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 403,
+    "text": "What do you believe about love or relationships that most people here probably wouldn't agree with?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 404,
+    "text": "What would you do differently right now if you genuinely didn't need anyone's approval?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 405,
+    "text": "What's the most surprising thing about who you've become compared to who you thought you'd be?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 406,
+    "text": "What are you most afraid of losing — and what, if anything, are you doing about it?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 407,
+    "text": "What's something you've sacrificed that most people around you don't know about — and was it worth it?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 408,
+    "text": "What's a moment from your past you still don't fully understand, but know it changed you?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 409,
+    "text": "What's the bravest thing you've ever done that almost nobody knows about?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 410,
+    "text": "What's something you know to be deeply true about human nature that most people are still slowly figuring out?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
   }
 ]

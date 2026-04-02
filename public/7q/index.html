@@ -19,6 +19,9 @@
 
   <!-- Site Banner -->
   <header class="site-banner">
+    <div id="group-tracker-pill" class="group-tracker-pill" style="display:none;">
+      <span id="group-tracker-text">Game 1</span>
+    </div>
     <div class="banner-inner">
       <span class="banner-logo">7</span>
       <span class="banner-title">Questions</span>
@@ -45,6 +48,10 @@
         <button class="relation-card" data-relation="date">
           <span class="card-icon">💕</span>
           <span class="card-label">Date</span>
+        </button>
+        <button class="relation-card group-card" id="group-card">
+          <span class="card-icon">🎯</span>
+          <span class="card-label">Group</span>
         </button>
       </div>
       <button class="spicy-btn" data-relation="spicy" style="display:none;">
@@ -152,6 +159,160 @@
     </div>
   </div>
 
+  <!-- ═══ GROUP MODE SCREENS ═══ -->
+
+  <!-- Screen: Group Rules -->
+  <div id="screen-group-rules" class="screen">
+    <div class="header">
+      <div class="step-label">Group Mode</div>
+      <h1>Play Together</h1>
+    </div>
+    <div class="group-rules-box">
+      <p class="rules-intro">Break into pairs. Each pair gets 7 personal questions — pass the phone when your name comes up. Then the whole group answers 7 questions out loud and votes on who had the most interesting answer.</p>
+      <div class="rules-steps">
+        <div class="rules-step"><span class="rules-num">1</span><span>Each pair answers 7 private questions. Pass the phone when your name is called.</span></div>
+        <div class="rules-step"><span class="rules-num">2</span><span>After all pairs finish, everyone gets 7 shared questions to answer out loud to the group.</span></div>
+        <div class="rules-step"><span class="rules-num">3</span><span>Each player votes for the most interesting answer per question. You can't vote for your own team.</span></div>
+        <div class="rules-step"><span class="rules-num">4</span><span>Most votes wins. Track scores across multiple games.</span></div>
+      </div>
+      <div class="timer-section">
+        <p class="timer-label">⏱ Time per pair</p>
+        <div class="timer-options">
+          <button class="timer-opt" data-min="5">5 min</button>
+          <button class="timer-opt" data-min="10">10 min</button>
+          <button class="timer-opt selected" data-min="15">15 min</button>
+          <button class="timer-opt" data-min="20">20 min</button>
+        </div>
+      </div>
+    </div>
+    <button class="g-primary-btn" id="rules-next-btn">Set Up Teams →</button>
+    <button class="g-back-link" id="rules-back">← Back</button>
+  </div>
+
+  <!-- Screen: Group Lobby -->
+  <div id="screen-group-lobby" class="screen">
+    <div class="header">
+      <div class="step-label">Step 2 — Teams</div>
+      <h1>Your Teams</h1>
+      <p class="subtitle" style="font-size:0.95rem;font-weight:400;">Add at least 2 pairs to begin</p>
+    </div>
+    <div id="pairs-list" class="pairs-list"></div>
+    <button class="add-pair-btn" id="add-pair-btn">+ Add a Pair</button>
+    <button class="g-primary-btn" id="begin-game-btn" disabled>Begin the Game →</button>
+    <button class="g-back-link" id="lobby-back">← Back</button>
+  </div>
+
+  <!-- Screen: Pair Intro (pass the phone) -->
+  <div id="screen-group-pair-intro" class="screen">
+    <div class="pair-intro-wrap">
+      <div class="pair-intro-icon">🎯</div>
+      <p class="pair-intro-eyebrow">Next up</p>
+      <h1 id="pair-intro-name" class="pair-intro-name"></h1>
+      <div id="pair-intro-players" class="pair-intro-players"></div>
+      <p class="pair-intro-desc">Find a quiet spot. These questions are just for you two.<br>Pass the phone when your name comes up.</p>
+      <p id="pair-intro-timer" class="pair-intro-timer-label"></p>
+      <button class="g-primary-btn" id="pair-ready-btn">We're Ready →</button>
+    </div>
+  </div>
+
+  <!-- Screen: Group Question -->
+  <div id="screen-group-question" class="screen">
+    <div class="question-header">
+      <button class="back-btn" id="group-q-back">← Home</button>
+      <div class="question-meta">
+        <span id="group-pair-badge" class="badge group-badge"></span>
+        <span id="group-q-counter" class="badge tier1"></span>
+      </div>
+      <div id="group-timer-display" class="group-timer">15:00</div>
+    </div>
+    <div class="question-container">
+      <div class="question-card">
+        <p id="group-question-text">Loading...</p>
+      </div>
+    </div>
+    <div class="question-nav">
+      <button class="nav-btn skip-btn" id="group-btn-skip">Skip</button>
+      <button class="nav-btn primary" id="group-btn-next">Next →</button>
+    </div>
+  </div>
+
+  <!-- Screen: Voting Intro -->
+  <div id="screen-group-vote-intro" class="screen">
+    <div class="done-content">
+      <div class="done-icon">🗳️</div>
+      <h2 class="done-title">Time to Vote</h2>
+      <p class="done-desc">Every team answers 7 questions out loud — one at a time. After each team shares, everyone votes for who gave the most interesting answer. You can't vote for your own team.</p>
+      <div id="vote-teams-preview" class="vote-teams-preview"></div>
+      <button class="g-primary-btn" id="start-voting-btn">Start Voting →</button>
+    </div>
+  </div>
+
+  <!-- Screen: Vote Question -->
+  <div id="screen-group-vote-question" class="screen">
+    <div class="question-header">
+      <div class="vote-q-label">Voting Round</div>
+      <span id="vote-q-counter" class="badge tier1"></span>
+    </div>
+    <div class="question-container">
+      <div class="question-card">
+        <p id="vote-question-text">Loading...</p>
+      </div>
+    </div>
+    <div id="vote-stage-area" class="vote-stage-area"></div>
+  </div>
+
+  <!-- Screen: Results -->
+  <div id="screen-group-results" class="screen">
+    <div class="done-content">
+      <div class="done-icon">🏆</div>
+      <h2 class="done-title" id="results-title">Game Over</h2>
+      <p class="done-desc" id="results-subtitle"></p>
+      <div id="results-leaderboard" class="results-leaderboard"></div>
+      <button class="g-primary-btn" id="play-again-btn">Play Again →</button>
+      <button class="restart-btn" id="results-done-btn">Done for now</button>
+    </div>
+  </div>
+
+  <!-- Modal: Continue / Play Again -->
+  <div id="modal-continue" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">🔄</div>
+      <h2 class="modal-title">Keep Playing?</h2>
+      <p class="modal-desc">Same teams or switch it up? Team wins are tracked when you stay together.</p>
+      <div class="modal-actions" style="flex-direction:column;gap:0.6rem;">
+        <button class="modal-btn primary depth-primary" id="continue-same-teams">Same Teams →</button>
+        <button class="modal-btn primary depth-primary" id="continue-new-teams">New Teams →</button>
+        <button class="modal-btn secondary" id="continue-done">Done for now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Tracker -->
+  <div id="modal-tracker" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">👑</div>
+      <h2 class="modal-title">Leaderboard</h2>
+      <div id="tracker-modal-content"></div>
+      <button class="skip-link" id="tracker-modal-close" style="margin-top:1rem;">Close</button>
+    </div>
+  </div>
+
+  <!-- Post-game: feedback + donate prompt (shown after results) -->
+  <div id="modal-postgame" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">💬</div>
+      <h2 class="modal-title">Thanks for playing!</h2>
+      <p class="modal-desc">Got a minute? Leave a quick note or help keep this free.</p>
+      <div class="kofi-modal-cta" style="margin-bottom:1rem;">
+        <p class="kofi-modal-cta-title">☕ Keep this free</p>
+        <p class="kofi-modal-cta-desc">This app is ad-free. A small donation keeps the lights on.</p>
+        <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-modal-link">☕ Donate on Ko-fi →</a>
+      </div>
+      <button class="modal-btn primary depth-primary" id="postgame-feedback-btn">Leave Feedback</button>
+      <button class="skip-link" id="postgame-skip" style="margin-top:0.75rem;">Maybe later</button>
+    </div>
+  </div>
+
   <!-- Ko-fi donate button -->
   <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-btn" title="Support on Ko-fi">
     <span class="kofi-btn-cup">☕</span>
@@ -195,5 +356,6 @@
   <div id="spicy-tap-zone"></div>
 
   <script src="app.js?v=5"></script>
+  <script src="group.js?v=1"></script>
 </body>
 </html>
