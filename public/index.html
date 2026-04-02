@@ -500,6 +500,22 @@
       .intro-title { font-size: 1.9rem; }
       .modal-overlay { align-items: center; justify-content: center; padding: 16px; }
       .modal-card { max-width: 100%; }
+
+      /* Bottom actions: unfix and lay out side by side */
+      .kofi-btn,
+      .feedback-fab {
+        position: static;
+        bottom: auto;
+        right: auto;
+      }
+      .bottom-actions {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px 32px;
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -573,14 +589,14 @@
 
   </div>
 
-  <!-- ── Ko-fi donate button ── -->
-  <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-btn" title="Support on Ko-fi">
-    <span class="kofi-btn-cup">☕</span>
-    <span>Donate</span>
-  </a>
-
-  <!-- ── Feedback FAB ── -->
-  <button class="feedback-fab" id="feedbackFab">💬 Feedback</button>
+  <!-- ── Bottom actions (fixed on desktop, scrollable footer on mobile) ── -->
+  <div class="bottom-actions">
+    <button class="feedback-fab" id="feedbackFab">💬 Feedback</button>
+    <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-btn" title="Support on Ko-fi">
+      <span class="kofi-btn-cup">☕</span>
+      <span>Donate</span>
+    </a>
+  </div>
 
   <!-- ── Feedback Modal ── -->
   <div class="modal-overlay" id="feedbackModal">
