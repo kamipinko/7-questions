@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <base href="/autobiography/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light" />
+  <title>Auto-Biography</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('ab_theme');
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (dark ? 'dark' : 'light'));
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- ── LANDING ── -->
+  <div id="screen-landing" class="screen active">
+    <div class="landing-wrap">
+      <div class="landing-logo">
+        <div class="logo-mark">✦</div>
+        <h1>Auto-Biography</h1>
+        <p class="tagline">A memoir created together</p>
+      </div>
+
+      <div class="setup-card">
+        <div class="field">
+          <label>Who is this for?</label>
+          <div class="rel-grid">
+            <button class="rel-btn" data-rel="grandpa">Grandpa</button>
+            <button class="rel-btn" data-rel="grandma">Grandma</button>
+            <button class="rel-btn" data-rel="dad">Dad</button>
+            <button class="rel-btn" data-rel="mom">Mom</button>
+            <button class="rel-btn" data-rel="uncle">Uncle</button>
+            <button class="rel-btn" data-rel="aunt">Aunt</button>
+            <button class="rel-btn" data-rel="sibling">Sibling</button>
+            <button class="rel-btn" data-rel="friend">Friend</button>
+            <button class="rel-btn" data-rel="partner">Lover</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="subject-name">Their name</label>
+          <input type="text" id="subject-name" placeholder="First name..." autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label>Their pronouns</label>
+          <div class="pronoun-row">
+            <button class="pronoun-btn active" data-pronoun="he">He / Him</button>
+            <button class="pronoun-btn" data-pronoun="she">She / Her</button>
+            <button class="pronoun-btn" data-pronoun="they">They / Them</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="author-name">Your name</label>
+          <input type="text" id="author-name" placeholder="Your first name..." autocomplete="off" />
+        </div>
+
+        <button id="begin-btn" class="btn-primary" disabled>Begin the Story →</button>
+      </div>
+
+      <button id="theme-toggle" class="theme-toggle" title="Toggle light/dark mode">🌙</button>
+    </div>
+  </div>
+
+  <!-- ── INTRO ── -->
+  <div id="screen-intro" class="screen">
+    <div class="intro-wrap">
+      <div class="intro-logo">✦</div>
+      <div id="intro-content" class="intro-content"></div>
+      <button id="intro-begin-btn" class="btn-primary intro-begin-btn">Let's Begin →</button>
+      <button class="btn-text intro-back-link" id="intro-back-btn">← Change details</button>
+    </div>
+  </div>
+
+  <!-- ── CHAPTERS ── -->
+  <div id="screen-chapters" class="screen">
+    <div class="screen-wrap">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <button id="home-btn" class="nav-logo-btn">✦ Auto-Biography</button>
+        </div>
+        <div class="top-bar-right">
+          <button id="save-btn" class="btn-save-progress">💾 Save Progress</button>
+          <button id="theme-toggle-top" class="theme-toggle theme-toggle-sm" title="Toggle light/dark mode">🌙</button>
+          <button class="btn-text" id="reset-btn">Start Over</button>
+        </div>
+      </header>
+
+      <div class="chapters-hero">
+        <h2>The Story of <span id="subject-display"></span></h2>
+        <p>Work through each chapter together. Your answers save as you go.</p>
+      </div>
+
+      <div id="chapter-grid" class="chapter-grid"></div>
+
+      <div class="generate-bar">
+        <div class="generate-bar-info">
+          <span id="chapters-done">0</span> of <span id="chapters-total">0</span> chapters answered
+        </div>
+        <button id="generate-btn" class="btn-generate">
+          <span class="btn-generate-title">Make the Book</span>
+          <span class="btn-generate-sub">Turn your answers into a memoir</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROMPTS ── -->
+  <div id="screen-prompts" class="screen">
+    <div class="screen-wrap">
+      <header class="top-bar">
+        <button class="btn-back" id="back-btn">← Back</button>
+        <div class="top-bar-center" id="prompt-chapter-name"></div>
+        <div class="top-bar-right" id="prompt-progress-label"></div>
+      </header>
+
+      <div id="prompts-list" class="prompts-list"></div>
+
+      <div class="prompts-footer">
+        <button id="save-chapter-btn" class="btn-primary">Save & Return ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GENERATING ── -->
+  <div id="screen-generating" class="screen">
+    <div class="generating-wrap">
+      <div class="gen-orb">
+        <div class="gen-ring"></div>
+        <div class="gen-ring"></div>
+        <div class="gen-ring"></div>
+        <span class="gen-icon">✦</span>
+      </div>
+      <h2>Making the Book...</h2>
+      <p id="gen-status">Reading through the answers...</p>
+    </div>
+  </div>
+
+  <!-- ── BOOK ── -->
+  <div id="screen-book" class="screen">
+    <div class="screen-wrap">
+      <header class="top-bar">
+        <button class="btn-back" id="back-btn-book">← Back</button>
+        <div class="top-bar-center" id="book-title-display"></div>
+        <div class="top-bar-right book-actions">
+          <button id="recordings-btn" class="btn-export">🎤 Recordings</button>
+          <button id="send-email-btn" class="btn-export">✉ Send</button>
+          <button id="export-epub-btn" class="btn-export">↓ EPUB</button>
+          <button id="print-btn" class="btn-export btn-export-primary">↓ PDF</button>
+        </div>
+      </header>
+
+      <div id="book-content" class="book-content"></div>
+    </div>
+  </div>
+
+  <!-- ── PRINT VIEW (hidden, CSS shows on print) ── -->
+  <div id="print-view">
+    <div id="print-inner"></div>
+  </div>
+
+  <!-- ── EMAIL MODAL ── -->
+  <div id="email-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 class="modal-title">Send the Story</h2>
+      <p class="modal-desc">We'll email the full book and all your answers so you can read it anytime — and keep it forever.</p>
+
+      <div class="field">
+        <label>Email address</label>
+        <input type="email" id="send-email-input" placeholder="your@email.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label>Phone number <span class="field-optional">(optional)</span></label>
+        <input type="tel" id="send-phone-input" placeholder="+1 (555) 000-0000" autocomplete="tel" />
+      </div>
+
+      <div id="modal-status" class="modal-status"></div>
+
+      <div class="modal-actions">
+        <button id="modal-cancel-btn" class="btn-text">Cancel</button>
+        <button id="modal-send-btn" class="btn-primary" style="width:auto;padding:12px 28px;">Send →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SAVE PROGRESS MODAL ── -->
+  <div id="save-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 class="modal-title">💾 Save Your Progress</h2>
+      <p class="modal-desc">We'll email you a private link. Click it anytime — on any device — to pick up exactly where you left off.</p>
+      <div class="field">
+        <label>Your email address</label>
+        <input type="email" id="save-email-input" placeholder="your@email.com" autocomplete="email" />
+      </div>
+      <div id="save-modal-status" class="modal-status"></div>
+      <div class="modal-actions">
+        <button id="save-modal-cancel" class="btn-text">Cancel</button>
+        <button id="save-modal-send" class="btn-primary" style="width:auto;padding:12px 28px;">Send my link →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FLOATING FEEDBACK BUTTON ── -->
+  <button id="feedback-fab" title="Leave feedback">💬</button>
+
+  <!-- ── FEEDBACK MODAL ── -->
+  <div id="feedback-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h2 class="modal-title">Leave Feedback</h2>
+      <p class="modal-desc">How was your experience? Let us know what worked or what could be better.</p>
+      <div class="field">
+        <label>Rating</label>
+        <div class="rating-row" id="rating-row">
+          <button class="rating-btn" data-val="1">1</button>
+          <button class="rating-btn" data-val="2">2</button>
+          <button class="rating-btn" data-val="3">3</button>
+          <button class="rating-btn" data-val="4">4</button>
+          <button class="rating-btn" data-val="5">5 ★</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Your email <span class="field-optional">(optional — so we can follow up)</span></label>
+        <input type="email" id="feedback-email" placeholder="your@email.com" autocomplete="email" />
+      </div>
+      <div class="field">
+        <label>Message <span class="field-optional">(optional)</span></label>
+        <textarea id="feedback-message" class="prompt-textarea" rows="3" placeholder="Tell us what you think..."></textarea>
+      </div>
+      <div id="feedback-status" class="modal-status"></div>
+      <div class="modal-actions">
+        <button id="feedback-cancel-btn" class="btn-text">Cancel</button>
+        <button id="feedback-send-btn" class="btn-primary" style="width:auto;padding:12px 28px;">Send feedback →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RECORDINGS MODAL ── -->
+  <div id="recordings-modal" class="modal-overlay">
+    <div class="modal-card modal-card-wide">
+      <div class="modal-header-row">
+        <h2 class="modal-title">🎤 Voice Recordings</h2>
+        <button id="recordings-close-btn" class="btn-text">✕ Close</button>
+      </div>
+      <p class="modal-desc">Play back the original voice recordings alongside each answer.</p>
+      <div id="recordings-list" class="recordings-list"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

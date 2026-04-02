@@ -1,0 +1,676 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== Shared palette tokens ===== */
+:root {
+  color-scheme: light;
+  --radius:  16px;
+  --family:  #f4a261;
+  --friends: #52b788;
+  --date:    #e46fa0;
+  --spicy:   #ff4d4d;
+  --spiral:  #28FF85;
+  --teal:    #158080;
+}
+
+/* ===== Dark theme (default) ===== */
+:root {
+  --bg:           #000000;
+  --surface:      #111111;
+  --surface2:     #1e1e1e;
+  --text:         #e05252;
+  --muted:        #888888;
+  --accent:       #ECAA27;   /* gold — primary buttons / highlights */
+  --accent-hover: #ffc84d;
+  --heading:      #680707;   /* deep red — page titles */
+  --box-border:   #ECAA27;   /* gold — card / question borders */
+  --banner-bg:    #000000;
+  --banner-border:#ECAA27;   /* gold outline under banner */
+  --banner-text:  #680707;   /* deep red — "7 Questions" title */
+  --logo-bg:      #680707;   /* red chip for the "7" logo */
+  --logo-text:    #ECAA27;   /* gold "7" */
+  --btn-text:     #000000;
+  --modal-bg:     #111111;
+}
+
+/* ===== Dark theme (explicit) ===== */
+[data-theme="dark"] {
+  --bg:           #000000;
+  --surface:      #111111;
+  --surface2:     #1e1e1e;
+  --text:         #e05252;
+  --muted:        #888888;
+  --accent:       #ECAA27;
+  --accent-hover: #ffc84d;
+  --heading:      #680707;
+  --box-border:   #ECAA27;
+  --banner-bg:    #000000;
+  --banner-border:#ECAA27;
+  --banner-text:  #680707;
+  --logo-bg:      #680707;
+  --logo-text:    #ECAA27;
+  --btn-text:     #000000;
+  --modal-bg:     #111111;
+}
+
+[data-theme="light"] {
+  --bg:           #680707;
+  --surface:      rgba(255,255,255,0.13);
+  --surface2:     rgba(255,255,255,0.25);
+  --text:         #000000;
+  --muted:        rgba(0,0,0,0.55);
+  --accent:       #158080;
+  --accent-hover: #1aadad;
+  --heading:      #000000;
+  --box-border:   #ECAA27;
+  --banner-bg:    #ECAA27;
+  --banner-border:#ECAA27;
+  --banner-text:  #680707;
+  --logo-bg:      #000000;   /* black chip for the "7" logo */
+  --logo-text:    #ECAA27;   /* gold "7" */
+  --btn-text:     #ffffff;
+  --modal-bg:     #680707;
+}
+
+/* ── Body ────────────────────── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── Site Banner ────────────────────── */
+.site-banner {
+  width: 100%;
+  background: var(--banner-bg);
+  border-bottom: 2px solid var(--banner-border);
+  padding: 0.9rem 2rem;
+  display: flex;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  transition: background 0.3s, border-color 0.3s;
+}
+.banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.banner-logo {
+  width: 38px;
+  height: 38px;
+  background: var(--logo-bg);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: var(--logo-text);
+  line-height: 1;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.banner-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--banner-text);
+  letter-spacing: 1px;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: absolute;
+  right: 1.5rem;
+  background: none;
+  border: 1px solid var(--banner-text);
+  border-radius: 8px;
+  color: var(--banner-text);
+  padding: 0.25rem 0.55rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity 0.2s;
+}
+.theme-toggle:hover { opacity: 1; }
+
+/* ── Screens ────────────────────── */
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 620px;
+  padding: 2rem 1.5rem;
+  animation: fadeIn 0.3s ease;
+  flex: 1;
+  justify-content: center;
+}
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ────────────────────── */
+.header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  width: 100%;
+}
+.header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--heading);
+  margin-bottom: 0.4rem;
+}
+.header h2 { font-size: 1.5rem; font-weight: 600; color: var(--text); }
+.subtitle   { color: var(--text); font-size: 1.15rem; font-weight: 600; }
+.step-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+
+/* ── Card Grid ────────────────────── */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+.card-grid.vertical { flex-direction: column; flex-wrap: nowrap; }
+
+/* ── Relation Cards ────────────────────── */
+.relation-card {
+  flex: 1;
+  background: var(--surface);
+  border: 2px solid var(--box-border);
+  border-radius: var(--radius);
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text);
+}
+.relation-card:hover {
+  background: var(--surface2);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+}
+
+/* Relation wrapper — positions the spicy btn relative to the card grid */
+.relation-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 3rem;
+}
+
+/* ── Spicy corner button ────────────────────── */
+.spicy-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #2a0808;
+  border: 2px solid #6b1212;
+  border-radius: 10px;
+  color: #e87070;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  letter-spacing: 0.4px;
+  transition: all 0.2s ease;
+}
+.spicy-btn:hover {
+  background: #4a0e0e;
+  border-color: #b52020;
+  color: #ffaaaa;
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 6px 20px rgba(180,20,20,0.45);
+}
+
+@keyframes spicy-select {
+  0%   { transform: scale(1)    translateY(0);    box-shadow: none; }
+  35%  { transform: scale(1.18) translateY(-5px); box-shadow: 0 8px 28px rgba(200,30,30,0.65); }
+  65%  { transform: scale(1.1)  translateY(-3px); box-shadow: 0 6px 20px rgba(200,30,30,0.45); }
+  100% { transform: scale(1)    translateY(0);    box-shadow: none; }
+}
+.spicy-btn.tapped {
+  animation: spicy-select 0.4s ease forwards;
+  background: #5a1010;
+  border-color: #cc2222;
+  color: #ffcccc;
+}
+
+.card-icon  { font-size: 2.5rem; }
+.card-label { font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; }
+
+/* ── Tier Cards ────────────────────── */
+.tier-card {
+  width: 100%;
+  background: var(--surface);
+  border: 2px solid var(--box-border);
+  border-radius: var(--radius);
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text);
+  text-align: left;
+}
+.tier-card:hover {
+  background: var(--surface2);
+  transform: translateX(4px);
+}
+.tier-badge {
+  background: var(--surface2);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.tier-info { display: flex; flex-direction: column; gap: 0.2rem; }
+.tier-name { font-size: 1.05rem; font-weight: 600; }
+.tier-desc { font-size: 0.85rem; color: var(--muted); }
+
+/* ── Back button ────────────────────── */
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.3rem 0;
+  transition: color 0.15s;
+}
+.back-btn:hover { color: var(--text); }
+
+/* ── Question Screen ────────────────────── */
+.question-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+.question-meta { display: flex; gap: 0.5rem; }
+
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+}
+.badge.family  { background: rgba(244,162,97,0.15);  color: var(--family); }
+.badge.friends { background: rgba(82,183,136,0.15);  color: var(--friends); }
+.badge.date    { background: rgba(228,111,160,0.15); color: var(--date); }
+.badge.spicy   { background: rgba(255,77,77,0.15);   color: var(--spicy); }
+.badge.tier1   { background: rgba(236,170,39,0.15);  color: #ECAA27; }
+.badge.tier2   { background: rgba(255,160,80,0.12);  color: #ffb347; }
+.badge.tier3   { background: rgba(228,111,160,0.12); color: var(--date); }
+
+/* ── Question Card ────────────────────── */
+.question-container {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+.question-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--box-border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+#question-text {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  text-align: center;
+  color: var(--text);
+}
+
+/* ── Navigation ────────────────────── */
+.question-nav {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.nav-btn {
+  flex: 1;
+  padding: 0.85rem;
+  border-radius: 10px;
+  border: 2px solid var(--surface2);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nav-btn:hover { border-color: var(--box-border); color: var(--text); }
+.nav-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--btn-text);
+}
+.nav-btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn:disabled:hover { border-color: var(--surface2); color: var(--muted); }
+
+/* ── Skip button ────────────────────── */
+.nav-btn.skip-btn {
+  flex: 0 0 auto;
+  padding: 0.85rem 1.2rem;
+  background: none;
+  border-color: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.nav-btn.skip-btn:hover {
+  border-color: var(--surface2);
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* ── Shuffle ────────────────────── */
+.shuffle-row { width: 100%; text-align: center; }
+.shuffle-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+.shuffle-btn:hover { color: var(--text); background: var(--surface2); }
+
+/* ── Modals ────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1.5rem;
+}
+.modal-box {
+  background: var(--modal-bg);
+  border: 2px solid var(--box-border);
+  border-radius: var(--radius);
+  padding: 2.5rem 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35);
+}
+.modal-icon  { font-size: 3rem; margin-bottom: 1rem; }
+.modal-title { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; }
+.modal-desc  { font-size: 0.95rem; color: var(--muted); line-height: 1.6; margin-bottom: 2rem; }
+.modal-actions { display: flex; gap: 0.75rem; }
+.modal-btn {
+  flex: 1;
+  padding: 0.85rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+.modal-btn.secondary {
+  background: var(--surface2);
+  border-color: var(--surface2);
+  color: var(--muted);
+}
+.modal-btn.secondary:hover { color: var(--text); border-color: var(--muted); }
+.modal-btn.primary {
+  background: var(--spicy);
+  border-color: var(--spicy);
+  color: #fff;
+}
+.modal-btn.primary:hover { background: #ff6666; border-color: #ff6666; }
+
+/* Depth prompt modal */
+.depth-box {
+  border-color: var(--box-border);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+.modal-btn.depth-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--btn-text);
+}
+.modal-btn.depth-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+/* ── Done / Email screen ────────────────────── */
+.done-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  width: 100%;
+}
+.done-icon  { font-size: 3.5rem; }
+.done-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--heading);
+}
+.done-desc {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 320px;
+}
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 320px;
+  margin-top: 0.5rem;
+}
+.email-input {
+  width: 100%;
+  background: var(--surface);
+  border: 2px solid var(--surface2);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  outline: none;
+}
+.email-input:focus { border-color: var(--box-border); }
+.email-input::placeholder { color: var(--muted); }
+.email-submit-btn {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: var(--btn-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.email-submit-btn:hover { background: var(--accent-hover); }
+.skip-link {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  transition: color 0.15s;
+}
+.skip-link:hover { color: var(--text); }
+.email-thanks {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+.restart-btn {
+  margin-top: 1.5rem;
+  background: none;
+  border: 2px solid var(--box-border);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.restart-btn:hover { border-color: var(--accent); color: var(--text); }
+
+/* ── Feedback Tab ────────────────────── */
+.feedback-tab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--surface2);
+  border: 1px solid var(--box-border);
+  border-radius: 20px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  z-index: 50;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  /* Force GPU layer — fixes iOS Safari fixed-position scroll bug */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+.feedback-tab:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* Feedback Modal */
+.feedback-box {
+  border-color: var(--box-border);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+}
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: left;
+}
+.feedback-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 2px solid var(--surface2);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.feedback-textarea:focus { border-color: var(--box-border); }
+.feedback-textarea::placeholder { color: var(--muted); }
+.feedback-rating-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.fb-rating-btn {
+  flex: 1;
+  background: var(--surface2);
+  border: 1.5px solid var(--box-border);
+  border-radius: 8px;
+  padding: 9px 6px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fb-rating-btn:hover { border-color: var(--accent); color: var(--accent); }
+.fb-rating-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+/* ── Spiral green accent (light mode highlights) ────────────────────── */
+[data-theme="light"] .badge.tier1 { background: rgba(40,255,133,0.2); color: var(--spiral); }
+[data-theme="light"] .nav-btn.skip-btn:hover { border-color: var(--spiral); color: var(--spiral); }
+[data-theme="light"] .shuffle-btn:hover { background: rgba(40,255,133,0.15); color: var(--spiral); }
+
+
+/* ── Secret tap zone (reveals spicy button after 10 taps) ────────────────────── */
+#spicy-tap-zone {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 64px;
+  z-index: 49; /* below feedback tab (z-index: 50) */
+  /* completely invisible — no background, no border */
+  pointer-events: auto;
+}
+
+/* Spicy button reveal animation */
+.spicy-btn {
+  animation: none;
+}
+.spicy-btn[style*="flex"] {
+  animation: spicy-fade-in 0.5s ease;
+}
+@keyframes spicy-fade-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Responsive ────────────────────── */
+@media (max-width: 480px) {
+  .card-grid { flex-direction: column; }
+  .header h1 { font-size: 1.7rem; }
+  #question-text { font-size: 1.1rem; }
+  .question-card { padding: 1.8rem 1.2rem; }
+  .theme-toggle { right: 1rem; }
+
+  /* Move feedback to bottom-left on mobile so it never overlaps the spicy button (bottom-right) */
+  .feedback-tab {
+    right: auto;
+    left: 1rem;
+    bottom: 1rem;
+  }
+}

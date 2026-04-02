@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <base href="/play/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>7 Questions</title>
+  <link rel="stylesheet" href="style.css?v=5" />
+  <script>
+    (function() {
+      var saved = localStorage.getItem('7q_theme');
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (dark ? 'dark' : 'light'));
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Site Banner -->
+  <header class="site-banner">
+    <div class="banner-inner">
+      <span class="banner-logo">7</span>
+      <span class="banner-title">Questions</span>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle light/dark mode">🌙</button>
+  </header>
+
+  <!-- Screen 1: Relation -->
+  <div id="screen-relation" class="screen active">
+    <div class="header">
+      <h1>Start a Conversation</h1>
+      <p class="subtitle">Who are you with?</p>
+    </div>
+    <div class="relation-wrapper">
+      <div class="card-grid">
+        <button class="relation-card" data-relation="family">
+          <span class="card-icon">👨‍👩‍👧</span>
+          <span class="card-label">Family</span>
+        </button>
+        <button class="relation-card" data-relation="friends">
+          <span class="card-icon">👥</span>
+          <span class="card-label">Friends</span>
+        </button>
+        <button class="relation-card" data-relation="date">
+          <span class="card-icon">💕</span>
+          <span class="card-label">Date</span>
+        </button>
+      </div>
+      <button class="spicy-btn" data-relation="spicy" style="display:none;">
+        <span>🌶️</span>
+        <span>Spicy</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Start Modal (shown when any relation is picked) -->
+  <div id="start-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">🌱</div>
+      <h2 class="modal-title">7 questions to bring you closer.</h2>
+      <p class="modal-desc">Only 7 questions — that's it. Take your time with each one. Don't rush. Really sit with what comes up. These questions only work if you let them.</p>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" id="start-modal-back">Go Back</button>
+        <button class="modal-btn primary" id="start-modal-confirm">Let's go →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lust Warning Modal (shown before age gate) -->
+  <div id="lust-warning" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">🕯️</div>
+      <h2 class="modal-title">A Word Before You Continue</h2>
+      <p class="modal-desc">Lust is not a method to closeness. In its pursuit, it brings you further apart from one another — and further from yourself.</p>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" id="lust-back">Go Back</button>
+        <button class="modal-btn primary" id="lust-continue">I understand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Age Gate Modal -->
+  <div id="age-gate" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">🌶️</div>
+      <h2 class="modal-title">Adults Only</h2>
+      <p class="modal-desc">This deck contains explicit adult content. By continuing you confirm you are 18 or older.</p>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" id="age-gate-cancel">Go Back</button>
+        <button class="modal-btn primary" id="age-gate-confirm">I'm 18+, Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Depth Prompt Modal (shown when user is engaged — offers to go deeper) -->
+  <div id="engage-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">🌊</div>
+      <h2 class="modal-title">You're really in it.</h2>
+      <p class="modal-desc">Want to go a little deeper?</p>
+      <div class="modal-actions">
+        <button class="modal-btn secondary" id="depth-keep">Keep it here</button>
+        <button class="modal-btn primary" id="depth-go-deeper">Go deeper →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pre-Done Email Modal (shown after question 7) -->
+  <div id="pre-done-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-icon">💌</div>
+      <h2 class="modal-title">That's all 7.</h2>
+      <p class="modal-desc" style="margin-bottom: 1.25rem;">7 Questions is built to make moments like this happen more. Want to hear about what we're building next?</p>
+      <form id="pre-done-email-form" class="email-form" style="margin: 0 auto 0.75rem;">
+        <input type="email" id="pre-done-email-input" class="email-input" placeholder="your@email.com" />
+        <button type="submit" class="email-submit-btn">Keep me posted</button>
+      </form>
+      <button type="button" id="pre-done-skip" class="skip-link">Maybe later</button>
+      <p id="pre-done-thanks" class="email-thanks" style="display:none;"></p>
+    </div>
+  </div>
+
+  <!-- Screen 2: Question -->
+  <div id="screen-question" class="screen">
+    <div class="question-header">
+      <button class="back-btn" id="back-to-relation">← Home</button>
+      <div class="question-meta">
+        <span id="relation-badge" class="badge"></span>
+      </div>
+    </div>
+
+    <div class="question-container">
+      <div class="question-card">
+        <p id="question-text">Loading...</p>
+      </div>
+    </div>
+
+    <div class="question-nav">
+      <button class="nav-btn skip-btn" id="btn-skip">Skip</button>
+      <button class="nav-btn primary" id="btn-next">Next →</button>
+    </div>
+  </div>
+
+  <!-- Screen 3: Done -->
+  <div id="screen-done" class="screen">
+    <div class="done-content">
+      <div class="done-icon">💫</div>
+      <h2 class="done-title">That was something.</h2>
+      <p class="done-desc">Real conversations are rare. You just had one.</p>
+      <button id="done-restart" class="restart-btn">Play again →</button>
+    </div>
+  </div>
+
+  <!-- Feedback Button (fixed, always visible) -->
+  <button id="feedback-tab" class="feedback-tab">Feedback</button>
+
+  <!-- Feedback Modal -->
+  <div id="feedback-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box feedback-box">
+      <div class="modal-icon">💬</div>
+      <h2 class="modal-title">Leave Feedback</h2>
+      <p class="modal-desc">What's on your mind? I'll follow up personally.</p>
+      <form id="feedback-form" class="feedback-form">
+        <div class="feedback-rating-row" id="feedback-rating-row">
+          <button type="button" class="fb-rating-btn" data-val="1">1</button>
+          <button type="button" class="fb-rating-btn" data-val="2">2</button>
+          <button type="button" class="fb-rating-btn" data-val="3">3</button>
+          <button type="button" class="fb-rating-btn" data-val="4">4</button>
+          <button type="button" class="fb-rating-btn" data-val="5">5 ★</button>
+        </div>
+        <textarea id="feedback-message" class="feedback-textarea" placeholder="What do you think? Suggestions, bugs, ideas..." rows="4"></textarea>
+        <input type="email" id="feedback-email" class="email-input" placeholder="your@email.com (optional)" />
+        <button type="submit" class="email-submit-btn">Send Feedback</button>
+      </form>
+      <button type="button" id="feedback-close" class="skip-link">Never mind</button>
+      <p id="feedback-thanks" class="email-thanks" style="display:none;">Thanks! I'll be in touch. ✓</p>
+    </div>
+  </div>
+
+  <!-- Secret tap zone — 10 taps at bottom center reveals spicy button -->
+  <div id="spicy-tap-zone"></div>
+
+  <script src="app.js?v=5"></script>
+</body>
+</html>

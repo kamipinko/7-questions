@@ -1,0 +1,144 @@
+{
+  "chapters": [
+    {
+      "id": "beginning",
+      "title": "The Beginning",
+      "icon": "✦",
+      "description": "Where the story starts",
+      "relationships": "all",
+      "prompts": [
+        { "id": "birthdate", "question": "When and where was {name} born?", "placeholder": "City, state, year..." },
+        { "id": "birth_name", "question": "What was {name}'s full name at birth? Were they named after anyone?", "placeholder": "Full name, any family namesake..." },
+        { "id": "early_home", "question": "Describe where {name} grew up — the house, the neighborhood, the town.", "placeholder": "The house on Maple Street, a small town in Ohio..." },
+        { "id": "early_memory", "question": "What is {name}'s earliest memory?", "placeholder": "A vivid scene from their earliest years..." },
+        { "id": "childhood_self", "question": "How would {name} describe themselves as a young child?", "placeholder": "Curious, shy, always getting into trouble..." }
+      ]
+    },
+    {
+      "id": "growing_up",
+      "title": "Growing Up",
+      "icon": "◈",
+      "description": "The years that shaped them",
+      "relationships": "all",
+      "prompts": [
+        { "id": "nickname", "question": "Did {name} have a nickname growing up? How did they get it?", "placeholder": "The nickname and its origin story..." },
+        { "id": "best_friends", "question": "Who were {name}'s closest friends growing up? Are they still in touch?", "placeholder": "Names, what they were like together..." },
+        { "id": "childhood_room", "question": "What did {name}'s room look like as a kid? What were they into?", "placeholder": "Posters, colors, hobbies, collections..." },
+        { "id": "chores", "question": "What chores did {name} have growing up? Did they get an allowance?", "placeholder": "The responsibilities and the reward..." },
+        { "id": "childhood_memory", "question": "What is a favorite childhood memory of {name}'s?", "placeholder": "A specific moment, a tradition, a summer..." }
+      ]
+    },
+    {
+      "id": "teen_years",
+      "title": "The Teen Years",
+      "icon": "◇",
+      "description": "Finding their way",
+      "relationships": "all",
+      "prompts": [
+        { "id": "teen_self", "question": "How would {name} describe themselves as a teenager?", "placeholder": "Their style, their crowd, their vibe..." },
+        { "id": "high_school", "question": "What did {name} love and dislike about high school?", "placeholder": "The good parts and the parts they'd rather forget..." },
+        { "id": "teen_activities", "question": "What activities, sports, or clubs was {name} part of in school?", "placeholder": "Teams, clubs, hobbies, bands..." },
+        { "id": "teen_job", "question": "Did {name} have a job as a teenager? What was it?", "placeholder": "First real paycheck..." },
+        { "id": "teen_advice", "question": "What advice would {name} give their teenage self?", "placeholder": "The wisdom they wish they'd had back then..." }
+      ]
+    },
+    {
+      "id": "career",
+      "title": "Work & Career",
+      "icon": "◉",
+      "description": "How they built their life",
+      "relationships": "all",
+      "prompts": [
+        { "id": "childhood_dream", "question": "What did {name} want to be when they grew up?", "placeholder": "The childhood dream job..." },
+        { "id": "first_job", "question": "What was {name}'s first job? How old were they?", "placeholder": "The job, the pay, the experience..." },
+        { "id": "career_path", "question": "How did {name} end up in their career? How did they get into it?", "placeholder": "The path that led them there..." },
+        { "id": "career_best", "question": "What are some of {name}'s proudest work or career achievements?", "placeholder": "Moments of professional pride..." },
+        { "id": "career_wisdom", "question": "What has {name} learned about work and what it means to succeed?", "placeholder": "Hard-won wisdom from years of experience..." }
+      ]
+    },
+    {
+      "id": "family_roots",
+      "title": "Family & Roots",
+      "icon": "⬡",
+      "description": "Where they come from",
+      "relationships": "all",
+      "prompts": [
+        { "id": "parents_origin", "question": "Where did {name}'s parents come from? What do they know about their heritage?", "placeholder": "Origins, ancestry, cultural background..." },
+        { "id": "parents_description", "question": "How would {name} describe their parents?", "placeholder": "Their personalities, what made them who they were..." },
+        { "id": "parents_meet", "question": "How did {name}'s parents meet?", "placeholder": "The origin story of the family..." },
+        { "id": "family_traditions", "question": "What are some family traditions {name} grew up with?", "placeholder": "Holidays, rituals, recipes, gatherings..." },
+        { "id": "parent_wisdom", "question": "What is the best advice {name} ever received from a parent or grandparent?", "placeholder": "Words that stayed with them..." }
+      ]
+    },
+    {
+      "id": "romance",
+      "title": "Love & Romance",
+      "icon": "♡",
+      "description": "Affairs of the heart",
+      "relationships": ["grandpa", "grandma", "aunt", "uncle", "mom", "dad", "friend", "partner"],
+      "prompts": [
+        { "id": "love_beliefs", "question": "Does {name} believe in love at first sight? In soulmates?", "placeholder": "Their philosophy on love..." },
+        { "id": "first_love", "question": "How old was {name} when they had their first real relationship?", "placeholder": "The beginning of their romantic story..." },
+        { "id": "love_qualities", "question": "What qualities does {name} value most in a partner?", "placeholder": "What they've learned to look for..." },
+        { "id": "love_memory", "question": "What is a favorite romantic memory of {name}'s?", "placeholder": "A moment that meant everything..." },
+        { "id": "partner_story", "question": "How did {name} meet their partner? What was the proposal or commitment story?", "placeholder": "The how-we-met story..." }
+      ]
+    },
+    {
+      "id": "parenting",
+      "title": "As a Parent",
+      "icon": "◎",
+      "description": "The role that changed everything",
+      "relationships": ["mom", "dad", "grandpa", "grandma"],
+      "prompts": [
+        { "id": "becoming_parent", "question": "How old was {name} when they became a parent? What was it like?", "placeholder": "The moment everything changed..." },
+        { "id": "parenting_memory", "question": "What is {name}'s favorite memory of being a parent?", "placeholder": "A moment of pure joy or connection..." },
+        { "id": "parenting_hard", "question": "What were the hardest and best parts of raising kids for {name}?", "placeholder": "The full truth of parenthood..." },
+        { "id": "parenting_wisdom", "question": "What advice would {name} give to new parents?", "placeholder": "What they know now that they wish they'd known then..." },
+        { "id": "kids_description", "question": "How would {name} describe their children?", "placeholder": "Who they are, what makes them each unique..." }
+      ]
+    },
+    {
+      "id": "together",
+      "title": "Our Story Together",
+      "icon": "✿",
+      "description": "The moments you've shared",
+      "relationships": "all",
+      "prompts": [
+        { "id": "favorite_memory", "question": "What is a favorite memory you have with {name}?", "placeholder": "A specific moment that stays with you..." },
+        { "id": "what_taught", "question": "What has {name} taught you — about life, love, or yourself?", "placeholder": "Lessons that passed between you..." },
+        { "id": "what_love", "question": "What do you love most about {name}?", "placeholder": "The things that make them irreplaceable to you..." },
+        { "id": "relive_moment", "question": "If you could relive one moment with {name}, what would it be?", "placeholder": "The moment you'd choose to live again..." },
+        { "id": "wish_for_them", "question": "What do you wish for {name}?", "placeholder": "Your deepest hopes for their life..." }
+      ]
+    },
+    {
+      "id": "wisdom",
+      "title": "Life Wisdom",
+      "icon": "❋",
+      "description": "What they've learned",
+      "relationships": "all",
+      "prompts": [
+        { "id": "life_purpose", "question": "What does {name} believe is the purpose of life?", "placeholder": "Their answer to the big question..." },
+        { "id": "core_values", "question": "What values does {name} live by? What matters most to them?", "placeholder": "The principles that guide their life..." },
+        { "id": "proudest", "question": "What is {name} most proud of in their life?", "placeholder": "Their greatest accomplishments..." },
+        { "id": "advice_young", "question": "What advice would {name} give to someone just starting out in life?", "placeholder": "Wisdom for the young..." },
+        { "id": "legacy", "question": "What legacy does {name} want to leave behind?", "placeholder": "How they want to be remembered..." }
+      ]
+    },
+    {
+      "id": "fun_facts",
+      "title": "Fun Facts",
+      "icon": "★",
+      "description": "The little things that make them them",
+      "relationships": "all",
+      "prompts": [
+        { "id": "favorite_food", "question": "What is {name}'s all-time favorite food or meal?", "placeholder": "The dish that always hits right..." },
+        { "id": "fav_entertainment", "question": "What is {name}'s favorite movie, TV show, or book of all time?", "placeholder": "The one they'd watch or read forever..." },
+        { "id": "superpower", "question": "If {name} could have any superpower, what would they choose and why?", "placeholder": "Their chosen power and the reason..." },
+        { "id": "travel_dream", "question": "If {name} could travel anywhere, where would they go?", "placeholder": "Their dream destination..." },
+        { "id": "autobiography_title", "question": "What would {name} title their autobiography?", "placeholder": "The perfect title for their story..." }
+      ]
+    }
+  ]
+}

@@ -1,1 +1,4 @@
 node_modules/
+.env
+data/analytics.json
+data/sessions/

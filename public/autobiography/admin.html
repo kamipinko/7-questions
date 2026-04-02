@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto-Biography — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #000;
+      --surface: #111;
+      --surface-2: #1e1e1e;
+      --accent: #ECAA27;
+      --red: #680707;
+      --text: #e8e8e8;
+      --muted: #888;
+      --border: #2a2a2a;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', system-ui, sans-serif;
+      --radius: 10px;
+      --green: #28a745;
+    }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Header */
+    .admin-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-logo { font-family: var(--font-serif); font-size: 1.3rem; color: var(--accent); }
+    .admin-logo span { color: var(--muted); font-size: 0.8rem; font-family: var(--font-sans); margin-left: 10px; }
+    .admin-refresh {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .admin-refresh:hover { color: var(--accent); }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 28px 32px 0;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+    .stat-value { font-family: var(--font-serif); font-size: 2rem; font-weight: 700; color: var(--accent); }
+    .stat-sub { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 0; padding: 28px 32px 0; border-bottom: 1px solid var(--border); margin: 0 0 0; }
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 10px 20px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* Tab content */
+    .tab-panel { display: none; padding: 28px 32px; }
+    .tab-panel.active { display: block; }
+
+    /* Table */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .data-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--surface); }
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(40,167,69,0.15); color: #28a745; }
+    .badge-gold { background: rgba(236,170,39,0.15); color: var(--accent); }
+    .badge-red { background: rgba(104,7,7,0.2); color: #e05252; }
+    .badge-muted { background: var(--surface-2); color: var(--muted); }
+
+    /* Duration display */
+    .duration { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+    /* Stars */
+    .stars { color: var(--accent); letter-spacing: 1px; }
+
+    /* Loading */
+    #loading { text-align: center; padding: 80px; color: var(--muted); font-style: italic; }
+  </style>
+</head>
+<body>
+
+<div class="admin-header">
+  <div class="admin-logo">✦ Auto-Biography <span>Admin Dashboard</span></div>
+  <button class="admin-refresh" onclick="loadData()">↻ Refresh</button>
+</div>
+
+<div id="loading">Loading analytics data...</div>
+
+<div id="dashboard" style="display:none">
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Visitors</div>
+      <div class="stat-value" id="stat-visitors">0</div>
+      <div class="stat-sub" id="stat-visitors-sub">sessions logged</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Books Generated</div>
+      <div class="stat-value" id="stat-books">0</div>
+      <div class="stat-sub" id="stat-books-sub">stories written</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Emails Sent</div>
+      <div class="stat-value" id="stat-emails">0</div>
+      <div class="stat-sub" id="stat-emails-sub">books delivered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Recordings</div>
+      <div class="stat-value" id="stat-recordings">0</div>
+      <div class="stat-sub" id="stat-recordings-sub">voice clips attached</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="visitors">👥 Visitors</button>
+    <button class="tab-btn" data-tab="emails">✉ Emails</button>
+    <button class="tab-btn" data-tab="recordings">🎤 Recordings</button>
+    <button class="tab-btn" data-tab="feedback">💬 Feedback</button>
+  </div>
+
+  <!-- Visitors Tab -->
+  <div class="tab-panel active" id="tab-visitors">
+    <div class="table-wrap" id="visitors-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Subject Name</th>
+            <th>Relationship</th>
+            <th>Time on Site</th>
+            <th>Book</th>
+            <th>Email</th>
+            <th>Last Seen</th>
+          </tr>
+        </thead>
+        <tbody id="visitors-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Emails Tab -->
+  <div class="tab-panel" id="tab-emails">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Email Address</th>
+            <th>Subject Name</th>
+            <th>Relationship</th>
+            <th>Book Title</th>
+            <th>Recordings</th>
+            <th>Phone</th>
+          </tr>
+        </thead>
+        <tbody id="emails-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Recordings Tab -->
+  <div class="tab-panel" id="tab-recordings">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Subject Name</th>
+            <th>Sent To</th>
+            <th>Recordings Attached</th>
+            <th>Relationship</th>
+          </tr>
+        </thead>
+        <tbody id="recordings-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Feedback Tab -->
+  <div class="tab-panel" id="tab-feedback">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Rating</th>
+            <th>Message</th>
+            <th>Email</th>
+            <th>Subject Name</th>
+          </tr>
+        </thead>
+        <tbody id="feedback-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const key = new URLSearchParams(location.search).get('key');
+
+  function fmt(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      + ' ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function fmtDuration(seconds) {
+    if (!seconds) return '< 1 min';
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (m === 0) return `${s}s`;
+    return `${m}m ${s}s`;
+  }
+
+  function stars(n) {
+    if (!n) return '—';
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+
+  function cap(s) {
+    if (!s) return '—';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  async function loadData() {
+    try {
+      const res = await fetch(`/api/admin/data?key=${key}`);
+      if (!res.ok) { document.getElementById('loading').textContent = '403 — Invalid admin key.'; return; }
+      const data = await res.json();
+
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('dashboard').style.display = '';
+
+      // Stats
+      const totalRecordings = data.emails.reduce((sum, e) => sum + (e.recordings || 0), 0);
+      document.getElementById('stat-visitors').textContent = data.sessions.length;
+      document.getElementById('stat-books').textContent = data.sessions.filter(s => s.bookGenerated).length;
+      document.getElementById('stat-emails').textContent = data.emails.length;
+      document.getElementById('stat-recordings').textContent = totalRecordings;
+
+      const avgDuration = data.sessions.length
+        ? Math.round(data.sessions.reduce((s, x) => s + (x.duration || 0), 0) / data.sessions.length)
+        : 0;
+      document.getElementById('stat-visitors-sub').textContent = `avg ${fmtDuration(avgDuration)} per visit`;
+      document.getElementById('stat-books-sub').textContent =
+        data.sessions.length ? Math.round(data.sessions.filter(s => s.bookGenerated).length / data.sessions.length * 100) + '% completion rate' : 'stories written';
+      document.getElementById('stat-emails-sub').textContent = 'books delivered';
+      document.getElementById('stat-recordings-sub').textContent = 'voice clips attached';
+
+      // Visitors table
+      const vBody = document.getElementById('visitors-body');
+      if (data.sessions.length === 0) {
+        vBody.innerHTML = `<tr><td colspan="7" class="empty-state">No visitors yet</td></tr>`;
+      } else {
+        vBody.innerHTML = [...data.sessions].reverse().map(s => `
+          <tr>
+            <td>${fmt(s.start)}</td>
+            <td>${s.subjectName || '—'}</td>
+            <td>${cap(s.relationship)}</td>
+            <td class="duration">${fmtDuration(s.duration)}</td>
+            <td>${s.bookGenerated ? '<span class="badge badge-green">✓ Generated</span>' : '<span class="badge badge-muted">No</span>'}</td>
+            <td>${s.emailSent ? '<span class="badge badge-gold">✓ Sent</span>' : '<span class="badge badge-muted">No</span>'}</td>
+            <td class="duration">${fmt(s.lastSeen)}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Emails table
+      const eBody = document.getElementById('emails-body');
+      if (data.emails.length === 0) {
+        eBody.innerHTML = `<tr><td colspan="7" class="empty-state">No emails sent yet</td></tr>`;
+      } else {
+        eBody.innerHTML = [...data.emails].reverse().map(e => `
+          <tr>
+            <td>${fmt(e.time)}</td>
+            <td>${e.email}</td>
+            <td>${e.subjectName || '—'}</td>
+            <td>${cap(e.relationship)}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.bookTitle || ''}">${e.bookTitle || '—'}</td>
+            <td>${e.recordings > 0 ? `<span class="badge badge-gold">🎤 ${e.recordings}</span>` : '<span class="badge badge-muted">None</span>'}</td>
+            <td>${e.phone || '—'}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Recordings table (sessions that had recordings sent)
+      const rBody = document.getElementById('recordings-body');
+      const withRec = data.emails.filter(e => e.recordings > 0);
+      if (withRec.length === 0) {
+        rBody.innerHTML = `<tr><td colspan="5" class="empty-state">No voice recordings attached to emails yet</td></tr>`;
+      } else {
+        rBody.innerHTML = [...withRec].reverse().map(e => `
+          <tr>
+            <td>${fmt(e.time)}</td>
+            <td>${e.subjectName || '—'}</td>
+            <td>${e.email}</td>
+            <td><span class="badge badge-gold">🎤 ${e.recordings} recording${e.recordings > 1 ? 's' : ''}</span></td>
+            <td>${cap(e.relationship)}</td>
+          </tr>
+        `).join('');
+      }
+
+      // Feedback table
+      const fBody = document.getElementById('feedback-body');
+      if (data.feedback.length === 0) {
+        fBody.innerHTML = `<tr><td colspan="5" class="empty-state">No feedback yet</td></tr>`;
+      } else {
+        fBody.innerHTML = [...data.feedback].reverse().map(f => `
+          <tr>
+            <td>${fmt(f.time)}</td>
+            <td><span class="stars">${stars(f.rating)}</span></td>
+            <td>${f.message || '—'}</td>
+            <td>${f.email || '—'}</td>
+            <td>${f.subjectName || '—'}</td>
+          </tr>
+        `).join('');
+      }
+
+    } catch (err) {
+      document.getElementById('loading').textContent = 'Error loading data: ' + err.message;
+    }
+  }
+
+  // Tabs
+  document.addEventListener('click', e => {
+    if (!e.target.classList.contains('tab-btn')) return;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    e.target.classList.add('active');
+    document.getElementById('tab-' + e.target.dataset.tab).classList.add('active');
+  });
+
+  loadData();
+</script>
+</body>
+</html>
