@@ -3563,5 +3563,765 @@
     "relations": [
       "group_vote"
     ]
+  },
+  {
+    "id": 471,
+    "text": "What's one thing you believe about money that most people your age don't agree with?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 472,
+    "text": "What did your parents get completely wrong about raising you — and what did they absolutely nail?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 473,
+    "text": "What's one thing society tells you to want that you genuinely don't care about?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 474,
+    "text": "What do you think is the single biggest threat to people our age right now that almost nobody is talking about?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 475,
+    "text": "When did you realize your parents were just people making it up as they went — and how did that land on you?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 476,
+    "text": "What's something about another culture, country, or way of life that you think has something genuinely figured out better than yours?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 477,
+    "text": "What's the most uncomfortable truth you've discovered about how the world actually works?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 478,
+    "text": "If you could give every 18-year-old on earth one piece of advice — just one sentence — what would it be?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 479,
+    "text": "What has your job or career taught you about human nature that no school ever could?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 480,
+    "text": "What do you think love actually requires that most people aren't really willing to give?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 481,
+    "text": "What's a gift you have that you consistently undervalue — and why do you think you downplay it?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 482,
+    "text": "What's something you see clearly about the world that you genuinely wish you could unsee?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 483,
+    "text": "What's something you learned from a complete stranger that's stayed with you longer than almost anything your closest friends have ever said?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 484,
+    "text": "What's something you do that you know is completely irrational — but you're never going to stop?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 485,
+    "text": "What's a privilege you have that you almost never actually acknowledge?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 486,
+    "text": "What's a chapter of your life you're still not fully sure what to make of?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 487,
+    "text": "What do you believe about religion, God, or spirituality that the people in this room might be surprised to hear?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 488,
+    "text": "What's the most important lesson most people seem to learn way too late in life?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 489,
+    "text": "What's something you've inherited from your family — a belief, a habit, a fear — that you're still deciding whether to keep?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 490,
+    "text": "What do you think you're really good at that has nothing to do with a skill or talent — just how you naturally are as a person?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 491,
+    "text": "What's one moral line you've drawn in your own life that you've never crossed — and what would actually move that line?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 492,
+    "text": "When did you last do something that made you feel genuinely alive — not just happy, actually alive?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 493,
+    "text": "What do you think is more powerful in life — luck or effort — and what happened to make you believe that?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 494,
+    "text": "What's something about being human that still genuinely amazes you?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 495,
+    "text": "What's the most surprising thing about who you've become compared to who you thought you'd be at this age?",
+    "tier": 1,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 496,
+    "text": "What version of yourself existed before life started shaping you — and is any of that person still in there?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 497,
+    "text": "What's the thing you want most in life that you've genuinely never worked toward — and what does that tell you about yourself?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 498,
+    "text": "What would the ten-year-old version of you honestly think of the person you've become?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 499,
+    "text": "What do you think happens when we die — and does that belief actually change the way you live day to day?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 500,
+    "text": "What's the most important decision you've ever made that nobody around you knows was even a decision?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 501,
+    "text": "What are you actually building toward — and what are you silently afraid that goal reveals about who you are?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 502,
+    "text": "What are you teaching the people around you without meaning to?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 503,
+    "text": "What's a part of yourself you've been slowly editing out to fit in — and do you actually miss it?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 504,
+    "text": "What do you want your life to actually mean — not your legacy, not what people say at your funeral, but the real meaning you're after?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 505,
+    "text": "What has grief taught you that nothing else in your life could?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 506,
+    "text": "What's a wound from your past that has actually made you better — and one that has genuinely made you worse?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 507,
+    "text": "What's a relationship pattern you keep repeating that you already know you need to break?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 508,
+    "text": "What do you know about yourself now that would have saved you years of pain if you'd known it at 20?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 509,
+    "text": "What's the hardest conversation you still owe someone — and what specifically keeps you from having it?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 510,
+    "text": "What's the kindest thing anyone has ever done for you that you've never properly thanked them for?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 511,
+    "text": "What's a story you tell about yourself that you've started to quietly suspect isn't fully true anymore?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 512,
+    "text": "What does justice actually mean to you — and when did you first learn it doesn't always happen?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 513,
+    "text": "What would genuinely change about your life if you fully stopped needing people to understand you?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 514,
+    "text": "What's something painful that happened to you that you've turned into a joke — and what does carrying it still actually cost you?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 515,
+    "text": "What are you most afraid of passing on to the next generation — whether you have children or not?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 516,
+    "text": "What's the thing about yourself that you're most afraid might be permanent?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 517,
+    "text": "What are you most ashamed of — not the version you've cleaned up, the real one?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 518,
+    "text": "What do you think has damaged the way you love people — and have you ever actually said that out loud before?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 519,
+    "text": "When did you stop being who you were — and who or what decided who you became?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 520,
+    "text": "What's something you want desperately that you are also terrified of actually getting?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 521,
+    "text": "What's the longest you've ever been truly alone with yourself — and what did you find when you got quiet enough?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 522,
+    "text": "What's a way you've hurt someone that you've never actually let yourself fully acknowledge?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 523,
+    "text": "If you could speak to the person you'll be in ten years, what's the one question you're most afraid they'd answer honestly?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 524,
+    "text": "What's a version of yourself you're actively protecting the people around you from seeing — and what would they actually find?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 525,
+    "text": "If everything you believed about yourself turned out to be a coping mechanism, what do you think you'd find underneath?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 526,
+    "text": "What's something you've been given in life that you haven't earned — and what would it actually mean to you to finally earn it?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 527,
+    "text": "What's the deepest fear that is quietly driving most of your biggest decisions — whether you admit it or not?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 528,
+    "text": "What would you say to yourself at the exact moment before the hardest thing you've ever had to go through?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 529,
+    "text": "What would change about who you are if you fully, completely forgave yourself — for everything?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 530,
+    "text": "What's the most tender, breakable, human thing about you — the thing that almost nobody actually gets to see?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 531,
+    "text": "What moment between {p1} and {p2} would {p1} never want to forget — and does {p2} know it mattered that much?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 532,
+    "text": "What does {p1} think {p2} is secretly most competitive about — even when {p2} pretends not to care?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 533,
+    "text": "What does {p1} think the people in this room don't know about {p2} that they should?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 534,
+    "text": "What's one thing {p2} introduced {p1} to that {p1} is genuinely glad they didn't miss?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 535,
+    "text": "What does {p1} think {p2} needs less of in their life right now — and what do they think {p2} needs more of?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 536,
+    "text": "What's one memory {p1} has of {p2} that {p2} has probably completely forgotten?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 537,
+    "text": "What's something {p2} is building or working toward that {p1} genuinely, quietly believes in?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 538,
+    "text": "What do {p1} and {p2} fundamentally disagree about — and how have they learned to live with that?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 539,
+    "text": "What does {p1} think would happen if {p2} stopped being so hard on themselves?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 540,
+    "text": "What's a question {p1} has always wanted to ask {p2} but could never find the right moment for?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 541,
+    "text": "What does {p1} think {p2} is most underrated at — something the people around them aren't giving enough credit for?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 542,
+    "text": "What does {p1} think {p2} would do if they had zero obligations for an entire month?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 543,
+    "text": "What's something {p1} has done that {p2} would describe as genuinely brave?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 544,
+    "text": "What about {p2} reminds {p1} of someone important in their own life — and does {p2} know that?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 545,
+    "text": "What does {p1} think is the defining quality that makes {p2} uniquely and completely themselves?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 546,
+    "text": "What does {p1} think {p2} hasn't started yet that they absolutely should?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 547,
+    "text": "What's something {p2} does for others that {p1} doesn't think gets nearly enough credit?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 548,
+    "text": "What's a moment where {p1} made {p2} genuinely laugh that {p1} still thinks about?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 549,
+    "text": "What does {p1} know about {p2} that they think most people in this room have no idea about?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 550,
+    "text": "What's something {p1} has watched {p2} do that made them quietly think — I really respect this person?",
+    "tier": 1,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 551,
+    "text": "What does {p1} think {p2} is pretending is fine right now — and what do they think would change if {p2} stopped?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 552,
+    "text": "What's a decision {p2} made that {p1} quietly worried about but never said a word?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 553,
+    "text": "What does {p1} think {p2}'s relationship with their family has quietly cost them?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 554,
+    "text": "What does {p1} think {p2} looks like when they're genuinely scared — not worried or stressed, actually scared?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 555,
+    "text": "What's something {p1} thinks {p2} has given up on that they shouldn't have — and would {p2} agree?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 556,
+    "text": "What does {p1} think would change about {p2} if they finally got the thing they've been chasing for years?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 557,
+    "text": "What's something {p1} has held back from saying to {p2} out of protection — and looking back, was that the right call?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 558,
+    "text": "What version of {p2} does {p1} believe in deeply that {p2} hasn't fully shown the world yet?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 559,
+    "text": "What does {p1} think {p2} needs to hear from themselves — not from anyone else, just from their own voice?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 560,
+    "text": "What's something {p1} has been avoiding saying to {p2} — and is this finally the moment to say it?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 561,
+    "text": "What does {p1} think {p2} has never forgiven themselves for — even if nobody else holds it against them?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 562,
+    "text": "If {p1} could take back one thing they've ever said to {p2}, what would it be — and would {p2} actually want them to take it back?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 563,
+    "text": "What does {p1} think {p2} has never fully let themselves want — and why do they think {p2} holds back?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 564,
+    "text": "What's something {p1} knows about {p2}'s past that makes them even more in awe of who {p2} has chosen to become?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 565,
+    "text": "What does {p1} think {p2} is most afraid of about who they might become — and has {p1} ever told them they believe in who they are right now?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
   }
 ]
