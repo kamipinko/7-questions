@@ -28,9 +28,10 @@ function saveTracker() {
 // ── Per-game state ──────────────────────────────────────────────
 let gState = {
   timerMinutes: 15,
+  currentTier: 1,       // 1 = Casual, 2 = Deeper, 3 = Deepest
   pairs: [],            // [{ id, name, p1, p2 }]
-  allPrivateQs: [],     // all group_private questions (from server)
-  allVoteQs: [],        // all group_vote questions (from server)
+  allPrivateQsByTier: { 1: [], 2: [], 3: [] }, // all group_private per tier
+  allVoteQsByTier:    { 1: [], 2: [], 3: [] }, // all group_vote per tier
   currentPairIdx: 0,
   pairQs: {},           // pairId → question array (7)
   pairAnswered: {},     // pairId → count
@@ -160,35 +161,47 @@ document.getElementById('begin-game-btn').addEventListener('click', async () => 
     gState.voters.push({ name: p.p2, pairId: p.id });
   });
 
-  // Fetch questions
-  document.getElementById('begin-game-btn').textContent = 'Loading…';
-  document.getElementById('begin-game-btn').disabled = true;
-  try {
-    const [pvtRes, voteRes] = await Promise.all([
-      fetch('/api/questions?relation=group_private&tier=1'),
-      fetch('/api/questions?relation=group_vote&tier=1'),
-    ]);
-    gState.allPrivateQs = await pvtRes.json();
-    gState.allVoteQs = await voteRes.json();
-  } catch (err) {
-    console.error('Failed to load group questions', err);
-    document.getElementById('begin-game-btn').textContent = 'Begin the Game →';
-    document.getElementById('begin-game-btn').disabled = false;
-    return;
+  // Fetch all tiers upfront (only once per session)
+  if (!gState.allPrivateQsByTier[1].length) {
+    document.getElementById('begin-game-btn').textContent = 'Loading…';
+    document.getElementById('begin-game-btn').disabled = true;
+    try {
+      const fetches = await Promise.all([1, 2, 3].flatMap(t => [
+        fetch(`/api/questions?relation=group_private&tier=${t}`),
+        fetch(`/api/questions?relation=group_vote&tier=${t}`),
+      ]));
+      const jsons = await Promise.all(fetches.map(r => r.json()));
+      [1, 2, 3].forEach((t, i) => {
+        gState.allPrivateQsByTier[t] = jsons[i * 2];
+        gState.allVoteQsByTier[t]    = jsons[i * 2 + 1];
+      });
+    } catch (err) {
+      console.error('Failed to load group questions', err);
+      document.getElementById('begin-game-btn').textContent = 'Begin the Game →';
+      document.getElementById('begin-game-btn').disabled = false;
+      return;
+    }
   }
 
-  // Assign 7 questions per pair (different shuffle each pair)
-  gState.pairs.forEach(pair => {
-    gState.pairQs[pair.id] = [...gState.allPrivateQs]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 7);
-  });
-  gState.voteQs = [...gState.allVoteQs].sort(() => Math.random() - 0.5).slice(0, 7);
+  gState.currentTier = 1;
+  assignQuestionsForCurrentTier();
 
   document.getElementById('begin-game-btn').textContent = 'Begin the Game →';
   showTrackerPill();
   startPairTurn(0);
 });
+
+function assignQuestionsForCurrentTier() {
+  const t = gState.currentTier;
+  gState.pairs.forEach(pair => {
+    gState.pairQs[pair.id] = [...gState.allPrivateQsByTier[t]]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 7);
+  });
+  gState.voteQs = [...gState.allVoteQsByTier[t]]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 7);
+}
 
 // ── Pair turn ───────────────────────────────────────────────────
 function startPairTurn(idx) {
@@ -203,8 +216,9 @@ function startPairTurn(idx) {
     <span class="player-chip-divider">+</span>
     <span class="player-chip">${pair.p2}</span>
   `;
+  const tierLabels = { 1: 'Casual', 2: 'Deeper', 3: 'Deepest' };
   document.getElementById('pair-intro-timer').textContent =
-    `${gState.timerMinutes} minutes on the clock`;
+    `${gState.timerMinutes} min on the clock  ·  ${tierLabels[gState.currentTier]}`;
 
   showScreen('group-pair-intro');
 }
@@ -486,12 +500,42 @@ document.getElementById('results-done-btn').addEventListener('click', endGroupSe
 document.getElementById('continue-same-teams').addEventListener('click', () => {
   document.getElementById('modal-continue').style.display = 'none';
   gState.gameNum++;
-  resetForNextGame(false);
+  if (gState.currentTier < 3) {
+    showDepthPrompt();
+  } else {
+    resetForNextGame();
+  }
+});
+
+function showDepthPrompt() {
+  const nextTier = gState.currentTier + 1;
+  const labels = { 2: 'Deeper', 3: 'Deepest' };
+  const descs = {
+    2: "You've warmed up. Ready for questions that ask a little more of you?",
+    3: "You've already gone deep. This last tier doesn't hold back. Are you ready?",
+  };
+  const icons = { 2: '🌊', 3: '🔥' };
+  document.getElementById('deeper-icon').textContent = icons[nextTier];
+  document.getElementById('deeper-title').textContent = `Go ${labels[nextTier]}?`;
+  document.getElementById('deeper-desc').textContent = descs[nextTier];
+  document.getElementById('modal-go-deeper').style.display = 'flex';
+}
+
+document.getElementById('deeper-go').addEventListener('click', () => {
+  document.getElementById('modal-go-deeper').style.display = 'none';
+  gState.currentTier++;
+  resetForNextGame();
+});
+
+document.getElementById('deeper-stay').addEventListener('click', () => {
+  document.getElementById('modal-go-deeper').style.display = 'none';
+  resetForNextGame();
 });
 
 document.getElementById('continue-new-teams').addEventListener('click', () => {
   document.getElementById('modal-continue').style.display = 'none';
   gState.gameNum++;
+  gState.currentTier = 1;
   gState.pairs = [];
   pairCounter = 0;
   initDefaultPairs();
@@ -504,7 +548,7 @@ document.getElementById('continue-done').addEventListener('click', () => {
   endGroupSession();
 });
 
-function resetForNextGame(newTeams) {
+function resetForNextGame() {
   gState.totalVotes = {};
   gState.pairAnswered = {};
   gState.voters = [];
@@ -515,12 +559,9 @@ function resetForNextGame(newTeams) {
     gState.pairAnswered[p.id] = 0;
     gState.voters.push({ name: p.p1, pairId: p.id });
     gState.voters.push({ name: p.p2, pairId: p.id });
-    gState.pairQs[p.id] = [...gState.allPrivateQs]
-      .sort(() => Math.random() - 0.5)
-      .slice(0, 7);
   });
-  gState.voteQs = [...gState.allVoteQs].sort(() => Math.random() - 0.5).slice(0, 7);
 
+  assignQuestionsForCurrentTier();
   startPairTurn(0);
 }
 
@@ -529,6 +570,7 @@ function endGroupSession() {
   hideTrackerPill();
   gState.pairs = [];
   gState.gameNum = 1;
+  gState.currentTier = 1;
   pairCounter = 0;
   showScreen('relation');
 }

@@ -3083,5 +3083,485 @@
     "relations": [
       "group_vote"
     ]
+  },
+  {
+    "id": 411,
+    "text": "What's the most honest conversation {p1} and {p2} have never had — and what's gotten in the way?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 412,
+    "text": "What is {p1} still carrying from their history with {p2} that they haven't fully let go of?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 413,
+    "text": "What's something {p1} has done that they've never really apologized to {p2} for — and why not?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 414,
+    "text": "What part of {p2}'s life story does {p1} feel they've never fully understood?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 415,
+    "text": "What would {p1} do differently in their relationship with {p2} if they could go back — and does {p2} know?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 416,
+    "text": "What does {p1} think {p2} is most in denial about in their own life right now?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 417,
+    "text": "What's a version of {p2}'s future that {p1} is quietly afraid of?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 418,
+    "text": "What's the biggest misunderstanding between {p1} and {p2} that has never really been resolved?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 419,
+    "text": "What does {p1} think {p2} needs to stop making excuses for — even if they've never said it?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 420,
+    "text": "What does {p1} think they haven't given {p2} enough credit for?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 421,
+    "text": "What's a fear about themselves that {p1} thinks {p2} secretly shares but would never admit?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 422,
+    "text": "When has {p1} let {p2} down in a way that still matters — and have they ever really talked about it?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 423,
+    "text": "What does {p1} think {p2} would say if they were being fully honest about where they are in life right now?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 424,
+    "text": "What does {p1} admire about how {p2} handles something that {p1} personally struggles with?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 425,
+    "text": "What's a pattern {p1} has noticed in {p2} that {p2} probably hasn't noticed in themselves?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 426,
+    "text": "What would it take for {p1} to feel truly understood by {p2} — and has that ever happened?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 427,
+    "text": "What does {p1} think {p2} is most afraid to want — and why?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 428,
+    "text": "What's a moment where {p1} was wrong about {p2} — and what did that change?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 429,
+    "text": "What does {p1} think {p2} needs permission to do or feel — and who needs to give it to them?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 430,
+    "text": "What's something {p1} has never thanked {p2} for — and why hasn't it been said?",
+    "tier": 2,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 431,
+    "text": "What's the one thing {p1} has never told {p2} — and what's actually stopping them right now?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 432,
+    "text": "If {p2} truly knew how {p1} sees them — the real version, not the polite one — what would surprise them most?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 433,
+    "text": "What does {p1} fear most about losing {p2} — and have they ever admitted that out loud?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 434,
+    "text": "What's the most painful thing {p1} has ever witnessed {p2} go through — and what did it do to {p1} to watch?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 435,
+    "text": "What's the version of themselves that {p1} is most ashamed of — and does {p2} know that version exists?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 436,
+    "text": "What does {p1} think their relationship with {p2} has cost them — and was it worth it?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 437,
+    "text": "What has {p1} needed from {p2} that they've never been able to ask for directly?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 438,
+    "text": "What's the hardest truth {p1} knows about {p2} that they've chosen to live with instead of saying?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 439,
+    "text": "If {p1} knew they only had one real conversation left with {p2}, what would they finally say?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 440,
+    "text": "What does {p1} think they would become without {p2} in their life — and is that person better or worse?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 441,
+    "text": "What's the moment {p1} almost walked away from {p2} — and what made them stay?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 442,
+    "text": "What does {p1} think they have never fully let {p2} see about who they really are — and why?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 443,
+    "text": "What's something {p1} has pretended was okay with {p2} that never actually was?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 444,
+    "text": "What does {p1} think {p2} deserves that they haven't been able to give them?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 445,
+    "text": "What would {p1} want {p2} to know about how they've shaped who {p1} is — the good and the hard parts?",
+    "tier": 3,
+    "relations": [
+      "group_private"
+    ]
+  },
+  {
+    "id": 446,
+    "text": "What's something you've never forgiven yourself for — and do you think you ever actually will?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 447,
+    "text": "What's the biggest lie you tell yourself on a regular basis?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 448,
+    "text": "What's an important relationship in your life you've let fall apart — and what have you told yourself about why?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 449,
+    "text": "What's a version of yourself you abandoned somewhere along the way — and do you miss them?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 450,
+    "text": "What's something you want deeply but have been pretending you don't care about?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 451,
+    "text": "What's the most significant way you've changed in the last five years that nobody around you has named yet?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 452,
+    "text": "What's the hardest thing you've ever had to forgive someone for — and are you actually over it?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 453,
+    "text": "What do you keep starting over and over without ever finishing — and what does that tell you about yourself?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 454,
+    "text": "What's a part of your personality you've had to dial back around certain people — and why?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 455,
+    "text": "What's something painful that happened to you that you've turned into a joke or a story — but still carries real weight?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 456,
+    "text": "What do you think you'll regret most if you don't change something in the next year?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 457,
+    "text": "What's a belief from your upbringing you've held onto even though you're not sure it still serves you?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 458,
+    "text": "What does loneliness look like for you — and what do you do with it when it shows up?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 459,
+    "text": "What's something you've outgrown but haven't been willing to fully leave behind yet?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 460,
+    "text": "What's a decision you made that defined you — that you've never talked about fully honestly with anyone?",
+    "tier": 2,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 461,
+    "text": "What's the one thing you would say out loud right now if you knew there were absolutely no consequences?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 462,
+    "text": "What's the truth about yourself that you've been quietly running from — and how long have you been running?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 463,
+    "text": "What's the moment in your life that broke something in you — and have you ever put it back together?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 464,
+    "text": "What do you want people to understand about who you are that you've never figured out how to say?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 465,
+    "text": "What's the cost of the life you've chosen — and is it one you'd choose again?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 466,
+    "text": "What's the most afraid you've ever been — not of something outside you, but of yourself?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 467,
+    "text": "What's something about the way you love people that you think has hurt them — even when you meant well?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 468,
+    "text": "What do you know about yourself that you've never said to anyone in this room — and what's it like to sit with that right now?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 469,
+    "text": "What's the version of your life you're grieving — the one that didn't happen — and how does it still show up?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
+  },
+  {
+    "id": 470,
+    "text": "If the people who love you most could see everything — every thought, every fear, every choice — what would you most want them to still understand about you?",
+    "tier": 3,
+    "relations": [
+      "group_vote"
+    ]
   }
 ]
