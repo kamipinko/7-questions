@@ -340,8 +340,20 @@ document.getElementById('done-restart').addEventListener('click', () => {
 
 // --- Feedback ---
 const feedbackModal = document.getElementById('feedback-modal');
+let fbRating = 0;
+
+document.getElementById('feedback-rating-row').addEventListener('click', e => {
+  const btn = e.target.closest('.fb-rating-btn');
+  if (!btn) return;
+  fbRating = parseInt(btn.dataset.val);
+  document.querySelectorAll('.fb-rating-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.val) <= fbRating);
+  });
+});
 
 document.getElementById('feedback-tab').addEventListener('click', () => {
+  fbRating = 0;
+  document.querySelectorAll('.fb-rating-btn').forEach(b => b.classList.remove('active'));
   feedbackModal.style.display = 'flex';
 });
 
@@ -363,7 +375,7 @@ document.getElementById('feedback-form').addEventListener('submit', async (e) =>
     await fetch('/api/feedback', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, email }),
+      body: JSON.stringify({ message, email, rating: fbRating || null }),
     });
   } catch (_) {}
 

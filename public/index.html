@@ -310,10 +310,79 @@
     }
     .panel:hover .panel-arrow { opacity: 1; transform: scale(1); }
 
+    /* ── Ko-fi donate button ── */
+    .kofi-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 101;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 100px;
+      padding: 9px 18px;
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 2px 14px rgba(236,170,39,0.45);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+    }
+    .kofi-btn:hover {
+      background: var(--gold-h);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 22px rgba(236,170,39,0.6);
+    }
+    .kofi-btn-cup { font-size: 1rem; line-height: 1; }
+
+    /* ── Ko-fi donate CTA inside feedback modal ── */
+    .kofi-modal-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      background: rgba(236,170,39,0.08);
+      border: 1px solid rgba(236,170,39,0.4);
+      border-radius: 12px;
+      text-align: center;
+    }
+    .kofi-modal-cta-title {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    .kofi-modal-cta-desc {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+    .kofi-modal-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--gold);
+      color: #000;
+      border-radius: 100px;
+      padding: 8px 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .kofi-modal-link:hover { background: var(--gold-h); transform: translateY(-1px); }
+
     /* ── Feedback FAB ── */
     .feedback-fab {
       position: fixed;
-      bottom: 20px;
+      bottom: 70px;
       right: 20px;
       z-index: 100;
       background: var(--red);
@@ -504,6 +573,12 @@
 
   </div>
 
+  <!-- ── Ko-fi donate button ── -->
+  <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-btn" title="Support on Ko-fi">
+    <span class="kofi-btn-cup">☕</span>
+    <span>Donate</span>
+  </a>
+
   <!-- ── Feedback FAB ── -->
   <button class="feedback-fab" id="feedbackFab">💬 Feedback</button>
 
@@ -515,6 +590,13 @@
       <textarea class="modal-textarea" id="feedbackMsg" rows="3" placeholder="Tell us what you think..."></textarea>
       <input class="modal-input" type="email" id="feedbackEmail" placeholder="your@email.com (optional)" />
       <div class="modal-status" id="feedbackStatus"></div>
+
+      <div class="kofi-modal-cta">
+        <p class="kofi-modal-cta-title">☕ Keep this running</p>
+        <p class="kofi-modal-cta-desc">This app is free and ad-free. Your donation helps cover server costs and makes new features possible.</p>
+        <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-modal-link">☕ Donate on Ko-fi →</a>
+      </div>
+
       <div class="modal-actions">
         <button class="btn-cancel" id="feedbackCancel">Cancel</button>
         <button class="btn-send" id="feedbackSend">Send →</button>

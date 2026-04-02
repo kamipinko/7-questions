@@ -552,10 +552,79 @@ body {
 }
 .restart-btn:hover { border-color: var(--accent); color: var(--text); }
 
+/* ── Ko-fi donate button ── */
+.kofi-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 102;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 100px;
+  padding: 9px 18px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 14px rgba(236,170,39,0.45);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.kofi-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 22px rgba(236,170,39,0.6);
+}
+.kofi-btn-cup { font-size: 1rem; line-height: 1; }
+
+/* ── Ko-fi donate CTA inside feedback modal ── */
+.kofi-modal-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: rgba(236,170,39,0.08);
+  border: 1px solid rgba(236,170,39,0.4);
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 4px;
+}
+.kofi-modal-cta-title {
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+.kofi-modal-cta-desc {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.kofi-modal-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--accent);
+  color: #000;
+  border-radius: 100px;
+  padding: 8px 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: background 0.2s, transform 0.15s;
+}
+.kofi-modal-link:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
 /* ── Feedback Tab ────────────────────── */
 .feedback-tab {
   position: fixed;
-  bottom: 1.5rem;
+  bottom: 5rem;
   right: 1.5rem;
   background: var(--surface2);
   border: 1px solid var(--box-border);
@@ -667,10 +736,14 @@ body {
   .question-card { padding: 1.8rem 1.2rem; }
   .theme-toggle { right: 1rem; }
 
-  /* Move feedback to bottom-left on mobile so it never overlaps the spicy button (bottom-right) */
+  /* Move feedback to bottom-left on mobile so it never overlaps the ko-fi button (bottom-right) */
   .feedback-tab {
     right: auto;
     left: 1rem;
     bottom: 1rem;
+  }
+  .kofi-btn {
+    bottom: 1rem;
+    right: 1rem;
   }
 }

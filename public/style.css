@@ -607,6 +607,26 @@ body {
 }
 .feedback-textarea:focus { border-color: var(--box-border); }
 .feedback-textarea::placeholder { color: var(--muted); }
+.feedback-rating-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+.fb-rating-btn {
+  flex: 1;
+  background: var(--surface2);
+  border: 1.5px solid var(--box-border);
+  border-radius: 8px;
+  padding: 9px 6px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fb-rating-btn:hover { border-color: var(--accent); color: var(--accent); }
+.fb-rating-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
 
 /* ── Spiral green accent (light mode highlights) ────────────────────── */
 [data-theme="light"] .badge.tier1 { background: rgba(40,255,133,0.2); color: var(--spiral); }
