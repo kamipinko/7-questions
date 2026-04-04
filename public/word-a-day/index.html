@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Word a Day</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function(){
+      var s=localStorage.getItem('sc_theme');
+      var d=window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme',s||(d?'dark':'light'));
+    })();
+  </script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+    :root{
+      --gold:#ECAA27;--gold-h:#ffc84d;--red:#680707;
+      --font-serif:'Playfair Display',Georgia,serif;
+      --font-sans:'Inter',system-ui,sans-serif;
+    }
+    :root,[data-theme="dark"]{
+      --bg:#000;--surface:#111;--surface2:#1a1a1a;
+      --text:#e05252;--text-sub:#888;--text-body:#ccc;
+      --border:#ECAA27;--border-dim:rgba(236,170,39,0.25);
+    }
+    [data-theme="light"]{
+      --bg:#680707;--surface:rgba(255,255,255,0.13);--surface2:rgba(255,255,255,0.2);
+      --text:#000;--text-sub:rgba(0,0,0,0.6);--text-body:rgba(255,255,255,0.92);
+      --border:#ECAA27;--border-dim:rgba(236,170,39,0.4);
+    }
+
+    html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font-sans);transition:background .3s,color .3s;}
+
+    /* ── Layout shell ── */
+    .shell{max-width:560px;margin:0 auto;padding:70px 20px 100px;min-height:100vh;display:flex;flex-direction:column;gap:0;}
+
+    /* ── Top nav ── */
+    .top-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--bg);border-bottom:1px solid var(--border-dim);}
+    .nav-left{display:flex;align-items:center;gap:10px;}
+    .nav-back{display:flex;align-items:center;gap:5px;color:var(--gold);font-size:.8rem;text-decoration:none;padding:6px 12px;border:1px solid var(--border-dim);border-radius:100px;transition:background .2s;}
+    .nav-back:hover{background:rgba(236,170,39,.1);}
+    .nav-title{font-family:var(--font-serif);font-size:1rem;color:var(--gold);}
+    .theme-toggle{background:none;border:1px solid var(--border-dim);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gold);font-size:.9rem;transition:background .2s;}
+    .theme-toggle:hover{background:rgba(236,170,39,.1);}
+
+    /* ── Screens ── */
+    .screen{display:none;flex-direction:column;gap:24px;padding-top:16px;}
+    .screen.active{display:flex;}
+
+    /* ── Screen: Language Select ── */
+    .screen-header{text-align:center;display:flex;flex-direction:column;gap:10px;}
+    .screen-eyebrow{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-sub);}
+    .screen-title{font-family:var(--font-serif);font-size:clamp(1.6rem,4vw,2.4rem);color:var(--gold);line-height:1.2;}
+    .screen-sub{font-size:.9rem;color:var(--text-body);line-height:1.6;}
+
+    .lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .lang-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 16px;background:var(--surface);border:1px solid var(--border-dim);border-radius:16px;cursor:pointer;transition:border-color .2s,background .2s,transform .15s;}
+    .lang-card:hover{border-color:var(--gold);background:var(--surface2);transform:translateY(-2px);}
+    .lang-card.active-lang{border-color:var(--gold);background:rgba(236,170,39,.08);}
+    .lang-flag{font-size:2.2rem;line-height:1;}
+    .lang-name{font-family:var(--font-serif);font-size:1rem;color:var(--gold);}
+    .lang-sub{font-size:.72rem;color:var(--text-sub);text-align:center;}
+
+    /* ── Screen: Auth / Save Spot ── */
+    .auth-card{background:var(--surface);border:1px solid var(--border-dim);border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;gap:18px;}
+    .auth-title{font-family:var(--font-serif);font-size:1.3rem;color:var(--gold);}
+    .auth-desc{font-size:.88rem;color:var(--text-body);line-height:1.6;}
+    .form-group{display:flex;flex-direction:column;gap:6px;}
+    .form-label{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-sub);}
+    .form-input{background:rgba(255,255,255,.07);border:1px solid #333;border-radius:10px;padding:12px 14px;font-size:.95rem;font-family:var(--font-sans);color:var(--text-body);outline:none;transition:border-color .2s;width:100%;}
+    [data-theme="light"] .form-input{color:#fff;border-color:var(--border-dim);}
+    .form-input:focus{border-color:var(--gold);}
+    .btn-primary{padding:14px 28px;background:var(--gold);color:#000;border:none;border-radius:100px;font-size:.95rem;font-weight:600;letter-spacing:.04em;cursor:pointer;transition:background .2s,transform .15s;width:100%;}
+    .btn-primary:hover{background:var(--gold-h);transform:translateY(-1px);}
+    .btn-primary:disabled{opacity:.5;pointer-events:none;}
+    .btn-ghost{padding:12px 20px;background:none;color:var(--gold);border:1px solid var(--border-dim);border-radius:100px;font-size:.85rem;cursor:pointer;transition:background .2s;width:100%;}
+    .btn-ghost:hover{background:rgba(236,170,39,.08);}
+    .form-status{font-size:.82rem;color:var(--gold);min-height:18px;text-align:center;}
+
+    /* ── Progress bar ── */
+    .progress-wrap{display:flex;flex-direction:column;gap:6px;}
+    .progress-meta{display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-sub);}
+    .progress-bar{height:4px;background:rgba(236,170,39,.15);border-radius:100px;overflow:hidden;}
+    .progress-fill{height:100%;background:var(--gold);border-radius:100px;transition:width .4s ease;}
+
+    /* ── Screen: Lesson ── */
+    .lesson-header{display:flex;flex-direction:column;gap:6px;}
+    .lesson-meta{display:flex;align-items:center;justify-content:space-between;}
+    .lesson-badge{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border-dim);border-radius:100px;padding:4px 12px;font-size:.75rem;color:var(--text-sub);}
+    .streak-badge{display:inline-flex;align-items:center;gap:4px;font-size:.8rem;color:var(--gold);}
+    .word-dots{display:flex;gap:6px;justify-content:center;margin-bottom:4px;}
+    .word-dot{width:8px;height:8px;border-radius:50%;background:var(--border-dim);transition:background .3s;}
+    .word-dot.done{background:var(--gold);}
+    .word-dot.current{background:rgba(236,170,39,.5);box-shadow:0 0 0 2px rgba(236,170,39,.3);}
+
+    /* ── Word card ── */
+    .word-card{background:var(--surface);border:1px solid var(--border-dim);border-radius:20px;padding:32px 28px;display:flex;flex-direction:column;gap:20px;align-items:center;text-align:center;}
+    .word-english{font-size:.82rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-sub);}
+    .word-target{font-family:var(--font-serif);font-size:clamp(2rem,6vw,3rem);color:var(--gold);line-height:1.15;word-break:break-word;}
+    .word-romanization{font-size:1rem;color:var(--text-body);font-style:italic;}
+    .word-phonetic{font-size:.85rem;color:var(--text-sub);letter-spacing:.04em;}
+    .word-example{background:rgba(236,170,39,.06);border:1px solid var(--border-dim);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:4px;width:100%;text-align:left;}
+    .example-en{font-size:.8rem;color:var(--text-sub);}
+    .example-target{font-size:.88rem;color:var(--text-body);}
+
+    /* ── Audio / Pronunciation ── */
+    .audio-section{display:flex;flex-direction:column;gap:14px;align-items:center;width:100%;}
+    .btn-listen{display:flex;align-items:center;gap:8px;background:var(--red);color:var(--gold);border:1px solid var(--gold);border-radius:100px;padding:11px 24px;font-size:.88rem;font-weight:600;cursor:pointer;transition:background .2s,transform .15s;}
+    .btn-listen:hover{background:#8a0a0a;transform:translateY(-1px);}
+    .btn-listen.playing{background:#8a0a0a;animation:pulse 1s infinite;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(236,170,39,.4)}50%{box-shadow:0 0 0 8px rgba(236,170,39,0)}}
+
+    .pronunciation-section{width:100%;display:flex;flex-direction:column;gap:12px;align-items:center;}
+    .pronunciation-hint{font-size:.8rem;color:var(--text-sub);text-align:center;line-height:1.5;}
+    .btn-record{display:flex;align-items:center;gap:8px;background:rgba(236,170,39,.1);color:var(--gold);border:2px solid var(--gold);border-radius:100px;padding:13px 28px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;width:100%;justify-content:center;}
+    .btn-record:hover{background:rgba(236,170,39,.15);}
+    .btn-record.recording{background:rgba(236,0,0,.15);border-color:#ff4444;color:#ff6666;animation:recordPulse 1.5s infinite;}
+    @keyframes recordPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,68,68,.4)}50%{box-shadow:0 0 0 10px rgba(255,68,68,0)}}
+    .btn-record:disabled{opacity:.4;pointer-events:none;}
+
+    .accuracy-display{width:100%;display:flex;flex-direction:column;gap:8px;align-items:center;}
+    .accuracy-label{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-sub);}
+    .accuracy-ring-wrap{position:relative;width:90px;height:90px;}
+    .accuracy-ring{transform:rotate(-90deg);}
+    .accuracy-ring-bg{fill:none;stroke:rgba(236,170,39,.15);stroke-width:6;}
+    .accuracy-ring-fill{fill:none;stroke:var(--gold);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .6s ease,stroke .3s;}
+    .accuracy-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-serif);font-size:1.3rem;color:var(--gold);}
+    .accuracy-feedback{font-size:.88rem;text-align:center;line-height:1.5;}
+    .accuracy-feedback.pass{color:#4ade80;}
+    .accuracy-feedback.fail{color:#f87171;}
+    .accuracy-heard{font-size:.78rem;color:var(--text-sub);text-align:center;}
+
+    /* ── Day Complete ── */
+    .complete-card{background:var(--surface);border:1px solid var(--gold);border-radius:20px;padding:40px 28px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center;}
+    .complete-icon{font-size:3rem;line-height:1;}
+    .complete-title{font-family:var(--font-serif);font-size:1.8rem;color:var(--gold);}
+    .complete-sub{font-size:.9rem;color:var(--text-body);line-height:1.6;}
+    .stat-row{display:flex;gap:16px;width:100%;justify-content:center;}
+    .stat-box{background:rgba(236,170,39,.07);border:1px solid var(--border-dim);border-radius:12px;padding:14px 20px;display:flex;flex-direction:column;gap:4px;align-items:center;flex:1;}
+    .stat-num{font-family:var(--font-serif);font-size:1.6rem;color:var(--gold);}
+    .stat-label{font-size:.72rem;color:var(--text-sub);text-transform:uppercase;letter-spacing:.08em;}
+    .exam-unlock-banner{background:rgba(236,170,39,.12);border:1px solid var(--gold);border-radius:14px;padding:16px 20px;display:flex;flex-direction:column;gap:6px;text-align:center;}
+    .exam-banner-title{font-family:var(--font-serif);font-size:1rem;color:var(--gold);}
+    .exam-banner-desc{font-size:.82rem;color:var(--text-body);}
+
+    /* ── Screen: Exam ── */
+    .exam-card{background:var(--surface);border:1px solid var(--border-dim);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;gap:18px;}
+    .exam-q-label{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-sub);}
+    .exam-q-type{font-size:.78rem;color:var(--gold);background:rgba(236,170,39,.1);border-radius:100px;padding:3px 10px;display:inline-block;margin-bottom:4px;}
+    .exam-q-text{font-family:var(--font-serif);font-size:1.3rem;color:var(--text-body);line-height:1.4;}
+    .exam-choices{display:flex;flex-direction:column;gap:10px;}
+    .exam-choice{background:rgba(255,255,255,.05);border:1px solid #333;border-radius:12px;padding:14px 16px;cursor:pointer;font-size:.92rem;color:var(--text-body);text-align:left;transition:border-color .2s,background .2s;}
+    .exam-choice:hover{border-color:var(--gold);background:rgba(236,170,39,.06);}
+    .exam-choice.selected{border-color:var(--gold);background:rgba(236,170,39,.1);}
+    .exam-choice.correct{border-color:#4ade80;background:rgba(74,222,128,.1);}
+    .exam-choice.wrong{border-color:#f87171;background:rgba(248,113,113,.1);}
+    [data-theme="light"] .exam-choice{color:#fff;border-color:var(--border-dim);}
+    .exam-input{background:rgba(255,255,255,.07);border:1px solid #333;border-radius:10px;padding:12px 14px;font-size:1rem;font-family:var(--font-sans);color:var(--text-body);outline:none;transition:border-color .2s;width:100%;}
+    [data-theme="light"] .exam-input{color:#fff;border-color:var(--border-dim);}
+    .exam-input:focus{border-color:var(--gold);}
+    .exam-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .btn-sm{padding:10px 20px;background:var(--gold);color:#000;border:none;border-radius:100px;font-size:.85rem;font-weight:600;cursor:pointer;transition:background .2s;}
+    .btn-sm:hover{background:var(--gold-h);}
+    .btn-sm:disabled{opacity:.4;pointer-events:none;}
+    .btn-sm-ghost{padding:10px 20px;background:none;color:var(--text-sub);border:1px solid #333;border-radius:100px;font-size:.85rem;cursor:pointer;}
+
+    /* ── Screen: Results / Report Card ── */
+    .report-card{background:var(--surface);border:1px solid var(--border-dim);border-radius:20px;padding:36px 28px;display:flex;flex-direction:column;gap:20px;align-items:center;text-align:center;}
+    .grade-circle{width:110px;height:110px;border-radius:50%;border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;}
+    .grade-letter{font-family:var(--font-serif);font-size:3rem;color:var(--gold);line-height:1;}
+    .grade-pct{font-size:.8rem;color:var(--text-sub);}
+    .grade-circle.pass-A{border-color:#4ade80;}.grade-circle.pass-A .grade-letter{color:#4ade80;}
+    .grade-circle.pass-B{border-color:#60a5fa;}.grade-circle.pass-B .grade-letter{color:#60a5fa;}
+    .grade-circle.pass-C{border-color:var(--gold);}.grade-circle.pass-C .grade-letter{color:var(--gold);}
+    .grade-circle.fail-F{border-color:#f87171;}.grade-circle.fail-F .grade-letter{color:#f87171;}
+    .report-title{font-family:var(--font-serif);font-size:1.4rem;color:var(--gold);}
+    .report-desc{font-size:.88rem;color:var(--text-body);line-height:1.6;}
+    .breakdown-rows{width:100%;display:flex;flex-direction:column;gap:8px;}
+    .breakdown-row{display:flex;align-items:center;justify-content:space-between;font-size:.82rem;padding:8px 14px;background:rgba(236,170,39,.04);border:1px solid var(--border-dim);border-radius:8px;}
+    .breakdown-section{color:var(--text-sub);}
+    .breakdown-score{color:var(--gold);font-weight:600;}
+    .retake-note{font-size:.8rem;color:var(--text-sub);text-align:center;}
+
+    /* ── Screen: Progress Overview ── */
+    .prog-lang-header{display:flex;align-items:center;gap:12px;}
+    .prog-flag{font-size:1.8rem;}
+    .prog-lang-name{font-family:var(--font-serif);font-size:1.4rem;color:var(--gold);}
+    .tier-cards{display:flex;flex-direction:column;gap:12px;}
+    .tier-card{background:var(--surface);border:1px solid var(--border-dim);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;}
+    .tier-card.locked{opacity:.5;}
+    .tier-header{display:flex;align-items:center;justify-content:space-between;}
+    .tier-name{font-family:var(--font-serif);font-size:1rem;color:var(--gold);}
+    .tier-status{font-size:.75rem;padding:3px 10px;border-radius:100px;background:rgba(236,170,39,.1);color:var(--gold);}
+    .tier-status.locked-status{background:rgba(136,136,136,.1);color:var(--text-sub);}
+    .tier-status.complete-status{background:rgba(74,222,128,.1);color:#4ade80;}
+    .weeks-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+    .week-cell{background:rgba(236,170,39,.06);border:1px solid var(--border-dim);border-radius:8px;padding:8px 6px;text-align:center;font-size:.7rem;}
+    .week-cell.done-week{background:rgba(236,170,39,.15);border-color:rgba(236,170,39,.5);}
+    .week-cell.current-week{border-color:var(--gold);box-shadow:0 0 0 1px rgba(236,170,39,.3);}
+    .week-label{color:var(--text-sub);}
+    .week-days{color:var(--gold);font-weight:600;font-size:.65rem;}
+    .exam-results-mini{display:flex;gap:8px;flex-wrap:wrap;}
+    .exam-pip{padding:3px 8px;border-radius:6px;font-size:.7rem;font-weight:600;}
+    .exam-pip.pass{background:rgba(74,222,128,.15);color:#4ade80;}
+    .exam-pip.fail{background:rgba(248,113,113,.15);color:#f87171;}
+
+    /* ── Save Spot FAB ── */
+    .save-fab{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:100;display:flex;align-items:center;gap:7px;background:var(--surface);color:var(--gold);border:1px solid var(--border-dim);border-radius:100px;padding:10px 20px;font-size:.8rem;font-family:var(--font-sans);cursor:pointer;transition:background .2s,border-color .2s;}
+    .save-fab:hover{background:var(--surface2);border-color:var(--gold);}
+    .save-fab.hidden{display:none;}
+
+    /* ── Toast ── */
+    .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:var(--gold);border:1px solid var(--border-dim);border-radius:100px;padding:10px 20px;font-size:.82rem;z-index:300;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+    .toast.hidden{opacity:0;}
+
+    /* ── No speech support notice ── */
+    .no-speech-note{font-size:.78rem;color:var(--text-sub);text-align:center;padding:8px 12px;background:rgba(236,170,39,.06);border:1px solid var(--border-dim);border-radius:8px;}
+
+    /* ── Mobile ── */
+    @media(max-width:480px){
+      .shell{padding:64px 16px 90px;}
+      .lang-grid{grid-template-columns:1fr 1fr;}
+      .word-card{padding:24px 20px;}
+      .word-target{font-size:2rem;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Top nav ── -->
+  <nav class="top-nav">
+    <div class="nav-left">
+      <a href="/" class="nav-back">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Hub
+      </a>
+      <span class="nav-title" id="navTitle">A Word a Day</span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="theme-toggle btn-sm-ghost" id="progBtn" style="display:none;border-radius:100px;font-size:.75rem;padding:6px 12px;color:var(--text-sub);" title="View progress">Progress</button>
+      <button class="theme-toggle" id="themeToggle">🌙</button>
+    </div>
+  </nav>
+
+  <!-- ── Main shell ── -->
+  <div class="shell">
+
+    <!-- ── SCREEN: Language Select ── -->
+    <div class="screen active" id="screen-lang">
+      <div class="screen-header">
+        <p class="screen-eyebrow">A Word a Day</p>
+        <h1 class="screen-title">Choose your language</h1>
+        <p class="screen-sub">Three words a day. Six months to survival fluency.</p>
+      </div>
+      <div class="lang-grid" id="langGrid"></div>
+      <button class="btn-primary" id="startLangBtn" disabled>Begin →</button>
+    </div>
+
+    <!-- ── SCREEN: Auth ── -->
+    <div class="screen" id="screen-auth">
+      <div class="screen-header">
+        <p class="screen-eyebrow" id="authLangLabel">Spanish</p>
+        <h1 class="screen-title">Your study spot</h1>
+        <p class="screen-sub">Enter your email and we'll keep your progress. You can always pick up right where you left off — no password needed.</p>
+      </div>
+      <div class="auth-card">
+        <div class="form-group">
+          <label class="form-label" for="emailInput">Email address</label>
+          <input class="form-input" type="email" id="emailInput" placeholder="you@example.com" />
+        </div>
+        <button class="btn-primary" id="startStudyBtn">Start studying →</button>
+        <p class="form-status" id="authStatus"></p>
+      </div>
+      <button class="btn-ghost" id="backToLangBtn">← Choose different language</button>
+    </div>
+
+    <!-- ── SCREEN: Lesson ── -->
+    <div class="screen" id="screen-lesson">
+      <div class="lesson-header">
+        <div class="lesson-meta">
+          <span class="lesson-badge" id="lessonBadge">Tier 1 · Week 1 · Day 1</span>
+          <span class="streak-badge" id="streakBadge">🔥 0</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-meta">
+            <span id="progLabel">Day progress</span>
+            <span id="progFrac">0 / 3</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+        </div>
+        <div class="word-dots" id="wordDots"></div>
+      </div>
+
+      <!-- Word Card -->
+      <div class="word-card" id="wordCard">
+        <p class="word-english" id="wEnglish">Loading...</p>
+        <div class="word-target" id="wTarget">...</div>
+        <div class="word-romanization" id="wRomanization" style="display:none;"></div>
+        <p class="word-phonetic" id="wPhonetic"></p>
+        <div class="word-example" id="wExample">
+          <span class="example-en" id="wExEn"></span>
+          <span class="example-target" id="wExTarget"></span>
+        </div>
+      </div>
+
+      <!-- Audio + Pronunciation -->
+      <div class="audio-section">
+        <button class="btn-listen" id="listenBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          Listen
+        </button>
+
+        <div class="pronunciation-section" id="pronSection">
+          <p class="pronunciation-hint" id="pronHint">Listen first, then try saying the word aloud.</p>
+
+          <div id="noSpeechNote" class="no-speech-note" style="display:none;">
+            Speech recognition isn't available in this browser. Try Chrome or Edge for the full experience.
+          </div>
+
+          <button class="btn-record" id="recordBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            <span id="recordBtnLabel">Hold to Speak</span>
+          </button>
+
+          <div class="accuracy-display" id="accuracyDisplay" style="display:none;">
+            <p class="accuracy-label">Accuracy</p>
+            <div class="accuracy-ring-wrap">
+              <svg class="accuracy-ring" viewBox="0 0 90 90" width="90" height="90">
+                <circle class="accuracy-ring-bg" cx="45" cy="45" r="36"/>
+                <circle class="accuracy-ring-fill" id="accuracyCircle" cx="45" cy="45" r="36" stroke-dasharray="226" stroke-dashoffset="226"/>
+              </svg>
+              <div class="accuracy-num" id="accuracyNum">0%</div>
+            </div>
+            <p class="accuracy-heard">Heard: "<span id="heardText"></span>"</p>
+            <p class="accuracy-feedback" id="accuracyFeedback"></p>
+            <button class="btn-sm" id="retryBtn" style="display:none;">Try Again</button>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="nextWordBtn" style="display:none;">Next Word →</button>
+      </div>
+    </div>
+
+    <!-- ── SCREEN: Day Complete ── -->
+    <div class="screen" id="screen-complete">
+      <div class="complete-card">
+        <div class="complete-icon" id="completeIcon">🎉</div>
+        <h2 class="complete-title" id="completeTitle">Day Complete!</h2>
+        <p class="complete-sub" id="completeSub">You studied 3 words today.</p>
+        <div class="stat-row">
+          <div class="stat-box"><div class="stat-num" id="statStreak">1</div><div class="stat-label">Day Streak</div></div>
+          <div class="stat-box"><div class="stat-num" id="statTotal">3</div><div class="stat-label">Words Learned</div></div>
+          <div class="stat-box"><div class="stat-num" id="statWeek">W1</div><div class="stat-label">Week</div></div>
+        </div>
+        <div class="exam-unlock-banner" id="examBanner" style="display:none;">
+          <div class="exam-banner-title">🎓 Exam Unlocked!</div>
+          <div class="exam-banner-desc">You've studied enough to take the weekly exam. Ready?</div>
+          <button class="btn-primary" id="goExamBtn" style="margin-top:4px;">Take Exam →</button>
+        </div>
+      </div>
+      <button class="btn-primary" id="saveDaySpotBtn" style="background:none;border:1px solid var(--border-dim);color:var(--gold);">📧 Email me my spot</button>
+      <button class="btn-ghost" id="resumeTomorrowBtn">Come Back Tomorrow</button>
+    </div>
+
+    <!-- ── SCREEN: Exam ── -->
+    <div class="screen" id="screen-exam">
+      <div class="lesson-header">
+        <div class="lesson-meta">
+          <span class="lesson-badge" id="examBadge">Week 1 Exam</span>
+          <span class="lesson-badge" id="examProgress">Q 1 / 21</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="examProgFill" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="exam-card" id="examCard">
+        <div>
+          <span class="exam-q-type" id="examQType">Multiple Choice</span>
+          <p class="exam-q-label" id="examQLabel">Question 1 of 21</p>
+        </div>
+        <p class="exam-q-text" id="examQText">Loading...</p>
+        <div id="examChoicesWrap"></div>
+        <div class="exam-nav">
+          <span class="btn-sm-ghost" id="examSkip" style="cursor:pointer;">Skip</span>
+          <button class="btn-sm" id="examNextBtn" disabled>Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN: Results ── -->
+    <div class="screen" id="screen-results">
+      <div class="report-card">
+        <div class="grade-circle" id="gradeCircle">
+          <div class="grade-letter" id="gradeLetter">A</div>
+          <div class="grade-pct" id="gradePct">97%</div>
+        </div>
+        <h2 class="report-title" id="reportTitle">Excellent work!</h2>
+        <p class="report-desc" id="reportDesc">You passed Week 1.</p>
+        <div class="breakdown-rows" id="breakdownRows"></div>
+        <div class="retake-note" id="retakeNote" style="display:none;"></div>
+      </div>
+      <button class="btn-primary" id="continueAfterExamBtn">Continue Studying →</button>
+    </div>
+
+    <!-- ── SCREEN: Progress Overview ── -->
+    <div class="screen" id="screen-progress">
+      <div class="prog-lang-header">
+        <span class="prog-flag" id="progFlag">🇪🇸</span>
+        <span class="prog-lang-name" id="progLangName">Spanish</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" id="progStatStreak">0</div><div class="stat-label">Streak</div></div>
+        <div class="stat-box"><div class="stat-num" id="progStatWords">0</div><div class="stat-label">Words</div></div>
+        <div class="stat-box"><div class="stat-num" id="progStatDays">0</div><div class="stat-label">Days</div></div>
+      </div>
+      <div class="tier-cards" id="tierCards"></div>
+      <button class="btn-primary" id="continueStudyingBtn">Continue Studying →</button>
+      <button class="btn-ghost" id="switchLangBtn">Switch Language</button>
+    </div>
+
+  </div><!-- /shell -->
+
+  <!-- ── Save Spot FAB ── -->
+  <button class="save-fab hidden" id="saveFab">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    Save My Spot
+  </button>
+
+  <!-- ── Toast ── -->
+  <div class="toast hidden" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const qs = sel => document.querySelector(sel);
+
+function showToast(msg, ms=2800) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(t._to);
+  t._to = setTimeout(() => t.classList.add('hidden'), ms);
+}
+
+function levenshtein(a, b) {
+  const m=a.length, n=b.length;
+  const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++) for(let j=1;j<=n;j++) dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+  return dp[m][n];
+}
+
+function similarity(spoken, target) {
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim();
+  const a = norm(spoken), b = norm(target);
+  if (!a || !b) return 0;
+  if (a.includes(b) || b.includes(a)) return 100;
+  const maxLen = Math.max(a.length, b.length);
+  return Math.max(0, Math.round((1 - levenshtein(a, b) / maxLen) * 100));
+}
+
+function today() {
+  return new Date().toISOString().slice(0,10);
+}
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0,10);
+}
+
+// ══════════════════════════════════════════════════════════
+// THEME
+// ══════════════════════════════════════════════════════════
+const themeToggle = $('themeToggle');
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  themeToggle.textContent = t==='dark' ? '🌙' : '☀️';
+}
+applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
+themeToggle.addEventListener('click', () => {
+  const next = document.documentElement.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+  localStorage.setItem('sc_theme', next);
+  applyTheme(next);
+});
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let state = {
+  token: null,
+  email: null,
+  lang: null,         // language code
+  langData: null,     // full language JSON
+  progress: null,     // server progress object
+  words: [],          // filtered word list for current tier/week/day
+  wordIdx: 0,         // index into words[]
+  listenedOnce: false,
+  accuracy: null,
+  exam: null,         // exam session
+  examIdx: 0,
+};
+
+const LANGS = [
+  {code:'es', name:'Spanish',   flag:'🇪🇸', sub:'6 months to survival'},
+  {code:'zh', name:'Chinese',   flag:'🇨🇳', sub:'Mandarin · Pinyin included'},
+  {code:'ja', name:'Japanese',  flag:'🇯🇵', sub:'Romaji included'},
+  {code:'vi', name:'Vietnamese',flag:'🇻🇳', sub:'Southeast Asia ready'},
+  {code:'sw', name:'Swahili',   flag:'🇰🇪', sub:'East African foundation'},
+  {code:'ki', name:'Kikuyu',    flag:'🇰🇪', sub:'Gĩkũyũ · East African'},
+];
+
+// Exam question type config
+const EXAM_SECTIONS = [
+  {type:'listen',  label:'Listen & Identify', weight:2,   count:5},
+  {type:'choose',  label:'See & Choose',       weight:2,   count:6},
+  {type:'type',    label:'Type it out',        weight:2.5, count:5},
+  {type:'speak',   label:'Say it aloud',       weight:3,   count:5},
+];
+
+// ══════════════════════════════════════════════════════════
+// SCREEN ROUTER
+// ══════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+
+  const hasSession = !!state.token;
+  $('saveFab').classList.toggle('hidden', id !== 'screen-lesson');
+  $('progBtn').style.display = (hasSession && id !== 'screen-lang' && id !== 'screen-auth') ? '' : 'none';
+}
+
+// ══════════════════════════════════════════════════════════
+// LANGUAGE SELECT
+// ══════════════════════════════════════════════════════════
+function buildLangGrid() {
+  const grid = $('langGrid');
+  grid.innerHTML = '';
+  LANGS.forEach(l => {
+    const card = document.createElement('div');
+    card.className = 'lang-card';
+    card.dataset.code = l.code;
+    card.innerHTML = `<div class="lang-flag">${l.flag}</div><div class="lang-name">${l.name}</div><div class="lang-sub">${l.sub}</div>`;
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('active-lang'));
+      card.classList.add('active-lang');
+      state.lang = l.code;
+      $('startLangBtn').disabled = false;
+    });
+    grid.appendChild(card);
+  });
+}
+
+$('startLangBtn').addEventListener('click', async () => {
+  if (!state.lang) return;
+
+  // Check if returning user with token for this lang
+  const savedToken = localStorage.getItem(`wad_token_${state.lang}`);
+  if (savedToken) {
+    state.token = savedToken;
+    await loadProgress();
+    await loadLangData();
+    gotoLesson();
+    return;
+  }
+
+  // New user — go to auth
+  const l = LANGS.find(x => x.code === state.lang);
+  $('authLangLabel').textContent = l ? l.name : '';
+  showScreen('screen-auth');
+});
+
+// ══════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════
+$('backToLangBtn').addEventListener('click', () => showScreen('screen-lang'));
+
+$('startStudyBtn').addEventListener('click', async () => {
+  const email = $('emailInput').value.trim();
+  if (!email || !email.includes('@')) { $('authStatus').textContent = 'Please enter a valid email.'; return; }
+
+  $('startStudyBtn').disabled = true;
+  $('authStatus').textContent = 'Setting up...';
+
+  try {
+    const res = await fetch('/api/wad/session', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email, language: state.lang })
+    });
+    const data = await res.json();
+    state.token = data.token;
+    state.email = email;
+    localStorage.setItem(`wad_token_${state.lang}`, data.token);
+    state.progress = data.progress;
+    await loadLangData();
+    $('authStatus').textContent = '';
+    gotoLesson();
+  } catch(e) {
+    $('authStatus').textContent = 'Something went wrong. Try again.';
+  }
+  $('startStudyBtn').disabled = false;
+});
+
+// ══════════════════════════════════════════════════════════
+// LOAD DATA
+// ══════════════════════════════════════════════════════════
+async function loadLangData() {
+  const res = await fetch(`/api/wad/words/${state.lang}`);
+  const data = await res.json();
+  state.langData = data;
+}
+
+async function loadProgress() {
+  const res = await fetch(`/api/wad/progress/${state.token}`);
+  state.progress = await res.json();
+  state.lang = state.progress.language;
+}
+
+// ══════════════════════════════════════════════════════════
+// LESSON FLOW
+// ══════════════════════════════════════════════════════════
+function gotoLesson() {
+  const p = state.progress;
+
+  // Check if already studied today
+  if (p.studyDays && p.studyDays.includes(today())) {
+    // Show day complete
+    showDayComplete();
+    return;
+  }
+
+  // Get today's 3 words
+  const { tier, week, day } = p;
+  state.words = state.langData.words.filter(w => w.tier===tier && w.week===week && w.day===day);
+
+  if (!state.words.length) {
+    // Advance to next day
+    advanceDay();
+    return;
+  }
+
+  state.wordIdx = 0;
+  state.listenedOnce = false;
+  state.accuracy = null;
+  renderLesson();
+  showScreen('screen-lesson');
+  updateNavTitle();
+}
+
+function updateNavTitle() {
+  const l = LANGS.find(x => x.code === state.lang);
+  $('navTitle').textContent = l ? `${l.flag} ${l.name}` : 'A Word a Day';
+}
+
+function renderLesson() {
+  const p = state.progress;
+  const w = state.words[state.wordIdx];
+
+  // Badge
+  const tierName = ['','Survival','Communicate','Vocabulary'][p.tier];
+  $('lessonBadge').textContent = `${tierName} · Week ${p.week} · Day ${p.day}`;
+  $('streakBadge').textContent = `🔥 ${p.streak || 0}`;
+
+  // Progress bar
+  const frac = state.wordIdx / 3;
+  $('progFill').style.width = (frac*100)+'%';
+  $('progFrac').textContent = `${state.wordIdx} / 3`;
+
+  // Dots
+  const dots = $('wordDots');
+  dots.innerHTML = '';
+  for (let i=0; i<3; i++) {
+    const d = document.createElement('div');
+    d.className = 'word-dot' + (i<state.wordIdx?' done':i===state.wordIdx?' current':'');
+    dots.appendChild(d);
+  }
+
+  // Word card
+  $('wEnglish').textContent = w.english.toUpperCase();
+  $('wTarget').textContent = w.target;
+  if (w.romanization) {
+    $('wRomanization').style.display = '';
+    $('wRomanization').textContent = w.romanization;
+  } else {
+    $('wRomanization').style.display = 'none';
+  }
+  $('wPhonetic').textContent = `/ ${w.phonetic} /`;
+  $('wExEn').textContent = w.example_en;
+  $('wExTarget').textContent = w.example_target;
+
+  // Reset audio/pronunciation state
+  state.listenedOnce = false;
+  state.accuracy = null;
+  $('listenBtn').classList.remove('playing');
+  $('recordBtn').disabled = true;
+  $('recordBtn').classList.remove('recording');
+  $('recordBtnLabel').textContent = 'Hold to Speak';
+  $('accuracyDisplay').style.display = 'none';
+  $('nextWordBtn').style.display = 'none';
+  $('pronHint').textContent = 'Listen first, then try saying the word aloud.';
+  $('retryBtn').style.display = 'none';
+
+  // Check speech API
+  const hasSpeech = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
+  $('noSpeechNote').style.display = hasSpeech ? 'none' : '';
+  if (!hasSpeech) {
+    $('recordBtn').style.display = 'none';
+    // Allow skip with no speech
+    setTimeout(() => { $('nextWordBtn').style.display = ''; }, 1500);
+  }
+}
+
+// ── Listen button ──
+$('listenBtn').addEventListener('click', () => {
+  const w = state.words[state.wordIdx];
+  const lang = state.langData;
+  const utterance = new SpeechSynthesisUtterance(w.target);
+  utterance.lang = lang.tts_lang;
+  utterance.rate = 0.85;
+
+  $('listenBtn').classList.add('playing');
+  utterance.onend = () => {
+    $('listenBtn').classList.remove('playing');
+    if (!state.listenedOnce) {
+      state.listenedOnce = true;
+      $('recordBtn').disabled = false;
+      $('pronHint').textContent = 'Now try saying it yourself. Hold the button while you speak.';
+    }
+  };
+  utterance.onerror = () => $('listenBtn').classList.remove('playing');
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+});
+
+// ── Record button (hold to speak) ──
+let recognition = null;
+let recognizing = false;
+
+function setupRecognition() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRec) return null;
+  const r = new SpeechRec();
+  r.continuous = false;
+  r.interimResults = false;
+  r.lang = state.langData.recognition_lang;
+
+  r.onstart = () => {
+    recognizing = true;
+    $('recordBtn').classList.add('recording');
+    $('recordBtnLabel').textContent = 'Listening...';
+  };
+
+  r.onresult = (e) => {
+    const spoken = e.results[0][0].transcript;
+    const w = state.words[state.wordIdx];
+    const score = similarity(spoken, w.target);
+    showAccuracy(score, spoken, w);
+  };
+
+  r.onerror = (e) => {
+    recognizing = false;
+    $('recordBtn').classList.remove('recording');
+    $('recordBtnLabel').textContent = 'Hold to Speak';
+    if (e.error !== 'no-speech') showToast('Could not hear you. Try again.');
+  };
+
+  r.onend = () => {
+    recognizing = false;
+    $('recordBtn').classList.remove('recording');
+    $('recordBtnLabel').textContent = 'Hold to Speak';
+  };
+
+  return r;
+}
+
+$('recordBtn').addEventListener('mousedown', startRecording);
+$('recordBtn').addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); }, {passive:false});
+$('recordBtn').addEventListener('mouseup', stopRecording);
+$('recordBtn').addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); }, {passive:false});
+$('recordBtn').addEventListener('mouseleave', stopRecording);
+
+function startRecording() {
+  if (recognizing) return;
+  recognition = setupRecognition();
+  if (!recognition) return;
+  recognition.lang = state.langData.recognition_lang;
+  try { recognition.start(); } catch(e){}
+}
+function stopRecording() {
+  if (recognition && recognizing) { try { recognition.stop(); } catch(e){} }
+}
+
+function showAccuracy(score, spoken, word) {
+  const PASS = 65; // % threshold to pass
+  $('accuracyDisplay').style.display = 'flex';
+  $('accuracyDisplay').style.flexDirection = 'column';
+  $('accuracyDisplay').style.alignItems = 'center';
+  $('accuracyDisplay').style.gap = '8px';
+
+  // Ring animation
+  const circumference = 226;
+  const fill = Math.round(circumference * (1 - score/100));
+  const circle = $('accuracyCircle');
+  circle.style.strokeDashoffset = fill;
+  circle.style.stroke = score >= PASS ? '#4ade80' : score >= 40 ? '#ECAA27' : '#f87171';
+  $('accuracyNum').textContent = score + '%';
+  $('heardText').textContent = spoken || '—';
+
+  const feedback = $('accuracyFeedback');
+  if (score >= 90) {
+    feedback.textContent = 'Perfect! Excellent pronunciation!';
+    feedback.className = 'accuracy-feedback pass';
+  } else if (score >= PASS) {
+    feedback.textContent = 'Good enough! Keep practicing.';
+    feedback.className = 'accuracy-feedback pass';
+  } else {
+    feedback.textContent = 'Not quite — listen again and try once more.';
+    feedback.className = 'accuracy-feedback fail';
+  }
+
+  state.accuracy = score;
+
+  if (score >= PASS) {
+    $('retryBtn').style.display = 'none';
+    $('nextWordBtn').style.display = '';
+    $('nextWordBtn').textContent = state.wordIdx < 2 ? 'Next Word →' : 'Finish Day →';
+  } else {
+    $('retryBtn').style.display = '';
+    $('nextWordBtn').style.display = 'none';
+  }
+}
+
+$('retryBtn').addEventListener('click', () => {
+  $('accuracyDisplay').style.display = 'none';
+  $('pronHint').textContent = 'Listen carefully, then try again.';
+  // Re-listen automatically
+  $('listenBtn').click();
+});
+
+// ── Next word ──
+$('nextWordBtn').addEventListener('click', async () => {
+  // Mark word complete on server
+  const w = state.words[state.wordIdx];
+  await fetch('/api/wad/complete-word', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ token: state.token, wordId: w.id, accuracy: state.accuracy || 70 })
+  });
+
+  state.wordIdx++;
+  if (state.wordIdx >= 3) {
+    // Day complete
+    const res = await fetch('/api/wad/complete-day', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token: state.token })
+    });
+    state.progress = await res.json();
+    showDayComplete();
+  } else {
+    state.listenedOnce = false;
+    state.accuracy = null;
+    renderLesson();
+  }
+});
+
+// ══════════════════════════════════════════════════════════
+// DAY COMPLETE
+// ══════════════════════════════════════════════════════════
+function showDayComplete() {
+  const p = state.progress;
+  const total = p.completedWords ? p.completedWords.length : 0;
+  const streak = p.streak || 0;
+
+  $('completeIcon').textContent = streak >= 7 ? '🔥' : streak >= 3 ? '⭐' : '🎉';
+  $('completeTitle').textContent = streak >= 7 ? 'On Fire!' : 'Day Complete!';
+  $('completeSub').textContent = `You've studied ${total} word${total!==1?'s':''} total.`;
+  $('statStreak').textContent = streak;
+  $('statTotal').textContent = total;
+  $('statWeek').textContent = 'W' + p.week;
+
+  // Check exam eligibility
+  const examReady = checkExamEligibility(p);
+  $('examBanner').style.display = examReady ? '' : 'none';
+
+  showScreen('screen-complete');
+}
+
+function checkExamEligibility(p) {
+  // Exam unlocks after studying 4+ days in a 7-day window, for any completed week
+  const days = p.studyDays || [];
+  if (days.length < 4) return false;
+
+  // Check if current week is fully studied (all 7 days × 3 words = 21 words done)
+  const wordsThisWeek = (p.completedWords || []).filter(id => {
+    const parts = id.split('-');
+    return parseInt(parts[2]) === p.tier && parseInt(parts[3]) === p.week;
+  });
+
+  // If past day 4 of week, offer exam for the previous week
+  const examsDone = (p.exams || []).map(e => `${e.tier}-${e.week}`);
+  const weekToExam = p.day >= 5 ? p.week : p.week - 1;
+  if (weekToExam < 1) return false;
+  if (examsDone.includes(`${p.tier}-${weekToExam}`)) return false;
+
+  // Check retake lock
+  const lastExam = (p.exams || []).find(e => e.tier===p.tier && e.week===weekToExam);
+  if (lastExam && !lastExam.passed) {
+    if (lastExam.canRetakeAt && today() < lastExam.canRetakeAt) return false;
+  }
+
+  return days.length >= 4;
+}
+
+$('goExamBtn').addEventListener('click', () => startExam());
+$('saveDaySpotBtn').addEventListener('click', saveSpot);
+$('resumeTomorrowBtn').addEventListener('click', () => {
+  showToast("See you tomorrow! 🌟");
+  showScreen('screen-lang');
+});
+
+// ══════════════════════════════════════════════════════════
+// SAVE SPOT
+// ══════════════════════════════════════════════════════════
+async function saveSpot() {
+  showToast('Sending email...');
+  try {
+    await fetch('/api/wad/save-spot', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token: state.token })
+    });
+    showToast('Email sent! Check your inbox. 📧');
+  } catch(e) {
+    showToast('Could not send email. Try again.');
+  }
+}
+$('saveFab').addEventListener('click', saveSpot);
+
+// ══════════════════════════════════════════════════════════
+// EXAM
+// ══════════════════════════════════════════════════════════
+function startExam() {
+  const p = state.progress;
+  const weekToExam = p.day >= 5 ? p.week : p.week - 1;
+  const allWords = state.langData.words.filter(w => w.tier===p.tier && w.week===weekToExam);
+
+  // Build 21 questions across 4 sections
+  const shuffled = [...allWords].sort(() => Math.random() - 0.5);
+  const questions = [];
+  let wordPool = [...shuffled];
+
+  EXAM_SECTIONS.forEach(section => {
+    for (let i=0; i<section.count; i++) {
+      const word = wordPool[i % wordPool.length];
+      questions.push(buildQuestion(section.type, section.label, section.weight, word, allWords));
+    }
+    wordPool = wordPool.slice(section.count);
+    if (!wordPool.length) wordPool = [...shuffled];
+  });
+
+  // Final shuffle
+  questions.sort(() => Math.random() - 0.5);
+
+  state.exam = { questions, answers: [], weekToExam, tier: p.tier };
+  state.examIdx = 0;
+  renderExamQuestion();
+  $('examBadge').textContent = `Tier ${p.tier} · Week ${weekToExam} Exam`;
+  showScreen('screen-exam');
+}
+
+function buildQuestion(type, label, weight, word, allWords) {
+  const distractors = allWords.filter(w => w.id !== word.id).sort(() => Math.random()-.5).slice(0, 3);
+  const q = { type, label, weight, word, distractors, answered: false, correct: false, score: 0 };
+
+  if (type === 'listen') {
+    q.prompt = `You'll hear a word. Which English meaning is it?`;
+    q.audioTarget = word.target;
+    q.choices = shuffle([word.english, ...distractors.map(d=>d.english)]);
+    q.answer = word.english;
+  } else if (type === 'choose') {
+    q.prompt = `How do you say "${word.english}" in ${LANGS.find(l=>l.code===state.lang)?.name || ''}?`;
+    q.choices = shuffle([word.target, ...distractors.map(d=>d.target)]);
+    q.answer = word.target;
+  } else if (type === 'type') {
+    q.prompt = `Type "${word.english}" in ${LANGS.find(l=>l.code===state.lang)?.name || ''}:`;
+    q.answer = word.target;
+  } else if (type === 'speak') {
+    q.prompt = `Say this in ${LANGS.find(l=>l.code===state.lang)?.name || ''}:`;
+    q.speakWord = word.english;
+    q.answer = word.target;
+  }
+  return q;
+}
+
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-.5); }
+
+function renderExamQuestion() {
+  const q = state.exam.questions[state.examIdx];
+  const total = state.exam.questions.length;
+
+  $('examQType').textContent = q.label;
+  $('examQLabel').textContent = `Question ${state.examIdx+1} of ${total}`;
+  $('examProgress').textContent = `Q ${state.examIdx+1} / ${total}`;
+  $('examProgFill').style.width = (state.examIdx/total*100)+'%';
+  $('examNextBtn').disabled = true;
+  $('examQText').textContent = q.prompt;
+
+  const wrap = $('examChoicesWrap');
+  wrap.innerHTML = '';
+
+  if (q.type === 'listen') {
+    // Play audio then show choices
+    const listenQ = document.createElement('button');
+    listenQ.className = 'btn-listen';
+    listenQ.style.marginBottom = '12px';
+    listenQ.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Play Word`;
+    listenQ.addEventListener('click', () => {
+      const u = new SpeechSynthesisUtterance(q.audioTarget);
+      u.lang = state.langData.tts_lang; u.rate = 0.85;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    });
+    wrap.appendChild(listenQ);
+    renderMultipleChoice(q, wrap);
+    // Auto-play once
+    setTimeout(() => listenQ.click(), 300);
+
+  } else if (q.type === 'choose') {
+    renderMultipleChoice(q, wrap);
+
+  } else if (q.type === 'type') {
+    const hint = document.createElement('p');
+    hint.style.cssText = 'font-size:.78rem;color:var(--text-sub);margin-bottom:8px;';
+    if (state.langData.has_romanization) hint.textContent = `Phonetic hint: / ${q.word.phonetic} /`;
+    wrap.appendChild(hint);
+    const inp = document.createElement('input');
+    inp.className = 'exam-input';
+    inp.type = 'text';
+    inp.placeholder = 'Type the word...';
+    inp.autocomplete = 'off';
+    inp.addEventListener('input', () => { $('examNextBtn').disabled = !inp.value.trim(); });
+    wrap.appendChild(inp);
+    $('examNextBtn').addEventListener('click', () => {
+      const score = similarity(inp.value, q.answer);
+      q.score = score; q.answered = true; q.correct = score >= 65;
+      inp.style.borderColor = q.correct ? '#4ade80' : '#f87171';
+      inp.disabled = true;
+    }, {once:true});
+
+  } else if (q.type === 'speak') {
+    const target = document.createElement('div');
+    target.style.cssText = 'font-family:var(--font-serif);font-size:1.6rem;color:var(--gold);text-align:center;margin:8px 0;';
+    target.textContent = q.speakWord;
+    wrap.appendChild(target);
+    if (q.word.phonetic) {
+      const ph = document.createElement('p');
+      ph.style.cssText = 'font-size:.8rem;color:var(--text-sub);text-align:center;margin-bottom:10px;';
+      ph.textContent = `/ ${q.word.phonetic} /`;
+      wrap.appendChild(ph);
+    }
+    const recBtn = document.createElement('button');
+    recBtn.className = 'btn-record';
+    recBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Hold to Speak`;
+    let examRec = null, examRecognizing = false;
+
+    recBtn.addEventListener('mousedown', () => {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) return;
+      examRec = new SR();
+      examRec.lang = state.langData.recognition_lang;
+      examRec.onstart = () => { examRecognizing=true; recBtn.classList.add('recording'); };
+      examRec.onresult = (e) => {
+        const spoken = e.results[0][0].transcript;
+        const score = similarity(spoken, q.answer);
+        q.score = score; q.answered = true; q.correct = score >= 65;
+        const fb = document.createElement('p');
+        fb.style.cssText = `color:${q.correct?'#4ade80':'#f87171'};font-size:.85rem;text-align:center;margin-top:8px;`;
+        fb.textContent = `${score}% accuracy — ${q.correct?'Pass ✓':'Keep trying'}`;
+        wrap.appendChild(fb);
+        $('examNextBtn').disabled = false;
+      };
+      examRec.onerror = () => { examRecognizing=false; recBtn.classList.remove('recording'); };
+      examRec.onend = () => { examRecognizing=false; recBtn.classList.remove('recording'); };
+      try { examRec.start(); } catch(e){}
+    });
+    recBtn.addEventListener('mouseup', () => { if(examRec && examRecognizing) try{examRec.stop();}catch(e){} });
+    recBtn.addEventListener('mouseleave', () => { if(examRec && examRecognizing) try{examRec.stop();}catch(e){} });
+    recBtn.addEventListener('touchstart', (e) => { e.preventDefault(); recBtn.dispatchEvent(new Event('mousedown')); }, {passive:false});
+    recBtn.addEventListener('touchend', (e) => { e.preventDefault(); recBtn.dispatchEvent(new Event('mouseup')); }, {passive:false});
+    wrap.appendChild(recBtn);
+
+    // If no speech API, allow manual skip
+    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      $('examNextBtn').disabled = false;
+      q.score = 0; q.correct = false; q.answered = true;
+    }
+  }
+
+  // Skip handler
+  $('examSkip').onclick = () => advanceExam(false);
+
+  // Next button (for non-type, non-speak questions it's set when choice selected)
+  $('examNextBtn').onclick = () => advanceExam(true);
+}
+
+function renderMultipleChoice(q, wrap) {
+  const choices = document.createElement('div');
+  choices.className = 'exam-choices';
+  q.choices.forEach(ch => {
+    const btn = document.createElement('button');
+    btn.className = 'exam-choice';
+    btn.textContent = ch;
+    btn.addEventListener('click', () => {
+      if (q.answered) return;
+      q.answered = true;
+      q.correct = ch === q.answer;
+      q.score = q.correct ? 100 : 0;
+      document.querySelectorAll('.exam-choice').forEach(b => {
+        if (b.textContent === q.answer) b.classList.add('correct');
+        else if (b.textContent === ch && !q.correct) b.classList.add('wrong');
+        b.disabled = true;
+      });
+      $('examNextBtn').disabled = false;
+    });
+    choices.appendChild(btn);
+  });
+  wrap.appendChild(choices);
+}
+
+function advanceExam(save) {
+  const q = state.exam.questions[state.examIdx];
+  if (save && !q.answered) { q.answered = true; q.correct = false; q.score = 0; }
+  state.exam.answers.push(q);
+  state.examIdx++;
+
+  if (state.examIdx >= state.exam.questions.length) {
+    finishExam();
+  } else {
+    renderExamQuestion();
+  }
+}
+
+async function finishExam() {
+  // Grade the exam
+  let totalPoints = 0, earned = 0;
+  const sectionScores = {};
+
+  EXAM_SECTIONS.forEach(s => sectionScores[s.type] = {earned:0, total:0, label:s.label});
+
+  state.exam.answers.forEach(q => {
+    const pts = q.weight * (q.type==='speak'||q.type==='type' ? q.score/100 : (q.correct?1:0));
+    totalPoints += q.weight;
+    earned += pts;
+    sectionScores[q.type].total += q.weight;
+    sectionScores[q.type].earned += pts;
+  });
+
+  const score = Math.round((earned/totalPoints)*100);
+  const grade = score>=90?'A':score>=75?'B':score>=60?'C':'F';
+  const passed = grade !== 'F';
+
+  // Submit to server
+  const res = await fetch('/api/wad/submit-exam', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      token: state.token,
+      week: state.exam.weekToExam,
+      tier: state.exam.tier,
+      score, grade, passed
+    })
+  });
+  state.progress = await res.json();
+  showResults(score, grade, passed, sectionScores);
+}
+
+function showResults(score, grade, passed, sectionScores) {
+  const gradeCircle = $('gradeCircle');
+  gradeCircle.className = 'grade-circle ' + (passed ? `pass-${grade}` : 'fail-F');
+  $('gradeLetter').textContent = grade;
+  $('gradePct').textContent = score + '%';
+
+  const messages = {
+    A: "Outstanding! You've mastered this week's words.",
+    B: "Great work! Strong foundation building.",
+    C: "You passed! Keep practicing for improvement.",
+    F: "Not quite there yet — review your words and try again."
+  };
+  $('reportTitle').textContent = passed ? "Week Complete! 🎓" : "Keep Practicing";
+  $('reportDesc').textContent = messages[grade];
+
+  // Breakdown
+  const rows = $('breakdownRows');
+  rows.innerHTML = '';
+  Object.values(sectionScores).forEach(s => {
+    const pct = s.total > 0 ? Math.round((s.earned/s.total)*100) : 0;
+    const row = document.createElement('div');
+    row.className = 'breakdown-row';
+    row.innerHTML = `<span class="breakdown-section">${s.label}</span><span class="breakdown-score">${pct}%</span>`;
+    rows.appendChild(row);
+  });
+
+  // Retake note
+  if (!passed) {
+    const retakeDate = addDays(today(), 7);
+    $('retakeNote').style.display = '';
+    $('retakeNote').textContent = `You can retake this exam on ${new Date(retakeDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}.`;
+  } else {
+    $('retakeNote').style.display = 'none';
+  }
+
+  showScreen('screen-results');
+}
+
+$('continueAfterExamBtn').addEventListener('click', () => gotoLesson());
+
+// ══════════════════════════════════════════════════════════
+// PROGRESS SCREEN
+// ══════════════════════════════════════════════════════════
+$('progBtn').addEventListener('click', showProgressScreen);
+$('continueStudyingBtn').addEventListener('click', () => gotoLesson());
+$('switchLangBtn').addEventListener('click', () => {
+  state.lang = null; state.token = null; state.progress = null; state.langData = null;
+  showScreen('screen-lang');
+  $('navTitle').textContent = 'A Word a Day';
+  $('progBtn').style.display = 'none';
+});
+
+function showProgressScreen() {
+  const p = state.progress;
+  const l = LANGS.find(x => x.code === state.lang);
+  if (!l || !p) return;
+
+  $('progFlag').textContent = l.flag;
+  $('progLangName').textContent = l.name;
+  $('progStatStreak').textContent = p.streak || 0;
+  $('progStatWords').textContent = (p.completedWords || []).length;
+  $('progStatDays').textContent = (p.studyDays || []).length;
+
+  // Tier cards
+  const tierNames = ['','Survival','Communicate','General Vocabulary'];
+  const tierDescs = ['','Get what you need. Navigate, ask for help, order food.','Understand and be understood. Go beyond basic requests.','Everyday vocabulary. Describe the world around you.'];
+  const tiers = $('tierCards');
+  tiers.innerHTML = '';
+
+  for (let t=1; t<=3; t++) {
+    const unlocked = t <= p.tier;
+    const card = document.createElement('div');
+    card.className = 'tier-card' + (unlocked?'':' locked');
+
+    // Status
+    const tierExams = (p.exams||[]).filter(e=>e.tier===t);
+    const allPassed = tierExams.length >= 4 && tierExams.every(e=>e.passed);
+    const status = !unlocked ? 'locked-status' : allPassed ? 'complete-status' : '';
+    const statusText = !unlocked ? 'Locked' : allPassed ? 'Complete' : 'In Progress';
+
+    // Weeks grid
+    const maxWeeks = 4;
+    let weeksHTML = '';
+    for (let w=1; w<=maxWeeks; w++) {
+      const weekNum = (t-1)*4 + w;
+      const isDone = p.week > weekNum || (p.week===weekNum && p.day > 7);
+      const isCurr = p.tier===t && p.week===weekNum;
+      const exam = (p.exams||[]).find(e=>e.tier===t&&e.week===weekNum);
+      const wordsInWeek = (p.completedWords||[]).filter(id=>id.includes(`-${t}-${weekNum}-`)).length;
+      weeksHTML += `<div class="week-cell${isDone?' done-week':''}${isCurr?' current-week':''}">
+        <div class="week-label">W${w}</div>
+        <div class="week-days">${wordsInWeek}/21</div>
+        ${exam ? `<div style="font-size:.6rem;color:${exam.passed?'#4ade80':'#f87171'};margin-top:2px;">${exam.grade||''}</div>` : ''}
+      </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="tier-header">
+        <span class="tier-name">Tier ${t}: ${tierNames[t]}</span>
+        <span class="tier-status ${status}">${statusText}</span>
+      </div>
+      <p style="font-size:.8rem;color:var(--text-sub);">${tierDescs[t]}</p>
+      <div class="weeks-grid">${weeksHTML}</div>`;
+    tiers.appendChild(card);
+  }
+
+  showScreen('screen-progress');
+}
+
+// ══════════════════════════════════════════════════════════
+// ADVANCE DAY (called when day's words not found — shouldn't normally happen)
+// ══════════════════════════════════════════════════════════
+function advanceDay() {
+  // If no words for current day, go to day complete screen
+  showDayComplete();
+}
+
+// ══════════════════════════════════════════════════════════
+// RESUME FROM URL TOKEN
+// ══════════════════════════════════════════════════════════
+async function checkResume() {
+  const params = new URLSearchParams(location.search);
+  const token = params.get('token');
+  if (token) {
+    state.token = token;
+    try {
+      await loadProgress();
+      localStorage.setItem(`wad_token_${state.lang}`, token);
+      await loadLangData();
+      showToast('Welcome back! 👋');
+      gotoLesson();
+    } catch(e) {
+      showToast('Could not find your session. Starting fresh.');
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+buildLangGrid();
+showScreen('screen-lang');
+checkResume();
+</script>
+</body>
+</html>

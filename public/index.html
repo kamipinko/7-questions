@@ -310,6 +310,39 @@
     }
     .panel:hover .panel-arrow { opacity: 1; transform: scale(1); }
 
+    /* ── Word-a-Day strip (below panels) ── */
+    #wad-strip {
+      position: fixed;
+      bottom: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: none;
+    }
+    #split.visible ~ #wad-strip { display: block; }
+    .wad-strip-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      color: var(--gold);
+      border: 1px solid rgba(236,170,39,0.45);
+      border-radius: 100px;
+      padding: 9px 20px;
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .wad-strip-btn:hover {
+      background: rgba(236,170,39,0.1);
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
+
     /* ── Bottom actions bar (always fixed) ── */
     .bottom-actions {
       position: fixed;
@@ -603,6 +636,13 @@
       </div>
     </a>
 
+  </div>
+
+  <!-- ── Word-a-Day strip ── -->
+  <div id="wad-strip">
+    <a href="/word-a-day" class="wad-strip-btn">
+      📚 A Word a Day — Learn a new language
+    </a>
   </div>
 
   <!-- ── Bottom actions (fixed on desktop, scrollable footer on mobile) ── -->
