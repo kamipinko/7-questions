@@ -1100,6 +1100,216 @@ body {
 .tracker-stats { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
 .tracker-empty { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 1rem 0; }
 
+/* ══════════════════════════════════════════════════════
+   LOBBY MODE STYLES
+   ══════════════════════════════════════════════════════ */
+
+/* Entry cards */
+.lobby-entry-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 360px;
+  margin: 1.5rem auto 0;
+  padding: 0 1rem;
+}
+.lobby-entry-card {
+  background: var(--surface);
+  border: 2px solid var(--box-border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  transition: transform 0.15s;
+  width: 100%;
+}
+.lobby-entry-card:active { transform: scale(0.97); }
+.lobby-entry-card .card-label { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+.lobby-entry-card .card-sub   { font-size: 0.85rem; color: var(--muted); }
+
+/* Form */
+.lobby-form {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 1rem;
+}
+.lobby-input-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.lobby-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.lobby-input {
+  background: var(--surface);
+  border: 2px solid var(--box-border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 1rem;
+  padding: 0.7rem 1rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+.lobby-input:focus { border-color: var(--accent); }
+.lobby-code-input {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.lobby-timer-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.lobby-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.lobby-error {
+  color: #ff5555;
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 0.4rem 1rem;
+}
+
+/* Room code */
+.room-code-block { text-align: center; margin: 1rem 1rem 0.5rem; }
+.room-code {
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  background: var(--surface);
+  border: 3px solid var(--box-border);
+  border-radius: var(--radius);
+  padding: 0.6rem 1.5rem;
+  display: inline-block;
+  line-height: 1.1;
+}
+.room-code-hint {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 0.6rem;
+  line-height: 1.5;
+}
+
+/* QR */
+.qr-wrap { display: flex; justify-content: center; margin: 0.5rem 0; }
+.qr-img  { border-radius: 12px; border: 3px solid var(--box-border); display: block; }
+
+/* Waiting team list */
+.waiting-teams {
+  width: 100%;
+  max-width: 380px;
+  margin: 0.5rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0 1rem;
+}
+.waiting-team-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--surface);
+  border: 1.5px solid var(--box-border);
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+}
+.waiting-team-num {
+  width: 1.5rem; height: 1.5rem;
+  background: var(--accent); color: var(--btn-text);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+}
+.waiting-team-name { flex: 1; font-weight: 600; font-size: 0.95rem; }
+.host-chip {
+  font-size: 0.62rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; background: var(--accent); color: var(--btn-text);
+  padding: 0.18rem 0.5rem; border-radius: 20px;
+}
+
+/* Game screen */
+.game-team-badge {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; background: var(--accent); color: var(--btn-text);
+  padding: 0.2rem 0.65rem; border-radius: 20px; white-space: nowrap;
+}
+
+/* Pace warning banner */
+.pace-warning {
+  background: rgba(255,165,0,0.13);
+  border: 1.5px solid orange;
+  border-radius: 10px;
+  color: orange;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  margin: 0.4rem 1rem;
+  text-align: center;
+  line-height: 1.45;
+}
+
+/* Team-done progress */
+.done-progress-list {
+  width: 100%;
+  max-width: 360px;
+  margin: 0.75rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 1rem;
+}
+.progress-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 44px;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.progress-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.progress-bar-wrap { background: var(--surface2); border-radius: 20px; height: 8px; overflow: hidden; }
+.progress-bar     { height: 100%; background: var(--accent); border-radius: 20px; transition: width 0.5s ease; display: block; }
+.progress-count   { text-align: right; color: var(--muted); font-size: 0.8rem; }
+
+/* Vote countdown */
+.vote-countdown {
+  font-size: 3rem; font-weight: 900; color: var(--accent);
+  text-align: center; margin: 0.4rem 0; line-height: 1;
+}
+.vote-muted { text-align: center; color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+
+/* Vote reveal */
+.reveal-bars {
+  width: 100%; max-width: 380px;
+  margin: 1rem auto 0;
+  display: flex; flex-direction: column; gap: 0.9rem;
+  padding: 0 0.5rem;
+}
+.reveal-row { display: flex; align-items: center; gap: 0.75rem; }
+.reveal-rank { font-size: 1.2rem; flex-shrink: 0; width: 2rem; text-align: center; }
+.reveal-team-info { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+.reveal-name { font-weight: 700; font-size: 0.9rem; }
+.reveal-bar-wrap { background: var(--surface2); border-radius: 20px; height: 10px; overflow: hidden; }
+.reveal-bar  { height: 100%; background: var(--accent); border-radius: 20px; transition: width 0.8s ease; }
+.reveal-stats {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 0.1rem; flex-shrink: 0; min-width: 58px;
+}
+.reveal-votes { font-size: 0.78rem; color: var(--muted); }
+.reveal-score { font-size: 0.88rem; font-weight: 700; color: var(--accent); }
+
 /* ── Responsive ────────────────────── */
 @media (max-width: 480px) {
   .card-grid { flex-direction: column; }

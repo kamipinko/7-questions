@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <base href="/play/" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>7 Questions — Lobby</title>
+  <link rel="stylesheet" href="style.css?v=5" />
+  <script>
+    (function() {
+      var saved = localStorage.getItem('7q_theme');
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (dark ? 'dark' : 'light'));
+    })();
+  </script>
+</head>
+<body>
+
+  <header class="site-banner">
+    <div class="banner-inner">
+      <a href="/play" style="text-decoration:none;display:flex;align-items:center;gap:0.5rem;">
+        <span class="banner-logo">7</span>
+        <span class="banner-title">Questions</span>
+      </a>
+    </div>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle light/dark mode">🌙</button>
+  </header>
+
+  <!-- ── Screen: Entry ── -->
+  <div id="screen-entry" class="screen active">
+    <div class="header">
+      <div class="step-label">Lobby Mode</div>
+      <h1>Play Together</h1>
+      <p class="subtitle">Each pair on their own phone</p>
+    </div>
+    <div class="lobby-entry-cards">
+      <button class="lobby-entry-card" id="btn-host">
+        <span class="card-icon">🎮</span>
+        <span class="card-label">Host a Game</span>
+        <span class="card-sub">Create a room for your group</span>
+      </button>
+      <button class="lobby-entry-card" id="btn-join">
+        <span class="card-icon">📱</span>
+        <span class="card-label">Join a Game</span>
+        <span class="card-sub">Enter a room code to join</span>
+      </button>
+    </div>
+    <a href="/play" class="g-back-link" style="display:block;text-align:center;margin-top:1.25rem;">← Back to 7 Questions</a>
+  </div>
+
+  <!-- ── Screen: Host Setup ── -->
+  <div id="screen-host-setup" class="screen">
+    <div class="header">
+      <div class="step-label">Step 1 — Your Team</div>
+      <h1>Host a Game</h1>
+    </div>
+    <div class="lobby-form">
+      <div class="lobby-input-group">
+        <label class="lobby-label">Team Name</label>
+        <input type="text" id="host-team-name" class="lobby-input" placeholder="e.g. Team Thunder" maxlength="24" />
+      </div>
+      <div class="lobby-input-group">
+        <label class="lobby-label">Player 1</label>
+        <input type="text" id="host-p1" class="lobby-input" placeholder="First name" maxlength="20" />
+      </div>
+      <div class="lobby-input-group">
+        <label class="lobby-label">Player 2</label>
+        <input type="text" id="host-p2" class="lobby-input" placeholder="First name" maxlength="20" />
+      </div>
+      <div class="lobby-timer-group">
+        <label class="lobby-label">Game Timer</label>
+        <div class="timer-options">
+          <button class="timer-opt" data-min="5">5 min</button>
+          <button class="timer-opt" data-min="8">8 min</button>
+          <button class="timer-opt selected" data-min="12">12 min</button>
+          <button class="timer-opt" data-min="15">15 min</button>
+          <button class="timer-opt" data-min="20">20 min</button>
+        </div>
+        <p class="lobby-hint">Time for the private question phase — 7 questions per pair</p>
+      </div>
+    </div>
+    <button class="g-primary-btn" id="host-create-btn" disabled>Create Room →</button>
+    <button class="g-back-link" id="host-setup-back">← Back</button>
+  </div>
+
+  <!-- ── Screen: Host Waiting Room ── -->
+  <div id="screen-host-waiting" class="screen">
+    <div class="header" style="margin-bottom:0.5rem;">
+      <div class="step-label">Step 2 — Waiting Room</div>
+      <h1>Share the Code</h1>
+    </div>
+    <div class="room-code-block">
+      <div class="room-code" id="room-code-display">----</div>
+      <p class="room-code-hint">Other pairs open <strong>/play/lobby</strong> and enter this code</p>
+    </div>
+    <div id="host-qr-wrap" class="qr-wrap"></div>
+    <div class="waiting-teams" id="host-team-list"></div>
+    <p class="lobby-hint" id="host-waiting-hint" style="text-align:center;margin:0.5rem 1rem;">Waiting for more teams... (need at least 2)</p>
+    <button class="g-primary-btn" id="host-start-btn" disabled>Start Game →</button>
+  </div>
+
+  <!-- ── Screen: Join Setup ── -->
+  <div id="screen-join-setup" class="screen">
+    <div class="header">
+      <div class="step-label">Join a Game</div>
+      <h1>Enter Room Code</h1>
+    </div>
+    <div class="lobby-form">
+      <div class="lobby-input-group">
+        <label class="lobby-label">Room Code</label>
+        <input type="text" id="join-code" class="lobby-input lobby-code-input" placeholder="XXXX" maxlength="4" autocapitalize="characters" autocomplete="off" />
+      </div>
+      <div class="lobby-input-group">
+        <label class="lobby-label">Team Name</label>
+        <input type="text" id="join-team-name" class="lobby-input" placeholder="e.g. The Wildcards" maxlength="24" />
+      </div>
+      <div class="lobby-input-group">
+        <label class="lobby-label">Player 1</label>
+        <input type="text" id="join-p1" class="lobby-input" placeholder="First name" maxlength="20" />
+      </div>
+      <div class="lobby-input-group">
+        <label class="lobby-label">Player 2</label>
+        <input type="text" id="join-p2" class="lobby-input" placeholder="First name" maxlength="20" />
+      </div>
+    </div>
+    <p id="join-error" class="lobby-error" style="display:none;"></p>
+    <button class="g-primary-btn" id="join-btn" disabled>Join Game →</button>
+    <button class="g-back-link" id="join-setup-back">← Back</button>
+  </div>
+
+  <!-- ── Screen: Join Waiting ── -->
+  <div id="screen-join-waiting" class="screen">
+    <div class="done-content">
+      <div class="done-icon">⏳</div>
+      <h2 class="done-title">You're in!</h2>
+      <p class="done-desc" id="join-room-label"></p>
+      <div class="waiting-teams" id="join-team-list"></div>
+      <p class="lobby-hint" style="text-align:center;margin-top:0.75rem;">Waiting for the host to start...</p>
+    </div>
+  </div>
+
+  <!-- ── Screen: Game (Private Questions) ── -->
+  <div id="screen-game" class="screen">
+    <div class="question-header">
+      <div class="game-team-badge" id="game-team-badge">Team</div>
+      <div class="question-meta">
+        <span id="game-q-counter" class="badge tier1">1 / 7</span>
+      </div>
+      <div id="game-timer-display" class="group-timer">--:--</div>
+    </div>
+    <div id="game-pace-warning" class="pace-warning" style="display:none;"></div>
+    <div class="question-container">
+      <div class="question-card">
+        <p id="game-question-text">Loading...</p>
+      </div>
+    </div>
+    <div class="question-nav">
+      <button class="nav-btn skip-btn" id="game-btn-skip">Skip</button>
+      <button class="nav-btn primary" id="game-btn-next">Next →</button>
+    </div>
+  </div>
+
+  <!-- ── Screen: Team Done (waiting for others) ── -->
+  <div id="screen-team-done" class="screen">
+    <div class="done-content">
+      <div class="done-icon">✅</div>
+      <h2 class="done-title">Nice work!</h2>
+      <p class="done-desc">Your team finished all 7 questions. Waiting for the rest...</p>
+      <div id="done-progress-list" class="done-progress-list"></div>
+      <p class="lobby-hint" style="text-align:center;margin-top:0.75rem;">Voting starts when everyone's done.</p>
+      <button class="skip-link" id="host-force-vote-btn" style="display:none;margin-top:1.25rem;">Skip to Voting →</button>
+    </div>
+  </div>
+
+  <!-- ── Screen: Vote Phase Intro ── -->
+  <div id="screen-vote-intro" class="screen">
+    <div class="done-content">
+      <div class="done-icon">🗳️</div>
+      <h2 class="done-title">Time to Vote!</h2>
+      <p class="done-desc">7 questions coming up. Each team answers out loud — then everyone votes on their own phone for the most interesting answer.</p>
+      <div id="vote-intro-teams" class="vote-teams-preview"></div>
+      <p class="lobby-hint" style="text-align:center;margin-top:1rem;">Get ready — starting in a moment...</p>
+    </div>
+  </div>
+
+  <!-- ── Screen: Vote Question ── -->
+  <div id="screen-vote-question" class="screen">
+    <div class="question-header">
+      <div class="vote-q-label">Voting Round</div>
+      <span id="vote-q-counter" class="badge tier1">1 of 7</span>
+    </div>
+    <div class="question-container">
+      <div class="question-card">
+        <p id="vote-question-text">Loading...</p>
+      </div>
+    </div>
+    <div id="vote-stage-area" class="vote-stage-area"></div>
+  </div>
+
+  <!-- ── Screen: Vote Reveal ── -->
+  <div id="screen-vote-reveal" class="screen">
+    <div class="done-content" style="width:100%;max-width:440px;">
+      <div class="done-icon">📊</div>
+      <h2 class="done-title" id="reveal-q-label">Q1 Results</h2>
+      <div id="reveal-bars" class="reveal-bars"></div>
+      <p class="lobby-hint" style="text-align:center;margin-top:1rem;">Next question coming up...</p>
+    </div>
+  </div>
+
+  <!-- ── Screen: Final Results ── -->
+  <div id="screen-results" class="screen">
+    <div class="done-content">
+      <div class="done-icon">🏆</div>
+      <h2 class="done-title" id="final-title">Game Over!</h2>
+      <p class="done-desc" id="final-subtitle"></p>
+      <div id="final-leaderboard" class="results-leaderboard"></div>
+      <a href="/play/lobby" class="g-primary-btn" style="display:block;text-align:center;margin-top:1.5rem;text-decoration:none;">Play Again →</a>
+      <a href="/play" class="g-back-link" style="display:block;text-align:center;margin-top:0.5rem;">← Back to 7 Questions</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="lobby.js?v=1"></script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 require('dotenv').config();
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -9,6 +11,8 @@ const OpenAI = require('openai');
 const multer = require('multer');
 
 const app = express();
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, { cors: { origin: '*' } });
 const PORT = process.env.PORT || 3000;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 25 * 1024 * 1024 } });
 
@@ -38,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ── Page routes ──
 app.get('/play', (req, res) => res.sendFile(path.join(__dirname, 'public/7q/index.html')));
+app.get('/play/lobby', (req, res) => res.sendFile(path.join(__dirname, 'public/7q/lobby.html')));
 app.get('/autobiography', (req, res) => res.sendFile(path.join(__dirname, 'public/autobiography/index.html')));
 
 // ════════════════════════════════════════
@@ -489,6 +494,216 @@ app.get('/api/admin/data', (req, res) => {
 
 // ════════════════════════════════════════
 
-app.listen(PORT, () => {
+// ════════════════════════════════════════
+// LOBBY MULTIPLAYER — Socket.io
+// ════════════════════════════════════════
+
+const rooms = new Map(); // code → room
+
+function genRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code;
+  do {
+    code = Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  } while (rooms.has(code));
+  return code;
+}
+
+function sanitizeRoom(room) {
+  return {
+    code: room.code,
+    timerMinutes: room.timerMinutes,
+    status: room.status,
+    teams: room.teams.map(t => ({ id: t.id, name: t.name, p1: t.p1, p2: t.p2, answered: t.answered, done: t.done })),
+  };
+}
+
+function startVoting(room) {
+  if (room.status !== 'playing') return;
+  room.status = 'voting';
+  room.voteQIdx = 0;
+  room.votedThisQ = new Set();
+  io.to(room.code).emit('vote-phase-start', {
+    voteQs: room.voteQs,
+    teams: room.teams.map(t => ({ id: t.id, name: t.name, p1: t.p1, p2: t.p2 })),
+  });
+  setTimeout(() => sendVoteQuestion(room), 4000);
+}
+
+function sendVoteQuestion(room) {
+  if (room.status !== 'voting') return;
+  room.votedThisQ = new Set();
+  if (!room.votesPerQ[room.voteQIdx]) room.votesPerQ[room.voteQIdx] = {};
+  io.to(room.code).emit('vote-question', {
+    qIdx: room.voteQIdx,
+    question: room.voteQs[room.voteQIdx],
+  });
+  clearTimeout(room.voteTimeout);
+  room.voteTimeout = setTimeout(() => revealVoteResults(room), 60000);
+}
+
+function revealVoteResults(room) {
+  clearTimeout(room.voteTimeout);
+  const qIdx = room.voteQIdx;
+  const votes = room.votesPerQ[qIdx] || {};
+  const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
+
+  room.teams.forEach(t => {
+    const v = votes[t.id] || 0;
+    if (totalVotes > 0) {
+      room.scores[t.id] = (room.scores[t.id] || 0) + Math.round((v / totalVotes) * 1000);
+    }
+  });
+
+  const results = room.teams
+    .map(t => ({ id: t.id, name: t.name, p1: t.p1, p2: t.p2, votes: votes[t.id] || 0, score: room.scores[t.id] || 0 }))
+    .sort((a, b) => b.votes - a.votes);
+
+  io.to(room.code).emit('vote-results', { qIdx, results });
+
+  setTimeout(() => {
+    room.voteQIdx++;
+    if (room.voteQIdx >= room.voteQs.length) {
+      endGame(room);
+    } else {
+      sendVoteQuestion(room);
+    }
+  }, 5000);
+}
+
+function endGame(room) {
+  room.status = 'done';
+  const sorted = room.teams
+    .map(t => ({ id: t.id, name: t.name, p1: t.p1, p2: t.p2, score: room.scores[t.id] || 0 }))
+    .sort((a, b) => b.score - a.score);
+  io.to(room.code).emit('game-ended', { results: sorted });
+  setTimeout(() => rooms.delete(room.code), 30 * 60 * 1000);
+}
+
+io.on('connection', socket => {
+  socket.on('create-room', ({ timerMinutes, teamName, p1, p2 }) => {
+    const code = genRoomCode();
+    const teamId = 'team_' + Date.now();
+    const team = { id: teamId, name: teamName || 'Team 1', p1: p1 || 'Player 1', p2: p2 || 'Player 2', socketId: socket.id, answered: 0, done: false };
+    const room = {
+      code, hostSocketId: socket.id,
+      timerMinutes: timerMinutes || 12,
+      teams: [team], status: 'waiting',
+      privateQsByTeam: {}, voteQs: [],
+      voteQIdx: 0, votesPerQ: {}, votedThisQ: new Set(),
+      scores: { [teamId]: 0 },
+      timerEnd: null, gameStartedAt: null, voteTimeout: null,
+    };
+    rooms.set(code, room);
+    socket.join(code);
+    socket.data.roomCode = code;
+    socket.data.teamId = teamId;
+    socket.emit('room-created', { code, teamId, team: sanitizeRoom(room).teams[0] });
+  });
+
+  socket.on('join-room', ({ code, teamName, p1, p2 }) => {
+    const upper = (code || '').toUpperCase();
+    const room = rooms.get(upper);
+    if (!room) { socket.emit('join-error', { message: 'Room not found. Check the code and try again.' }); return; }
+    if (room.status !== 'waiting') { socket.emit('join-error', { message: 'This game has already started.' }); return; }
+    if (room.teams.length >= 8) { socket.emit('join-error', { message: 'This room is full (max 8 teams).' }); return; }
+
+    const teamId = 'team_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5);
+    const team = { id: teamId, name: teamName || `Team ${room.teams.length + 1}`, p1: p1 || 'Player 1', p2: p2 || 'Player 2', socketId: socket.id, answered: 0, done: false };
+    room.teams.push(team);
+    room.scores[teamId] = 0;
+    socket.join(upper);
+    socket.data.roomCode = upper;
+    socket.data.teamId = teamId;
+
+    socket.emit('room-joined', { room: sanitizeRoom(room), teamId });
+    socket.to(upper).emit('team-joined', { team: { id: team.id, name: team.name, p1: team.p1, p2: team.p2, answered: 0, done: false } });
+  });
+
+  socket.on('start-game', ({ code }) => {
+    const room = rooms.get(code);
+    if (!room || room.hostSocketId !== socket.id) return;
+    if (room.teams.length < 2) { socket.emit('join-error', { message: 'Need at least 2 teams to start.' }); return; }
+    if (room.status !== 'waiting') return;
+
+    const privatePool = questions.filter(q => q.tier === 1 && q.relations.includes('group_private'));
+    const votePool = questions.filter(q => q.tier === 1 && q.relations.includes('group_vote'));
+
+    room.teams.forEach(team => {
+      room.privateQsByTeam[team.id] = [...privatePool].sort(() => Math.random() - 0.5).slice(0, 7);
+    });
+    room.voteQs = [...votePool].sort(() => Math.random() - 0.5).slice(0, 7);
+    room.status = 'playing';
+    room.gameStartedAt = Date.now();
+    room.timerEnd = Date.now() + room.timerMinutes * 60 * 1000;
+
+    room.teams.forEach(team => {
+      io.to(team.socketId).emit('game-started', {
+        questions: room.privateQsByTeam[team.id],
+        timerMinutes: room.timerMinutes,
+        timerEnd: room.timerEnd,
+        teams: room.teams.map(t => ({ id: t.id, name: t.name })),
+        teamId: team.id,
+        isHost: team.socketId === room.hostSocketId,
+      });
+    });
+  });
+
+  socket.on('progress-update', ({ code, answered }) => {
+    const room = rooms.get(code);
+    if (!room) return;
+    const team = room.teams.find(t => t.socketId === socket.id);
+    if (!team) return;
+    team.answered = answered;
+    io.to(code).emit('team-progress', { teamId: team.id, answered, done: false });
+  });
+
+  socket.on('team-done', ({ code }) => {
+    const room = rooms.get(code);
+    if (!room) return;
+    const team = room.teams.find(t => t.socketId === socket.id);
+    if (!team) return;
+    team.done = true;
+    team.answered = 7;
+    io.to(code).emit('team-progress', { teamId: team.id, answered: 7, done: true });
+    if (room.status === 'playing' && room.teams.every(t => t.done)) {
+      startVoting(room);
+    }
+  });
+
+  socket.on('force-vote', ({ code }) => {
+    const room = rooms.get(code);
+    if (!room || room.hostSocketId !== socket.id) return;
+    startVoting(room);
+  });
+
+  socket.on('cast-vote', ({ code, forTeamId }) => {
+    const room = rooms.get(code);
+    if (!room || room.status !== 'voting') return;
+    if (room.votedThisQ.has(socket.id)) return;
+    room.votedThisQ.add(socket.id);
+    const qIdx = room.voteQIdx;
+    if (!room.votesPerQ[qIdx]) room.votesPerQ[qIdx] = {};
+    room.votesPerQ[qIdx][forTeamId] = (room.votesPerQ[qIdx][forTeamId] || 0) + 1;
+    if (room.votedThisQ.size >= room.teams.length) {
+      revealVoteResults(room);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    const code = socket.data.roomCode;
+    if (!code) return;
+    const room = rooms.get(code);
+    if (!room) return;
+    if (room.hostSocketId === socket.id && room.status === 'waiting') {
+      io.to(code).emit('host-disconnected');
+      rooms.delete(code);
+    }
+  });
+});
+
+// ════════════════════════════════════════
+
+httpServer.listen(PORT, () => {
   console.log(`Stop & Connect running on http://localhost:${PORT}`);
 });
