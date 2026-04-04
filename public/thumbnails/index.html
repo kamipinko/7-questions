@@ -383,9 +383,46 @@
       font-size: 0.75rem;
       color: #aaa;
     }
+
+    /* ── Scene illustration layer ── */
+    .scene-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .scene-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+    .scene-svg.active { display: block; }
   </style>
 </head>
 <body>
+
+  <!-- Shared gradient defs (referenced by scene SVGs) -->
+  <svg style="display:none;position:absolute;width:0;height:0" aria-hidden="true">
+    <defs>
+      <radialGradient id="g_party_yt" cx="0" cy="0" r="1">
+        <stop offset="0%" stop-color="#8030c0" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#8030c0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="g_sun_yt" cx="1" cy="1" r="1">
+        <stop offset="0%" stop-color="#ECAA27" stop-opacity="0.30"/>
+        <stop offset="100%" stop-color="#ECAA27" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="g_party_ig" cx="0.1" cy="0.1" r="0.9">
+        <stop offset="0%" stop-color="#8030c0" stop-opacity="0.20"/>
+        <stop offset="100%" stop-color="#8030c0" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="g_sun_ig" cx="0.9" cy="0.1" r="0.9">
+        <stop offset="0%" stop-color="#ECAA27" stop-opacity="0.28"/>
+        <stop offset="100%" stop-color="#ECAA27" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+  </svg>
 
   <h1>✦ Proles Kitchen</h1>
   <p class="subtitle">Thumbnail Generator — Philosophy & Lifestyle</p>
@@ -413,6 +450,14 @@
       <input type="text" id="ctrl-bg" placeholder="/thumbnails/bg_fulfillment.jpg" style="width:260px;" />
     </div>
     <div class="control-group">
+      <label>Visual Scene</label>
+      <select id="ctrl-scene">
+        <option value="crossroads" selected>Crossroads</option>
+        <option value="thinker">Thinker</option>
+        <option value="none">None</option>
+      </select>
+    </div>
+    <div class="control-group">
       <label>&nbsp;</label>
       <button class="btn-export" onclick="applyControls()">Apply Changes</button>
     </div>
@@ -430,6 +475,55 @@
         <img class="yt-bg" id="yt-bg-img-1" src="" style="display:none;" alt="" />
         <div class="yt-split"></div>
         <div class="yt-vignette"></div>
+        <div class="scene-layer">
+          <svg class="scene-svg crossroads-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="360" height="360" fill="url(#g_party_yt)"/>
+            <rect x="280" y="0" width="360" height="360" fill="url(#g_sun_yt)"/>
+            <circle cx="22" cy="28" r="1.5" fill="white" opacity="0.75"/>
+            <circle cx="58" cy="14" r="1" fill="white" opacity="0.55"/>
+            <circle cx="96" cy="48" r="2" fill="white" opacity="0.80"/>
+            <circle cx="143" cy="22" r="1.5" fill="white" opacity="0.60"/>
+            <circle cx="178" cy="65" r="1" fill="white" opacity="0.45"/>
+            <circle cx="215" cy="38" r="2" fill="white" opacity="0.70"/>
+            <circle cx="268" cy="18" r="1.5" fill="white" opacity="0.50"/>
+            <circle cx="302" cy="55" r="1" fill="white" opacity="0.65"/>
+            <circle cx="42" cy="88" r="1" fill="white" opacity="0.45"/>
+            <circle cx="118" cy="82" r="1.5" fill="white" opacity="0.40"/>
+            <circle cx="248" cy="80" r="1" fill="white" opacity="0.55"/>
+            <circle cx="72" cy="108" r="1.5" fill="white" opacity="0.35"/>
+            <path d="M152,28 Q176,12 196,24 Q170,36 175,60 Q148,52 152,28Z" fill="rgba(255,252,185,0.62)"/>
+            <line x1="640" y1="360" x2="345" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="390" y2="28" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="442" y2="12" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="500" y2="8"  stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="568" y2="18" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="622" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="500" cy="82" r="25" stroke="none"/>
+              <path d="M492,105 Q500,108 508,105 L506,122 Q500,125 494,122Z" stroke="none"/>
+              <path d="M462,122 Q500,117 538,122 L534,210 Q510,218 500,217 Q490,218 466,210Z" stroke="none"/>
+              <path d="M465,128 Q447,162 448,188" stroke-width="17" fill="none"/>
+              <path d="M448,188 Q457,155 482,90" stroke-width="15" fill="none"/>
+              <circle cx="482" cy="88" r="11" stroke="none"/>
+              <path d="M535,130 Q556,178 550,225" stroke-width="17" fill="none"/>
+              <path d="M475,212 Q467,278 470,355" stroke-width="22" fill="none"/>
+              <path d="M525,212 Q533,278 530,355" stroke-width="22" fill="none"/>
+            </g>
+          </svg>
+          <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="462" cy="108" r="27" stroke="none"/>
+              <path d="M440,148 Q480,142 492,148 Q510,178 520,220 Q526,258 528,295" stroke-width="36" fill="none"/>
+              <path d="M512,295 Q485,280 455,258" stroke-width="28" fill="none"/>
+              <path d="M455,258 Q450,300 448,345" stroke-width="24" fill="none"/>
+              <path d="M525,295 Q558,320 588,342" stroke-width="28" fill="none"/>
+              <path d="M442,155 Q446,205 455,258" stroke-width="20" fill="none"/>
+              <path d="M455,258 Q456,195 458,120" stroke-width="18" fill="none"/>
+              <circle cx="458" cy="114" r="13" stroke="none"/>
+              <path d="M480,152 Q518,215 535,268" stroke-width="20" fill="none"/>
+            </g>
+          </svg>
+        </div>
         <div class="yt-text">
           <div class="yt-eyebrow" id="yt-eyebrow-1"></div>
           <div class="yt-headline" id="yt-headline-1">
@@ -450,6 +544,55 @@
         <img class="yt-bg" id="yt-bg-img-2" src="" style="display:none;" alt="" />
         <div class="yt-split"></div>
         <div class="yt-vignette"></div>
+        <div class="scene-layer">
+          <svg class="scene-svg crossroads-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="360" height="360" fill="url(#g_party_yt)"/>
+            <rect x="280" y="0" width="360" height="360" fill="url(#g_sun_yt)"/>
+            <circle cx="22" cy="28" r="1.5" fill="white" opacity="0.75"/>
+            <circle cx="58" cy="14" r="1" fill="white" opacity="0.55"/>
+            <circle cx="96" cy="48" r="2" fill="white" opacity="0.80"/>
+            <circle cx="143" cy="22" r="1.5" fill="white" opacity="0.60"/>
+            <circle cx="178" cy="65" r="1" fill="white" opacity="0.45"/>
+            <circle cx="215" cy="38" r="2" fill="white" opacity="0.70"/>
+            <circle cx="268" cy="18" r="1.5" fill="white" opacity="0.50"/>
+            <circle cx="302" cy="55" r="1" fill="white" opacity="0.65"/>
+            <circle cx="42" cy="88" r="1" fill="white" opacity="0.45"/>
+            <circle cx="118" cy="82" r="1.5" fill="white" opacity="0.40"/>
+            <circle cx="248" cy="80" r="1" fill="white" opacity="0.55"/>
+            <circle cx="72" cy="108" r="1.5" fill="white" opacity="0.35"/>
+            <path d="M152,28 Q176,12 196,24 Q170,36 175,60 Q148,52 152,28Z" fill="rgba(255,252,185,0.62)"/>
+            <line x1="640" y1="360" x2="345" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="390" y2="28" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="442" y2="12" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="500" y2="8"  stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="568" y2="18" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
+            <line x1="640" y1="360" x2="622" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="500" cy="82" r="25" stroke="none"/>
+              <path d="M492,105 Q500,108 508,105 L506,122 Q500,125 494,122Z" stroke="none"/>
+              <path d="M462,122 Q500,117 538,122 L534,210 Q510,218 500,217 Q490,218 466,210Z" stroke="none"/>
+              <path d="M465,128 Q447,162 448,188" stroke-width="17" fill="none"/>
+              <path d="M448,188 Q457,155 482,90" stroke-width="15" fill="none"/>
+              <circle cx="482" cy="88" r="11" stroke="none"/>
+              <path d="M535,130 Q556,178 550,225" stroke-width="17" fill="none"/>
+              <path d="M475,212 Q467,278 470,355" stroke-width="22" fill="none"/>
+              <path d="M525,212 Q533,278 530,355" stroke-width="22" fill="none"/>
+            </g>
+          </svg>
+          <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="462" cy="108" r="27" stroke="none"/>
+              <path d="M440,148 Q480,142 492,148 Q510,178 520,220 Q526,258 528,295" stroke-width="36" fill="none"/>
+              <path d="M512,295 Q485,280 455,258" stroke-width="28" fill="none"/>
+              <path d="M455,258 Q450,300 448,345" stroke-width="24" fill="none"/>
+              <path d="M525,295 Q558,320 588,342" stroke-width="28" fill="none"/>
+              <path d="M442,155 Q446,205 455,258" stroke-width="20" fill="none"/>
+              <path d="M455,258 Q456,195 458,120" stroke-width="18" fill="none"/>
+              <circle cx="458" cy="114" r="13" stroke="none"/>
+              <path d="M480,152 Q518,215 535,268" stroke-width="20" fill="none"/>
+            </g>
+          </svg>
+        </div>
         <div class="yt-brand">
           <div class="yt-brand-mark">Proles Kitchen</div>
           <div class="yt-brand-line"></div>
@@ -480,6 +623,53 @@
         <img class="ig-bg" id="ig-bg-img-1" src="" style="display:none;" alt="" />
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
+        <div class="scene-layer">
+          <svg class="scene-svg crossroads-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="180" height="533" fill="url(#g_party_ig)"/>
+            <rect x="120" y="0" width="180" height="533" fill="url(#g_sun_ig)"/>
+            <circle cx="18" cy="22" r="1.5" fill="white" opacity="0.72"/>
+            <circle cx="48" cy="12" r="1" fill="white" opacity="0.55"/>
+            <circle cx="82" cy="38" r="2" fill="white" opacity="0.78"/>
+            <circle cx="115" cy="18" r="1.5" fill="white" opacity="0.60"/>
+            <circle cx="32" cy="65" r="1" fill="white" opacity="0.45"/>
+            <circle cx="75" cy="80" r="1.5" fill="white" opacity="0.40"/>
+            <circle cx="148" cy="25" r="1" fill="white" opacity="0.50"/>
+            <circle cx="175" cy="55" r="1.5" fill="white" opacity="0.35"/>
+            <circle cx="200" cy="28" r="2" fill="white" opacity="0.65"/>
+            <circle cx="255" cy="45" r="1" fill="white" opacity="0.50"/>
+            <circle cx="280" cy="22" r="1.5" fill="white" opacity="0.58"/>
+            <path d="M55,32 Q72,18 88,28 Q68,38 72,58 Q48,50 55,32Z" fill="rgba(255,252,185,0.58)"/>
+            <line x1="300" y1="0" x2="80"  y2="230" stroke="rgba(236,170,39,0.20)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="115" y2="235" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="152" y2="238" stroke="rgba(236,170,39,0.12)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="190" y2="235" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="240" y2="228" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="152" cy="148" r="28" stroke="none"/>
+              <path d="M144,174 Q152,178 160,174 L158,192 Q152,195 146,192Z" stroke="none"/>
+              <path d="M114,192 Q152,186 190,192 L186,292 Q162,300 152,299 Q142,300 118,292Z" stroke="none"/>
+              <path d="M117,198 Q98,236 99,264" stroke-width="20" fill="none"/>
+              <path d="M99,264 Q110,228 136,156" stroke-width="18" fill="none"/>
+              <circle cx="137" cy="153" r="13" stroke="none"/>
+              <path d="M187,200 Q210,256 205,310" stroke-width="20" fill="none"/>
+              <path d="M128,294 Q120,372 123,460" stroke-width="26" fill="none"/>
+              <path d="M176,294 Q184,372 181,460" stroke-width="26" fill="none"/>
+            </g>
+          </svg>
+          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="148" cy="112" r="30" stroke="none"/>
+              <path d="M128,150 Q166,144 178,150 Q195,185 204,228 Q210,264 213,305" stroke-width="42" fill="none"/>
+              <path d="M200,305 Q172,288 142,262" stroke-width="32" fill="none"/>
+              <path d="M142,262 Q137,308 135,368" stroke-width="28" fill="none"/>
+              <path d="M215,305 Q248,332 275,352" stroke-width="32" fill="none"/>
+              <path d="M128,162 Q132,212 142,262" stroke-width="24" fill="none"/>
+              <path d="M142,262 Q144,198 148,124" stroke-width="21" fill="none"/>
+              <circle cx="148" cy="118" r="16" stroke="none"/>
+              <path d="M166,158 Q206,225 220,280" stroke-width="24" fill="none"/>
+            </g>
+          </svg>
+        </div>
         <div class="ig-text">
           <div class="ig-eyebrow" id="ig-eyebrow-1"></div>
           <div class="ig-headline" id="ig-headline-1">
@@ -499,6 +689,53 @@
         <img class="ig-bg" id="ig-bg-img-2" src="" style="display:none;" alt="" />
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
+        <div class="scene-layer">
+          <svg class="scene-svg crossroads-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="180" height="533" fill="url(#g_party_ig)"/>
+            <rect x="120" y="0" width="180" height="533" fill="url(#g_sun_ig)"/>
+            <circle cx="18" cy="22" r="1.5" fill="white" opacity="0.72"/>
+            <circle cx="48" cy="12" r="1" fill="white" opacity="0.55"/>
+            <circle cx="82" cy="38" r="2" fill="white" opacity="0.78"/>
+            <circle cx="115" cy="18" r="1.5" fill="white" opacity="0.60"/>
+            <circle cx="32" cy="65" r="1" fill="white" opacity="0.45"/>
+            <circle cx="75" cy="80" r="1.5" fill="white" opacity="0.40"/>
+            <circle cx="148" cy="25" r="1" fill="white" opacity="0.50"/>
+            <circle cx="175" cy="55" r="1.5" fill="white" opacity="0.35"/>
+            <circle cx="200" cy="28" r="2" fill="white" opacity="0.65"/>
+            <circle cx="255" cy="45" r="1" fill="white" opacity="0.50"/>
+            <circle cx="280" cy="22" r="1.5" fill="white" opacity="0.58"/>
+            <path d="M55,32 Q72,18 88,28 Q68,38 72,58 Q48,50 55,32Z" fill="rgba(255,252,185,0.58)"/>
+            <line x1="300" y1="0" x2="80"  y2="230" stroke="rgba(236,170,39,0.20)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="115" y2="235" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="152" y2="238" stroke="rgba(236,170,39,0.12)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="190" y2="235" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
+            <line x1="300" y1="0" x2="240" y2="228" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="152" cy="148" r="28" stroke="none"/>
+              <path d="M144,174 Q152,178 160,174 L158,192 Q152,195 146,192Z" stroke="none"/>
+              <path d="M114,192 Q152,186 190,192 L186,292 Q162,300 152,299 Q142,300 118,292Z" stroke="none"/>
+              <path d="M117,198 Q98,236 99,264" stroke-width="20" fill="none"/>
+              <path d="M99,264 Q110,228 136,156" stroke-width="18" fill="none"/>
+              <circle cx="137" cy="153" r="13" stroke="none"/>
+              <path d="M187,200 Q210,256 205,310" stroke-width="20" fill="none"/>
+              <path d="M128,294 Q120,372 123,460" stroke-width="26" fill="none"/>
+              <path d="M176,294 Q184,372 181,460" stroke-width="26" fill="none"/>
+            </g>
+          </svg>
+          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
+              <circle cx="148" cy="112" r="30" stroke="none"/>
+              <path d="M128,150 Q166,144 178,150 Q195,185 204,228 Q210,264 213,305" stroke-width="42" fill="none"/>
+              <path d="M200,305 Q172,288 142,262" stroke-width="32" fill="none"/>
+              <path d="M142,262 Q137,308 135,368" stroke-width="28" fill="none"/>
+              <path d="M215,305 Q248,332 275,352" stroke-width="32" fill="none"/>
+              <path d="M128,162 Q132,212 142,262" stroke-width="24" fill="none"/>
+              <path d="M142,262 Q144,198 148,124" stroke-width="21" fill="none"/>
+              <circle cx="148" cy="118" r="16" stroke="none"/>
+              <path d="M166,158 Q206,225 220,280" stroke-width="24" fill="none"/>
+            </g>
+          </svg>
+        </div>
         <div class="ig-brand">
           <div class="ig-brand-mark">✦ Proles Kitchen</div>
           <div class="ig-brand-line"></div>
@@ -530,40 +767,44 @@
       const eyebrow  = document.getElementById('ctrl-eyebrow').value;
       const accent   = document.getElementById('ctrl-accent').value.toUpperCase();
       const bgUrl    = document.getElementById('ctrl-bg').value.trim();
+      const scene    = document.getElementById('ctrl-scene').value;
 
-      // Build headline HTML — replace accent word with gold span
-      function buildHeadline(raw, isIG) {
+      function buildHeadline(raw) {
         let lines = raw.split('|');
-        let html  = lines.map((line, i) => {
-          let words = line.toUpperCase().split(' ').map(w => {
-            if (accent && w === accent) return `<span class="accent-word">${w}</span>`;
-            return w;
-          }).join(' ');
+        return lines.map((line, i) => {
+          let words = line.toUpperCase().split(' ').map(w =>
+            (accent && w === accent) ? `<span class="accent-word">${w}</span>` : w
+          ).join(' ');
           return words + (i < lines.length - 1 ? '<br>' : '');
         }).join('');
-        return html;
       }
 
       ['1','2'].forEach(n => {
         document.getElementById(`yt-eyebrow-${n}`).textContent  = eyebrow;
         document.getElementById(`yt-subline-${n}`).textContent  = subline;
-        document.getElementById(`yt-headline-${n}`).innerHTML   = buildHeadline(headline, false);
+        document.getElementById(`yt-headline-${n}`).innerHTML   = buildHeadline(headline);
         document.getElementById(`ig-eyebrow-${n}`).textContent  = eyebrow;
         document.getElementById(`ig-subline-${n}`).textContent  = subline;
-        document.getElementById(`ig-headline-${n}`).innerHTML   = buildHeadline(headline, true);
+        document.getElementById(`ig-headline-${n}`).innerHTML   = buildHeadline(headline);
       });
 
-      // Background image
       ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
         const img = document.getElementById(id);
-        if (bgUrl) {
-          img.src = bgUrl;
-          img.style.display = 'block';
-        } else {
-          img.style.display = 'none';
-        }
+        if (bgUrl) { img.src = bgUrl; img.style.display = 'block'; }
+        else        { img.style.display = 'none'; }
       });
+
+      setScene(scene);
     }
+
+    function setScene(scene) {
+      document.querySelectorAll('.crossroads-svg').forEach(el =>
+        el.classList.toggle('active', scene === 'crossroads'));
+      document.querySelectorAll('.thinker-svg').forEach(el =>
+        el.classList.toggle('active', scene === 'thinker'));
+    }
+
+    setScene(document.getElementById('ctrl-scene').value);
   </script>
 </body>
 </html>
