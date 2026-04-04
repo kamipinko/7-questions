@@ -1175,7 +1175,19 @@ body {
 }
 @media (max-width: 600px) {
   #feedback-fab::after { content: ''; }
-  #feedback-fab { padding: 12px 14px; border-radius: 50%; font-size: 1.1rem; }
+  #feedback-fab {
+    padding: 12px 14px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    bottom: 24px;
+    right: 80px;
+  }
+  .kofi-btn {
+    padding: 12px 14px;
+    border-radius: 50%;
+    gap: 0;
+  }
+  .kofi-btn span:last-child { display: none; }
 }
 
 /* ── Rating Buttons ── */

@@ -44,6 +44,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/play', (req, res) => res.sendFile(path.join(__dirname, 'public/7q/index.html')));
 app.get('/play/lobby', (req, res) => res.sendFile(path.join(__dirname, 'public/7q/lobby.html')));
 app.get('/autobiography', (req, res) => res.sendFile(path.join(__dirname, 'public/autobiography/index.html')));
+app.get('/autobiography/feedback', (req, res) => res.sendFile(path.join(__dirname, 'public/autobiography/feedback.html')));
 
 // ════════════════════════════════════════
 // 7 QUESTIONS API

@@ -1001,7 +1001,7 @@ async function init() {
   document.getElementById('export-epub-btn').addEventListener('click', exportEpub);
   document.getElementById('send-email-btn').addEventListener('click', openEmailModal);
   document.getElementById('recordings-btn').addEventListener('click', openRecordingsModal);
-  document.getElementById('feedback-fab').addEventListener('click', openFeedbackModal);
+  document.getElementById('feedback-fab').addEventListener('click', () => { window.location.href = '/autobiography/feedback'; });
 
   // Feedback modal
   let selectedRating = 0;

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light" />
+  <title>Feedback — Auto-Biography</title>
+  <link rel="stylesheet" href="/autobiography/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('ab_theme');
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (dark ? 'dark' : 'light'));
+    })();
+  </script>
+  <style>
+    .feedback-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .feedback-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .feedback-banner-logo {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .feedback-banner-logo:hover { opacity: 0.75; }
+    .feedback-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 24px 80px;
+    }
+    .feedback-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+    }
+    .feedback-card h1 {
+      font-family: var(--font-serif);
+      font-size: 1.7rem;
+      color: var(--heading);
+      margin-bottom: 8px;
+    }
+    .feedback-card .subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+    .feedback-submit-btn {
+      width: 100%;
+      margin-top: 8px;
+    }
+    #feedback-page-status {
+      margin-top: 12px;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    #feedback-page-status.success { color: #4caf50; }
+    #feedback-page-status.error { color: #e05252; }
+    @media (max-width: 600px) {
+      .feedback-card { padding: 24px 18px; }
+      .feedback-card h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="feedback-page">
+    <header class="feedback-banner">
+      <a href="/autobiography" class="feedback-banner-logo">✦ Auto-Biography</a>
+    </header>
+
+    <div class="feedback-body">
+      <div class="feedback-card">
+        <h1>Leave Feedback</h1>
+        <p class="subtitle">How was your experience? Let us know what worked or what could be better.</p>
+
+        <div class="field">
+          <label>Rating</label>
+          <div class="rating-row" id="rating-row">
+            <button class="rating-btn" data-val="1">1</button>
+            <button class="rating-btn" data-val="2">2</button>
+            <button class="rating-btn" data-val="3">3</button>
+            <button class="rating-btn" data-val="4">4</button>
+            <button class="rating-btn" data-val="5">5 ★</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Your email <span class="field-optional">(optional — so we can follow up)</span></label>
+          <input type="email" id="feedback-email" placeholder="your@email.com" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label>Message <span class="field-optional">(optional)</span></label>
+          <textarea id="feedback-message" class="prompt-textarea" rows="4" placeholder="Tell us what you think..."></textarea>
+        </div>
+
+        <div id="feedback-page-status" class="modal-status"></div>
+
+        <button id="feedback-send-btn" class="btn-primary feedback-submit-btn">Send feedback →</button>
+
+        <div class="kofi-modal-cta" style="margin-top: 28px;">
+          <p class="kofi-modal-cta-title">☕ Keep this alive</p>
+          <p class="kofi-modal-cta-desc">This app is free to use. Donations keep the servers running and help fund new features.</p>
+          <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-modal-link">☕ Donate on Ko-fi →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedRating = 0;
+
+    document.querySelectorAll('.rating-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedRating = parseInt(btn.dataset.val);
+        document.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    document.getElementById('feedback-send-btn').addEventListener('click', async () => {
+      const message = document.getElementById('feedback-message').value.trim();
+      const email = document.getElementById('feedback-email').value.trim();
+      const statusEl = document.getElementById('feedback-page-status');
+      const sendBtn = document.getElementById('feedback-send-btn');
+
+      if (!selectedRating && !message) {
+        alert('Please add a rating or message.');
+        return;
+      }
+
+      sendBtn.textContent = 'Sending...';
+      sendBtn.disabled = true;
+
+      try {
+        await fetch('/api/log/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            email: email || null,
+            rating: selectedRating || null,
+            source: 'autobiography-feedback-page'
+          })
+        });
+        statusEl.className = 'modal-status success';
+        statusEl.textContent = 'Thanks for the feedback!';
+        sendBtn.textContent = 'Sent ✓';
+      } catch {
+        statusEl.className = 'modal-status error';
+        statusEl.textContent = 'Could not send. Try again.';
+        sendBtn.textContent = 'Send feedback →';
+        sendBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
