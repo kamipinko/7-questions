@@ -49,6 +49,52 @@ app.get('/autobiography/feedback', (req, res) => res.sendFile(path.join(__dirnam
 app.get('/thumbnails', (req, res) => res.sendFile(path.join(__dirname, 'public/thumbnails/index.html')));
 
 // ════════════════════════════════════════
+// THUMBNAIL — AI BACKGROUND GENERATION
+// ════════════════════════════════════════
+
+app.post('/api/generate-bg', express.json(), async (req, res) => {
+  const { prompt, provider = 'dalle' } = req.body;
+  if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
+
+  try {
+    if (provider === 'gemini') {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not set in Railway env vars' });
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instances: [{ prompt }], parameters: { sampleCount: 1 } })
+        }
+      );
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error?.message || 'Gemini generation failed');
+      const b64 = d.predictions[0].bytesBase64Encoded;
+      const mime = d.predictions[0].mimeType || 'image/jpeg';
+      return res.json({ dataUrl: `data:${mime};base64,${b64}` });
+    }
+
+    // DALL-E 3 (default)
+    if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set' });
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const result = await openai.images.generate({
+      model: 'dall-e-3',
+      prompt,
+      n: 1,
+      size: '1792x1024',
+      quality: 'standard',
+      response_format: 'b64_json'
+    });
+    res.json({ dataUrl: `data:image/png;base64,${result.data[0].b64_json}` });
+
+  } catch (err) {
+    console.error('[generate-bg]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ════════════════════════════════════════
 // 7 QUESTIONS API
 // ════════════════════════════════════════
 

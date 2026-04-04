@@ -384,6 +384,26 @@
       color: #aaa;
     }
 
+    /* ── AI Generation section ── */
+    .ai-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 18px;
+      border-top: 1px solid #222;
+      margin-top: 8px;
+    }
+    .ai-section-title {
+      font-size: 0.7rem;
+      color: #ECAA27;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .ai-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+    #ai-status { font-size: 0.78rem; min-height: 16px; color: #666; }
+    #btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+
     /* ── Scene illustration layer ── */
     .scene-layer {
       position: absolute;
@@ -460,6 +480,29 @@
     <div class="control-group">
       <label>&nbsp;</label>
       <button class="btn-export" onclick="applyControls()">Apply Changes</button>
+    </div>
+
+    <!-- AI Background Generation -->
+    <div class="ai-section">
+      <div class="ai-section-title">✦ AI Background Generator</div>
+      <div class="ai-row">
+        <div class="control-group">
+          <label>Image prompt</label>
+          <textarea id="ctrl-ai-prompt" placeholder="cinematic dark moody city at night, rain-slicked streets, neon reflections, dramatic atmospheric lighting..."></textarea>
+        </div>
+        <div class="control-group">
+          <label>Provider</label>
+          <select id="ctrl-ai-provider">
+            <option value="dalle">DALL-E 3</option>
+            <option value="gemini">Gemini Imagen</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>&nbsp;</label>
+          <button class="btn-export" id="btn-generate" onclick="generateBg()">Generate</button>
+        </div>
+      </div>
+      <div id="ai-status"></div>
     </div>
   </div>
 
@@ -805,6 +848,45 @@
     }
 
     setScene(document.getElementById('ctrl-scene').value);
+
+    async function generateBg() {
+      const prompt   = document.getElementById('ctrl-ai-prompt').value.trim();
+      const provider = document.getElementById('ctrl-ai-provider').value;
+      const statusEl = document.getElementById('ai-status');
+      const btn      = document.getElementById('btn-generate');
+
+      if (!prompt) { statusEl.textContent = 'Enter a prompt first.'; statusEl.style.color = '#e05252'; return; }
+
+      btn.disabled = true;
+      statusEl.style.color = '#ECAA27';
+      statusEl.textContent = 'Generating — this takes 10–20 seconds...';
+
+      try {
+        const res  = await fetch('/api/generate-bg', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, provider })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Generation failed');
+
+        // Apply to all thumbnails + fill the URL field
+        document.getElementById('ctrl-bg').value = data.dataUrl;
+        ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
+          const img = document.getElementById(id);
+          img.src = data.dataUrl;
+          img.style.display = 'block';
+        });
+
+        statusEl.style.color = '#4caf50';
+        statusEl.textContent = 'Background applied! Use Apply Changes to update text if needed.';
+      } catch (err) {
+        statusEl.style.color = '#e05252';
+        statusEl.textContent = 'Error: ' + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
   </script>
 </body>
 </html>
