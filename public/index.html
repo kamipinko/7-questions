@@ -310,12 +310,24 @@
     }
     .panel:hover .panel-arrow { opacity: 1; transform: scale(1); }
 
+    /* ── Bottom actions bar (always fixed) ── */
+    .bottom-actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 101;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px 20px;
+      pointer-events: none;
+    }
+    .bottom-actions > * { pointer-events: auto; }
+
     /* ── Ko-fi donate button ── */
     .kofi-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 101;
       display: flex;
       align-items: center;
       gap: 7px;
@@ -381,10 +393,6 @@
 
     /* ── Feedback FAB ── */
     .feedback-fab {
-      position: fixed;
-      bottom: 70px;
-      right: 20px;
-      z-index: 100;
       background: var(--red);
       color: var(--gold);
       border: 1px solid var(--gold);
@@ -486,7 +494,7 @@
     /* ── Mobile ── */
     @media (max-width: 600px) {
       html, body { overflow: auto; }
-      #split { flex-direction: column; position: relative; min-height: 100vh; }
+      #split { flex-direction: column; position: relative; min-height: 100vh; padding-bottom: 80px; }
       .panel { min-height: 50vh; padding: 48px 28px; }
       .panel:hover { flex: 1; }
       [data-theme="dark"] .panel-auto,
@@ -500,22 +508,6 @@
       .intro-title { font-size: 1.9rem; }
       .modal-overlay { align-items: center; justify-content: center; padding: 16px; }
       .modal-card { max-width: 100%; }
-
-      /* Bottom actions: unfix and lay out side by side */
-      .kofi-btn,
-      .feedback-fab {
-        position: static;
-        bottom: auto;
-        right: auto;
-      }
-      .bottom-actions {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 24px 32px;
-        width: 100%;
-      }
     }
   </style>
 </head>
