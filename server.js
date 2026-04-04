@@ -47,6 +47,7 @@ app.get('/play/lobby', (req, res) => res.sendFile(path.join(__dirname, 'public/7
 app.get('/autobiography', (req, res) => res.sendFile(path.join(__dirname, 'public/autobiography/index.html')));
 app.get('/autobiography/feedback', (req, res) => res.sendFile(path.join(__dirname, 'public/autobiography/feedback.html')));
 app.get('/thumbnails', (req, res) => res.sendFile(path.join(__dirname, 'public/thumbnails/index.html')));
+app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, 'public/contact.html')));
 
 // ════════════════════════════════════════
 // THUMBNAIL — AI BACKGROUND GENERATION

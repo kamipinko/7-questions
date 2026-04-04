@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Stop & Connect</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      var saved = localStorage.getItem('sc_theme');
+      var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (dark ? 'dark' : 'light'));
+    })();
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:       #ECAA27;
+      --gold-h:     #ffc84d;
+      --red:        #680707;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans:  'Inter', system-ui, sans-serif;
+    }
+
+    :root,
+    [data-theme="dark"] {
+      --bg:       #000000;
+      --surface:  #111111;
+      --text:     #e05252;
+      --text-sub: #888888;
+      --border:   #ECAA27;
+    }
+
+    [data-theme="light"] {
+      --bg:       #680707;
+      --surface:  rgba(255,255,255,0.13);
+      --text:     #000000;
+      --text-sub: rgba(0,0,0,0.6);
+      --border:   #ECAA27;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: var(--gold);
+    }
+    .theme-toggle:hover { background: rgba(236,170,39,0.1); }
+
+    /* ── Back link ── */
+    .back-link {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--gold);
+      text-decoration: none;
+      padding: 8px 14px;
+      border: 1px solid rgba(236,170,39,0.4);
+      border-radius: 100px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .back-link:hover {
+      background: rgba(236,170,39,0.1);
+      border-color: var(--gold);
+    }
+
+    /* ── Page layout ── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px 60px;
+      gap: 0;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid rgba(236,170,39,0.35);
+      border-radius: 24px;
+      padding: 48px 36px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      backdrop-filter: blur(6px);
+    }
+
+    /* ── Profile pic ── */
+    .profile-wrap {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      flex-shrink: 0;
+    }
+
+    .profile-ring {
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      opacity: 0.6;
+    }
+
+    .profile-ring-outer {
+      position: absolute;
+      inset: -12px;
+      border-radius: 50%;
+      border: 1px solid rgba(236,170,39,0.25);
+    }
+
+    .profile-img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      /* Invert the black sketch to gold/dark tones matching the app */
+      filter: invert(1) sepia(0.6) hue-rotate(5deg) saturate(2.5) brightness(0.85);
+    }
+
+    [data-theme="light"] .profile-img {
+      filter: invert(0) sepia(0.3) saturate(1.5) brightness(1);
+    }
+
+    /* ── Name & title ── */
+    .contact-name {
+      font-family: var(--font-serif);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-align: center;
+      line-height: 1.15;
+    }
+
+    .contact-label {
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+      text-align: center;
+      margin-top: -16px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+
+    /* ── Contact links ── */
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: rgba(236,170,39,0.06);
+      border: 1px solid rgba(236,170,39,0.2);
+      border-radius: 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .contact-item:hover {
+      background: rgba(236,170,39,0.12);
+      border-color: rgba(236,170,39,0.5);
+      transform: translateY(-1px);
+    }
+
+    .contact-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: var(--red);
+      flex-shrink: 0;
+      border: 1px solid rgba(236,170,39,0.35);
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .contact-info-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-sub);
+    }
+    .contact-info-value {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--gold);
+    }
+    .contact-info-value.phone {
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      .card { padding: 40px 24px 32px; }
+      .contact-name { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="/" class="back-link">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Back
+  </a>
+
+  <button class="theme-toggle" id="themeToggle" title="Toggle light/dark mode">🌙</button>
+
+  <div class="page">
+    <div class="card">
+
+      <!-- Profile pic -->
+      <div class="profile-wrap">
+        <div class="profile-ring-outer"></div>
+        <div class="profile-ring"></div>
+        <img class="profile-img" src="/profile.jpg" alt="Thuku profile picture" />
+      </div>
+
+      <h1 class="contact-name">Thuku</h1>
+      <p class="contact-label">Creator of Stop & Connect</p>
+
+      <div class="divider"></div>
+
+      <div class="contact-links">
+
+        <!-- Phone -->
+        <a class="contact-item" href="tel:+14344898329">
+          <div class="contact-icon">📞</div>
+          <div class="contact-info">
+            <span class="contact-info-label">Phone</span>
+            <span class="contact-info-value phone">(434) 489-8329</span>
+          </div>
+        </a>
+
+        <!-- Instagram -->
+        <a class="contact-item" href="https://www.instagram.com/thuku_/" target="_blank" rel="noopener">
+          <div class="contact-icon">📷</div>
+          <div class="contact-info">
+            <span class="contact-info-label">Instagram</span>
+            <span class="contact-info-value">@thuku_</span>
+          </div>
+        </a>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      toggle.textContent = t === 'dark' ? '🌙' : '☀️';
+    }
+    applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
+    toggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('sc_theme', next);
+      applyTheme(next);
+    });
+  </script>
+
+</body>
+</html>

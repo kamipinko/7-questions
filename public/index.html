@@ -326,6 +326,30 @@
     }
     .bottom-actions > * { pointer-events: auto; }
 
+    /* ── Contact button ── */
+    .contact-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: none;
+      color: var(--gold);
+      border: 1px solid rgba(236,170,39,0.5);
+      border-radius: 100px;
+      padding: 9px 18px;
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .contact-btn:hover {
+      background: rgba(236,170,39,0.1);
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
+
     /* ── Ko-fi donate button ── */
     .kofi-btn {
       display: flex;
@@ -584,6 +608,12 @@
   <!-- ── Bottom actions (fixed on desktop, scrollable footer on mobile) ── -->
   <div class="bottom-actions">
     <button class="feedback-fab" id="feedbackFab">💬 Feedback</button>
+    <a href="/contact" class="contact-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      Contact
+    </a>
     <a href="https://ko-fi.com/thuku" target="_blank" rel="noopener" class="kofi-btn" title="Support on Ko-fi">
       <span class="kofi-btn-cup">☕</span>
       <span>Donate</span>
