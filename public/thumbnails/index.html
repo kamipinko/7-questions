@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proles Kitchen — Thumbnail Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #111;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      padding: 40px 24px;
+    }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      color: #ECAA27;
+      font-size: 1.6rem;
+      margin-bottom: 6px;
+    }
+    .subtitle { color: #888; font-size: 0.85rem; margin-bottom: 40px; }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+      align-items: flex-end;
+    }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    .control-group label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; }
+    .controls input, .controls select, .controls textarea {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+    }
+    .controls textarea { resize: vertical; min-height: 60px; width: 280px; }
+    .controls input[type="text"] { width: 280px; }
+    .controls select { width: 160px; cursor: pointer; }
+    .btn-export {
+      background: #ECAA27;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: background 0.2s;
+    }
+    .btn-export:hover { background: #ffc84d; }
+
+    /* ── Section labels ── */
+    .section-label {
+      font-size: 0.75rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+      margin-top: 48px;
+    }
+
+    /* ── Thumbnail Wrappers ── */
+    .thumb-row {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .thumb-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .thumb-label {
+      font-size: 0.7rem;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ════════════════════════════════════════
+       YOUTUBE THUMBNAIL  1280 × 720  (scaled 50%)
+    ════════════════════════════════════════ */
+    .yt-thumb {
+      width: 640px;
+      height: 360px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 6px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+      background: #000;
+    }
+
+    /* Background image — swap src in .yt-bg img */
+    .yt-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.72;
+    }
+
+    /* Placeholder gradient when no image */
+    .yt-bg-placeholder {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        #1a0000 0%,
+        #2d0000 20%,
+        #000000 40%,
+        #1a0d00 60%,
+        #2a1800 80%,
+        #3d2200 100%
+      );
+    }
+
+    /* Split overlay to simulate the party/purpose divide */
+    .yt-split {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(20,10,30,0.55) 0%,
+        rgba(10,5,15,0.7) 45%,
+        rgba(0,0,0,0.85) 50%,
+        rgba(40,20,0,0.5) 55%,
+        rgba(80,45,0,0.3) 100%
+      );
+    }
+
+    /* Vignette */
+    .yt-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%);
+    }
+
+    /* Bottom-left red accent bar */
+    .yt-accent-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #680707, #ECAA27, #680707);
+    }
+
+    /* Text layer */
+    .yt-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 36px 44px;
+      gap: 0;
+    }
+    .yt-eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: #ECAA27;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    }
+    .yt-headline {
+      font-family: 'Anton', sans-serif;
+      font-size: 3.2rem;
+      line-height: 0.95;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.01em;
+      text-shadow:
+        3px 3px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        0 4px 20px rgba(0,0,0,0.9);
+      max-width: 70%;
+    }
+    .yt-headline .accent-word {
+      color: #ECAA27;
+    }
+    .yt-headline .red-word {
+      color: #e05252;
+    }
+    .yt-subline {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 10px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+    }
+
+    /* Arrow */
+    .yt-arrow {
+      position: absolute;
+      right: 80px;
+      bottom: 80px;
+      font-size: 3rem;
+      color: #ECAA27;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8));
+      transform: rotate(160deg);
+      line-height: 1;
+    }
+
+    /* Brand badge */
+    .yt-brand {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .yt-brand-mark {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ECAA27;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+    .yt-brand-sub {
+      font-size: 0.55rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .yt-brand-line {
+      width: 100%;
+      height: 1.5px;
+      background: #ECAA27;
+      margin-bottom: 4px;
+    }
+
+    /* ════════════════════════════════════════
+       INSTAGRAM REEL  1080 × 1920  (scaled ~28%)
+    ════════════════════════════════════════ */
+    .ig-thumb {
+      width: 300px;
+      height: 533px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+      background: #000;
+    }
+    .ig-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.65;
+    }
+    .ig-bg-placeholder {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        #0a0000 0%,
+        #1a0800 30%,
+        #000000 55%,
+        #1a1000 75%,
+        #2a1500 100%
+      );
+    }
+    .ig-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center 60%, transparent 30%, rgba(0,0,0,0.8) 100%);
+    }
+    .ig-gradient-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60%;
+      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+    }
+    .ig-accent-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #680707, #ECAA27, #680707);
+    }
+    .ig-text {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 22px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ig-eyebrow {
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: #ECAA27;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .ig-headline {
+      font-family: 'Anton', sans-serif;
+      font-size: 1.85rem;
+      line-height: 1.0;
+      color: #fff;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0 #000, 0 3px 12px rgba(0,0,0,0.9);
+    }
+    .ig-headline .accent-word { color: #ECAA27; }
+    .ig-headline .red-word { color: #e05252; }
+    .ig-subline {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.75);
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .ig-brand {
+      position: absolute;
+      top: 16px;
+      left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .ig-brand-mark {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #ECAA27;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+    }
+    .ig-brand-line {
+      width: 100%;
+      height: 1px;
+      background: #ECAA27;
+    }
+
+    /* ── Print / Export hint ── */
+    .export-hint {
+      margin-top: 48px;
+      padding: 20px 24px;
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: #666;
+      line-height: 1.7;
+    }
+    .export-hint strong { color: #ECAA27; }
+    .export-hint code {
+      background: #222;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>✦ Proles Kitchen</h1>
+  <p class="subtitle">Thumbnail Generator — Philosophy & Lifestyle</p>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="control-group">
+      <label>Headline (use | for line break)</label>
+      <input type="text" id="ctrl-headline" value="FUN IS|OVERRATED" />
+    </div>
+    <div class="control-group">
+      <label>Subline</label>
+      <input type="text" id="ctrl-subline" value="Go for Fulfillment" />
+    </div>
+    <div class="control-group">
+      <label>Eyebrow text</label>
+      <input type="text" id="ctrl-eyebrow" value="Proles Kitchen" />
+    </div>
+    <div class="control-group">
+      <label>Accent word (turns gold)</label>
+      <input type="text" id="ctrl-accent" value="OVERRATED" />
+    </div>
+    <div class="control-group">
+      <label>Background image URL</label>
+      <input type="text" id="ctrl-bg" placeholder="/thumbnails/bg_fulfillment.jpg" style="width:260px;" />
+    </div>
+    <div class="control-group">
+      <label>&nbsp;</label>
+      <button class="btn-export" onclick="applyControls()">Apply Changes</button>
+    </div>
+  </div>
+
+  <!-- ── YOUTUBE ── -->
+  <div class="section-label">YouTube Thumbnail — 1280 × 720</div>
+  <div class="thumb-row">
+
+    <!-- Without brand -->
+    <div class="thumb-wrap">
+      <div class="thumb-label">Without branding</div>
+      <div class="yt-thumb" id="yt-no-brand">
+        <div class="yt-bg-placeholder"></div>
+        <img class="yt-bg" id="yt-bg-img-1" src="" style="display:none;" alt="" />
+        <div class="yt-split"></div>
+        <div class="yt-vignette"></div>
+        <div class="yt-text">
+          <div class="yt-eyebrow" id="yt-eyebrow-1"></div>
+          <div class="yt-headline" id="yt-headline-1">
+            <span class="red-word">FUN</span> IS<br><span class="accent-word">OVERRATED</span>
+          </div>
+          <div class="yt-subline" id="yt-subline-1">Go for Fulfillment</div>
+        </div>
+        <div class="yt-arrow">↙</div>
+        <div class="yt-accent-bar"></div>
+      </div>
+    </div>
+
+    <!-- With brand -->
+    <div class="thumb-wrap">
+      <div class="thumb-label">With branding</div>
+      <div class="yt-thumb" id="yt-brand">
+        <div class="yt-bg-placeholder"></div>
+        <img class="yt-bg" id="yt-bg-img-2" src="" style="display:none;" alt="" />
+        <div class="yt-split"></div>
+        <div class="yt-vignette"></div>
+        <div class="yt-brand">
+          <div class="yt-brand-mark">Proles Kitchen</div>
+          <div class="yt-brand-line"></div>
+          <div class="yt-brand-sub">Philosophy & Lifestyle</div>
+        </div>
+        <div class="yt-text">
+          <div class="yt-eyebrow" id="yt-eyebrow-2"></div>
+          <div class="yt-headline" id="yt-headline-2">
+            <span class="red-word">FUN</span> IS<br><span class="accent-word">OVERRATED</span>
+          </div>
+          <div class="yt-subline" id="yt-subline-2">Go for Fulfillment</div>
+        </div>
+        <div class="yt-arrow">↙</div>
+        <div class="yt-accent-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── INSTAGRAM REELS ── -->
+  <div class="section-label">Instagram Reels — 1080 × 1920</div>
+  <div class="thumb-row">
+
+    <!-- Without brand -->
+    <div class="thumb-wrap">
+      <div class="thumb-label">Without branding</div>
+      <div class="ig-thumb">
+        <div class="ig-bg-placeholder"></div>
+        <img class="ig-bg" id="ig-bg-img-1" src="" style="display:none;" alt="" />
+        <div class="ig-vignette"></div>
+        <div class="ig-gradient-bottom"></div>
+        <div class="ig-text">
+          <div class="ig-eyebrow" id="ig-eyebrow-1"></div>
+          <div class="ig-headline" id="ig-headline-1">
+            <span class="red-word">FUN</span> IS<br><span class="accent-word">OVER-<br>RATED</span>
+          </div>
+          <div class="ig-subline" id="ig-subline-1">Go for Fulfillment</div>
+        </div>
+        <div class="ig-accent-bar"></div>
+      </div>
+    </div>
+
+    <!-- With brand -->
+    <div class="thumb-wrap">
+      <div class="thumb-label">With branding</div>
+      <div class="ig-thumb">
+        <div class="ig-bg-placeholder"></div>
+        <img class="ig-bg" id="ig-bg-img-2" src="" style="display:none;" alt="" />
+        <div class="ig-vignette"></div>
+        <div class="ig-gradient-bottom"></div>
+        <div class="ig-brand">
+          <div class="ig-brand-mark">✦ Proles Kitchen</div>
+          <div class="ig-brand-line"></div>
+        </div>
+        <div class="ig-text">
+          <div class="ig-eyebrow" id="ig-eyebrow-2"></div>
+          <div class="ig-headline" id="ig-headline-2">
+            <span class="red-word">FUN</span> IS<br><span class="accent-word">OVER-<br>RATED</span>
+          </div>
+          <div class="ig-subline" id="ig-subline-2">Go for Fulfillment</div>
+        </div>
+        <div class="ig-accent-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="export-hint">
+    <strong>How to export full-resolution thumbnails:</strong><br>
+    1. Open this page in Chrome → Right-click a thumbnail → <strong>Inspect</strong><br>
+    2. Find the <code>.yt-thumb</code> or <code>.ig-thumb</code> element → right-click → <strong>Capture node screenshot</strong><br>
+    3. Chrome saves a full-resolution PNG. Scale is 2× at 50% display → ~1280×720 for YouTube.<br><br>
+    <strong>To use a generated background image:</strong> paste the file path into the "Background image URL" field above and click Apply.
+  </div>
+
+  <script>
+    function applyControls() {
+      const headline = document.getElementById('ctrl-headline').value;
+      const subline  = document.getElementById('ctrl-subline').value;
+      const eyebrow  = document.getElementById('ctrl-eyebrow').value;
+      const accent   = document.getElementById('ctrl-accent').value.toUpperCase();
+      const bgUrl    = document.getElementById('ctrl-bg').value.trim();
+
+      // Build headline HTML — replace accent word with gold span
+      function buildHeadline(raw, isIG) {
+        let lines = raw.split('|');
+        let html  = lines.map((line, i) => {
+          let words = line.toUpperCase().split(' ').map(w => {
+            if (accent && w === accent) return `<span class="accent-word">${w}</span>`;
+            return w;
+          }).join(' ');
+          return words + (i < lines.length - 1 ? '<br>' : '');
+        }).join('');
+        return html;
+      }
+
+      ['1','2'].forEach(n => {
+        document.getElementById(`yt-eyebrow-${n}`).textContent  = eyebrow;
+        document.getElementById(`yt-subline-${n}`).textContent  = subline;
+        document.getElementById(`yt-headline-${n}`).innerHTML   = buildHeadline(headline, false);
+        document.getElementById(`ig-eyebrow-${n}`).textContent  = eyebrow;
+        document.getElementById(`ig-subline-${n}`).textContent  = subline;
+        document.getElementById(`ig-headline-${n}`).innerHTML   = buildHeadline(headline, true);
+      });
+
+      // Background image
+      ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
+        const img = document.getElementById(id);
+        if (bgUrl) {
+          img.src = bgUrl;
+          img.style.display = 'block';
+        } else {
+          img.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

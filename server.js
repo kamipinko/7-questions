@@ -37,6 +37,7 @@ app.use(express.json({ limit: '50mb' }));
 // ── Static file serving ──
 app.use('/play', express.static(path.join(__dirname, 'public/7q')));
 app.use('/autobiography', express.static(path.join(__dirname, 'public/autobiography')));
+app.use('/thumbnails', express.static(path.join(__dirname, 'public/thumbnails')));
 app.use('/data', express.static(path.join(__dirname, 'data')));
 app.use(express.static(path.join(__dirname, 'public')));
 
