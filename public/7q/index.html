@@ -167,15 +167,33 @@
       <div class="step-label">Group Mode</div>
       <h1>Play Together</h1>
     </div>
-    <div class="group-rules-box">
-      <p class="rules-intro">Break into pairs. Each pair gets 7 personal questions — pass the phone when your name comes up. Then the whole group answers 7 questions out loud and votes on who had the most interesting answer.</p>
-      <div class="rules-steps">
-        <div class="rules-step"><span class="rules-num">1</span><span>Each pair answers 7 private questions. Pass the phone when your name is called.</span></div>
-        <div class="rules-step"><span class="rules-num">2</span><span>After all pairs finish, everyone gets 7 shared questions to answer out loud to the group.</span></div>
-        <div class="rules-step"><span class="rules-num">3</span><span>Each player votes for the most interesting answer per question. You can't vote for your own team.</span></div>
-        <div class="rules-step"><span class="rules-num">4</span><span>Most votes wins. Track scores across multiple games.</span></div>
+
+    <!-- Primary: Lobby Mode -->
+    <div class="group-mode-block primary-mode-block">
+      <div class="mode-block-header">
+        <span class="mode-block-icon">📱</span>
+        <div>
+          <h3 class="mode-block-title">Lobby Mode</h3>
+          <p class="mode-block-sub">Each pair on their own phone</p>
+        </div>
       </div>
-      <div class="timer-section">
+      <p class="mode-block-desc">Everyone joins with a room code. Pairs answer privately on their own phone at the same time, then vote together. Scores tracked Kahoot-style.</p>
+      <a href="/play/lobby" class="g-primary-btn" style="display:block;text-align:center;text-decoration:none;margin-top:0.75rem;">Start Lobby Mode →</a>
+    </div>
+
+    <div class="mode-divider">or</div>
+
+    <!-- Secondary: Classic pass-the-phone mode -->
+    <div class="group-mode-block classic-mode-block">
+      <div class="mode-block-header">
+        <span class="mode-block-icon">🤝</span>
+        <div>
+          <h3 class="mode-block-title">Classic Mode</h3>
+          <p class="mode-block-sub">Pass one phone around the group</p>
+        </div>
+      </div>
+      <p class="mode-block-desc">One shared phone. Each pair answers privately by passing it between them, then the group votes together out loud.</p>
+      <div class="timer-section" style="margin-top:0.75rem;">
         <p class="timer-label">⏱ Time per pair</p>
         <div class="timer-options">
           <button class="timer-opt" data-min="5">5 min</button>
@@ -184,9 +202,9 @@
           <button class="timer-opt" data-min="20">20 min</button>
         </div>
       </div>
+      <button class="classic-mode-btn" id="rules-next-btn" style="margin-top:0.75rem;">Set Up Teams →</button>
     </div>
-    <button class="g-primary-btn" id="rules-next-btn">Set Up Teams →</button>
-    <a href="/play/lobby" class="g-back-link" style="display:block;text-align:center;font-size:0.85rem;margin-top:0.25rem;">Or try Lobby Mode — each pair on their own phone →</a>
+
     <button class="g-back-link" id="rules-back">← Back</button>
   </div>
 
