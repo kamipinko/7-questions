@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact — Stop & Connect</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <script>
     (function() {
       var saved = localStorage.getItem('sc_theme');
@@ -21,6 +21,7 @@
       --red:        #680707;
       --font-serif: 'Playfair Display', Georgia, serif;
       --font-sans:  'Inter', system-ui, sans-serif;
+      --font-mono:  'Space Mono', 'Courier New', monospace;
     }
 
     :root,
@@ -56,18 +57,18 @@
       z-index: 100;
       background: none;
       border: 1px solid var(--border);
-      border-radius: 50%;
+      border-radius: 4px;
       width: 38px;
       height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
+      font-size: 0.95rem;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.15s ease-out, transform 0.15s ease-out;
       color: var(--gold);
     }
-    .theme-toggle:hover { background: rgba(236,170,39,0.1); }
+    .theme-toggle:hover { background: rgba(236,170,39,0.1); transform: translateY(-1px); }
 
     /* ── Back link ── */
     .back-link {
@@ -78,17 +79,21 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       color: var(--gold);
       text-decoration: none;
       padding: 8px 14px;
       border: 1px solid rgba(236,170,39,0.4);
-      border-radius: 100px;
-      transition: background 0.2s, border-color 0.2s;
+      border-radius: 2px;
+      transition: background 0.15s ease-out, border-color 0.15s ease-out, transform 0.15s ease-out;
     }
     .back-link:hover {
       background: rgba(236,170,39,0.1);
       border-color: var(--gold);
+      transform: translateY(-1px);
     }
 
     /* ── Page layout ── */
@@ -108,7 +113,8 @@
       max-width: 400px;
       background: var(--surface);
       border: 1px solid rgba(236,170,39,0.35);
-      border-radius: 24px;
+      border-left: 3px solid var(--gold);
+      border-radius: 4px;
       padding: 48px 36px 40px;
       display: flex;
       flex-direction: column;
@@ -166,8 +172,9 @@
     }
 
     .contact-label {
-      font-size: 0.78rem;
-      letter-spacing: 0.16em;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--text-sub);
       text-align: center;
@@ -176,9 +183,9 @@
 
     /* ── Divider ── */
     .divider {
-      width: 60px;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      width: 48px;
+      height: 2px;
+      background: var(--gold);
       opacity: 0.5;
     }
 
@@ -186,7 +193,7 @@
     .contact-links {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       width: 100%;
     }
 
@@ -195,23 +202,24 @@
       align-items: center;
       gap: 14px;
       padding: 14px 18px;
-      background: rgba(236,170,39,0.06);
+      background: rgba(236,170,39,0.05);
       border: 1px solid rgba(236,170,39,0.2);
-      border-radius: 14px;
+      border-left: 3px solid rgba(236,170,39,0.4);
+      border-radius: 2px;
       text-decoration: none;
       color: inherit;
-      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+      transition: background 0.15s ease-out, border-left-color 0.15s ease-out, transform 0.15s ease-out;
     }
     .contact-item:hover {
-      background: rgba(236,170,39,0.12);
-      border-color: rgba(236,170,39,0.5);
-      transform: translateY(-1px);
+      background: rgba(236,170,39,0.1);
+      border-left-color: var(--gold);
+      transform: translateX(4px);
     }
 
     .contact-icon {
       width: 42px;
       height: 42px;
-      border-radius: 12px;
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -224,11 +232,12 @@
     .contact-info {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
     .contact-info-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--text-sub);
     }
@@ -238,7 +247,9 @@
       color: var(--gold);
     }
     .contact-info-value.phone {
-      letter-spacing: 0.04em;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      letter-spacing: 0.06em;
     }
 
     /* ── Mobile ── */

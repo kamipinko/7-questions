@@ -1,9 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* ===== Shared palette tokens ===== */
 :root {
   color-scheme: light;
-  --radius:  16px;
+  --radius:     4px;
+  --radius-lg:  8px;
+  --font-mono:  'Space Mono', 'Courier New', monospace;
   --family:  #f4a261;
   --friends: #52b788;
   --date:    #e46fa0;
@@ -106,7 +110,7 @@ body {
   width: 38px;
   height: 38px;
   background: var(--logo-bg);
-  border-radius: 10px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,6 +125,11 @@ body {
   font-weight: 700;
   color: var(--banner-text);
   letter-spacing: 1px;
+}
+
+/* P5 left-border accent on banner */
+.site-banner {
+  border-left: 4px solid var(--banner-border);
 }
 
 /* Theme toggle button */
@@ -171,7 +180,7 @@ body {
 }
 .header h2 { font-size: 1.5rem; font-weight: 600; color: var(--text); }
 .subtitle   { color: var(--text); font-size: 1.15rem; font-weight: 600; }
-.step-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+.step-label { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 0.5rem; }
 
 /* ── Card Grid ────────────────────── */
 .card-grid {
@@ -188,20 +197,20 @@ body {
   flex: 1;
   background: var(--surface);
   border: 2px solid var(--box-border);
-  border-radius: var(--radius);
+  border-radius: 4px;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.15s ease-out, transform 0.15s ease-out, border-left-width 0.15s ease-out;
   color: var(--text);
 }
 .relation-card:hover {
   background: var(--surface2);
   transform: translateY(-3px);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+  border-left: 4px solid var(--box-border);
 }
 
 /* Relation wrapper — positions the spicy btn relative to the card grid */
@@ -311,11 +320,12 @@ body {
 
 .badge {
   padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  text-transform: capitalize;
-  letter-spacing: 0.5px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 .badge.family  { background: rgba(244,162,97,0.15);  color: var(--family); }
 .badge.friends { background: rgba(82,183,136,0.15);  color: var(--friends); }
@@ -332,13 +342,14 @@ body {
 }
 .question-card {
   background: var(--surface);
-  border-radius: var(--radius);
+  border-radius: 4px;
   padding: 2.5rem 2rem;
   min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid var(--box-border);
+  border-left: 4px solid var(--box-border);
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
 }
 #question-text {
@@ -358,16 +369,19 @@ body {
 .nav-btn {
   flex: 1;
   padding: 0.85rem;
-  border-radius: 10px;
+  border-radius: 4px;
   border: 2px solid var(--surface2);
   background: var(--surface);
   color: var(--muted);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out;
 }
-.nav-btn:hover { border-color: var(--box-border); color: var(--text); }
+.nav-btn:hover { border-color: var(--box-border); color: var(--text); transform: translateY(-1px); }
 .nav-btn.primary {
   background: var(--accent);
   border-color: var(--accent);
@@ -375,7 +389,7 @@ body {
 }
 .nav-btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.nav-btn:disabled:hover { border-color: var(--surface2); color: var(--muted); }
+.nav-btn:disabled:hover { border-color: var(--surface2); color: var(--muted); transform: none; }
 
 /* ── Skip button ────────────────────── */
 .nav-btn.skip-btn {
@@ -421,7 +435,8 @@ body {
 .modal-box {
   background: var(--modal-bg);
   border: 2px solid var(--box-border);
-  border-radius: var(--radius);
+  border-top: 4px solid var(--box-border);
+  border-radius: 4px;
   padding: 2.5rem 2rem;
   max-width: 400px;
   width: 100%;
@@ -435,11 +450,14 @@ body {
 .modal-btn {
   flex: 1;
   padding: 0.85rem;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  font-weight: 600;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s ease-out;
   border: 2px solid transparent;
 }
 .modal-btn.secondary {
@@ -501,11 +519,11 @@ body {
   width: 100%;
   background: var(--surface);
   border: 2px solid var(--surface2);
-  border-radius: 10px;
+  border-radius: 4px;
   padding: 0.85rem 1rem;
   color: var(--text);
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.15s ease-out;
   outline: none;
 }
 .email-input:focus { border-color: var(--box-border); }
@@ -513,16 +531,19 @@ body {
 .email-submit-btn {
   width: 100%;
   padding: 0.85rem;
-  border-radius: 10px;
+  border-radius: 4px;
   border: none;
   background: var(--accent);
   color: var(--btn-text);
-  font-size: 0.95rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s ease-out, transform 0.15s ease-out;
 }
-.email-submit-btn:hover { background: var(--accent-hover); }
+.email-submit-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
 .skip-link {
   background: none;
   border: none;
@@ -542,15 +563,18 @@ body {
   margin-top: 1.5rem;
   background: none;
   border: 2px solid var(--box-border);
-  border-radius: 10px;
+  border-radius: 4px;
   color: var(--muted);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   padding: 0.75rem 1.5rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out;
 }
-.restart-btn:hover { border-color: var(--accent); color: var(--text); }
+.restart-btn:hover { border-color: var(--accent); color: var(--text); transform: translateY(-1px); }
 
 /* ── Ko-fi donate button ── */
 .kofi-btn {
@@ -564,21 +588,27 @@ body {
   background: var(--accent);
   color: #000;
   border: none;
-  border-radius: 100px;
+  border-radius: 2px;
   padding: 9px 18px;
-  font-size: 0.8rem;
-  font-family: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 2px 14px rgba(236,170,39,0.45);
-  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 14px rgba(236,170,39,0.4);
+  transition: background 0.15s ease-out, transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  /* Samsung Internet GPU fix */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
 }
 .kofi-btn:hover {
   background: var(--accent-hover);
+  -webkit-transform: translateY(-2px);
   transform: translateY(-2px);
-  box-shadow: 0 4px 22px rgba(236,170,39,0.6);
+  box-shadow: 0 4px 20px rgba(236,170,39,0.55);
 }
 .kofi-btn-cup { font-size: 1rem; line-height: 1; }
 
@@ -589,9 +619,9 @@ body {
   align-items: center;
   gap: 10px;
   padding: 16px;
-  background: rgba(236,170,39,0.08);
-  border: 1px solid rgba(236,170,39,0.4);
-  border-radius: 12px;
+  background: rgba(236,170,39,0.06);
+  border: 1px solid rgba(236,170,39,0.3);
+  border-radius: 4px;
   text-align: center;
   margin-top: 4px;
 }
@@ -611,13 +641,15 @@ body {
   gap: 6px;
   background: var(--accent);
   color: #000;
-  border-radius: 100px;
+  border-radius: 2px;
   padding: 8px 20px;
-  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
   font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   text-decoration: none;
-  letter-spacing: 0.03em;
-  transition: background 0.2s, transform 0.15s;
+  transition: background 0.15s ease-out, transform 0.15s ease-out;
 }
 .kofi-modal-link:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
@@ -628,24 +660,29 @@ body {
   right: 1.5rem;
   background: var(--surface2);
   border: 1px solid var(--box-border);
-  border-radius: 20px;
+  border-radius: 2px;
   color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   padding: 0.45rem 1rem;
   cursor: pointer;
   z-index: 50;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
-  /* Force GPU layer — fixes iOS Safari fixed-position scroll bug */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  transition: background 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out;
+  /* Force GPU layer — Samsung Internet / iOS Safari fixed-position fix */
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 .feedback-tab:hover {
   background: var(--surface);
   border-color: var(--accent);
   color: var(--text);
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  -webkit-transform: translate3d(0, -2px, 0);
+  transform: translate3d(0, -2px, 0);
 }
 
 /* Feedback Modal */

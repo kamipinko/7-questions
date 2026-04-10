@@ -472,7 +472,7 @@
     <div class="control-group">
       <label>Visual Scene</label>
       <select id="ctrl-scene">
-        <option value="crossroads" selected>Crossroads</option>
+        <option value="funvsgrowth" selected>Fun vs Growth</option>
         <option value="thinker">Thinker</option>
         <option value="none">None</option>
       </select>
@@ -519,39 +519,54 @@
         <div class="yt-split"></div>
         <div class="yt-vignette"></div>
         <div class="scene-layer">
-          <svg class="scene-svg crossroads-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-            <rect x="0" y="0" width="360" height="360" fill="url(#g_party_yt)"/>
-            <rect x="280" y="0" width="360" height="360" fill="url(#g_sun_yt)"/>
-            <circle cx="22" cy="28" r="1.5" fill="white" opacity="0.75"/>
-            <circle cx="58" cy="14" r="1" fill="white" opacity="0.55"/>
-            <circle cx="96" cy="48" r="2" fill="white" opacity="0.80"/>
-            <circle cx="143" cy="22" r="1.5" fill="white" opacity="0.60"/>
-            <circle cx="178" cy="65" r="1" fill="white" opacity="0.45"/>
-            <circle cx="215" cy="38" r="2" fill="white" opacity="0.70"/>
-            <circle cx="268" cy="18" r="1.5" fill="white" opacity="0.50"/>
-            <circle cx="302" cy="55" r="1" fill="white" opacity="0.65"/>
-            <circle cx="42" cy="88" r="1" fill="white" opacity="0.45"/>
-            <circle cx="118" cy="82" r="1.5" fill="white" opacity="0.40"/>
-            <circle cx="248" cy="80" r="1" fill="white" opacity="0.55"/>
-            <circle cx="72" cy="108" r="1.5" fill="white" opacity="0.35"/>
-            <path d="M152,28 Q176,12 196,24 Q170,36 175,60 Q148,52 152,28Z" fill="rgba(255,252,185,0.62)"/>
-            <line x1="640" y1="360" x2="345" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="390" y2="28" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="442" y2="12" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="500" y2="8"  stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="568" y2="18" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="622" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
+          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <!-- Standing figure (right side, head at 512,240) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="500" cy="82" r="25" stroke="none"/>
-              <path d="M492,105 Q500,108 508,105 L506,122 Q500,125 494,122Z" stroke="none"/>
-              <path d="M462,122 Q500,117 538,122 L534,210 Q510,218 500,217 Q490,218 466,210Z" stroke="none"/>
-              <path d="M465,128 Q447,162 448,188" stroke-width="17" fill="none"/>
-              <path d="M448,188 Q457,155 482,90" stroke-width="15" fill="none"/>
-              <circle cx="482" cy="88" r="11" stroke="none"/>
-              <path d="M535,130 Q556,178 550,225" stroke-width="17" fill="none"/>
-              <path d="M475,212 Q467,278 470,355" stroke-width="22" fill="none"/>
-              <path d="M525,212 Q533,278 530,355" stroke-width="22" fill="none"/>
+              <circle cx="512" cy="240" r="22" stroke="none"/>
+              <path d="M507,261 Q512,264 517,261 L516,272 Q512,275 508,272Z" stroke="none"/>
+              <path d="M492,272 Q512,267 532,272 L528,330 Q512,336 496,330Z" stroke="none"/>
+              <path d="M494,278 Q478,305 474,335" stroke-width="13" fill="none"/>
+              <path d="M530,278 Q546,305 550,335" stroke-width="13" fill="none"/>
+              <path d="M499,328 Q494,344 492,360" stroke-width="17" fill="none"/>
+              <path d="M525,328 Q530,344 532,360" stroke-width="17" fill="none"/>
             </g>
+            <!-- Connector circles (head → bubble) -->
+            <circle cx="510" cy="218" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
+            <circle cx="490" cy="196" r="5.5" fill="rgba(8,3,0,0.70)" stroke="none"/>
+            <circle cx="472" cy="174" r="4" fill="rgba(8,3,0,0.65)" stroke="none"/>
+            <!-- Thought bubble ellipse -->
+            <ellipse cx="398" cy="92" rx="178" ry="70" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
+            <!-- Centre divider -->
+            <line x1="398" y1="24" x2="398" y2="160" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
+            <!-- FUN label -->
+            <text x="309" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="15" fill="rgba(236,170,39,0.92)" letter-spacing="3">FUN</text>
+            <!-- 4-point sparkle stars (FUN side) -->
+            <path d="M285,80 L287,87 L294,89 L287,91 L285,98 L283,91 L276,89 L283,87Z" fill="rgba(255,255,255,0.85)"/>
+            <path d="M338,102 L340,107 L345,109 L340,111 L338,116 L336,111 L331,109 L336,107Z" fill="rgba(255,255,255,0.70)"/>
+            <path d="M360,68 L361.5,73 L367,74.5 L361.5,76 L360,81 L358.5,76 L353,74.5 L358.5,73Z" fill="rgba(255,255,255,0.72)"/>
+            <!-- Sparkle crosses (FUN side) -->
+            <line x1="296" y1="116" x2="296" y2="124" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="292" y1="120" x2="300" y2="120" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="352" y1="98" x2="352" y2="104" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <line x1="349" y1="101" x2="355" y2="101" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <!-- Scattered dots (FUN side) -->
+            <circle cx="268" cy="102" r="2" fill="rgba(255,255,255,0.55)"/>
+            <circle cx="318" cy="128" r="1.5" fill="rgba(255,255,255,0.50)"/>
+            <circle cx="375" cy="120" r="2" fill="rgba(255,255,255,0.48)"/>
+            <circle cx="248" cy="82" r="1.5" fill="rgba(255,255,255,0.45)"/>
+            <!-- GROWTH label -->
+            <text x="487" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="12" fill="rgba(236,170,39,0.92)" letter-spacing="2">GROWTH</text>
+            <!-- Bold upward arrow (GROWTH side) -->
+            <line x1="422" y1="128" x2="422" y2="78" stroke="rgba(255,255,255,0.88)" stroke-width="4"/>
+            <path d="M413,87 L422,68 L431,87Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
+            <!-- Mountain peak + snow cap (GROWTH side) -->
+            <path d="M455,132 L478,88 L501,132Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M478,88 L484,100 L472,100Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
+            <!-- Rising dots (GROWTH side) -->
+            <circle cx="540" cy="128" r="2" fill="rgba(255,255,255,0.52)"/>
+            <circle cx="543" cy="115" r="2" fill="rgba(255,255,255,0.58)"/>
+            <circle cx="546" cy="102" r="2.5" fill="rgba(255,255,255,0.64)"/>
+            <circle cx="549" cy="90" r="1.5" fill="rgba(255,255,255,0.70)"/>
           </svg>
           <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
@@ -588,39 +603,54 @@
         <div class="yt-split"></div>
         <div class="yt-vignette"></div>
         <div class="scene-layer">
-          <svg class="scene-svg crossroads-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-            <rect x="0" y="0" width="360" height="360" fill="url(#g_party_yt)"/>
-            <rect x="280" y="0" width="360" height="360" fill="url(#g_sun_yt)"/>
-            <circle cx="22" cy="28" r="1.5" fill="white" opacity="0.75"/>
-            <circle cx="58" cy="14" r="1" fill="white" opacity="0.55"/>
-            <circle cx="96" cy="48" r="2" fill="white" opacity="0.80"/>
-            <circle cx="143" cy="22" r="1.5" fill="white" opacity="0.60"/>
-            <circle cx="178" cy="65" r="1" fill="white" opacity="0.45"/>
-            <circle cx="215" cy="38" r="2" fill="white" opacity="0.70"/>
-            <circle cx="268" cy="18" r="1.5" fill="white" opacity="0.50"/>
-            <circle cx="302" cy="55" r="1" fill="white" opacity="0.65"/>
-            <circle cx="42" cy="88" r="1" fill="white" opacity="0.45"/>
-            <circle cx="118" cy="82" r="1.5" fill="white" opacity="0.40"/>
-            <circle cx="248" cy="80" r="1" fill="white" opacity="0.55"/>
-            <circle cx="72" cy="108" r="1.5" fill="white" opacity="0.35"/>
-            <path d="M152,28 Q176,12 196,24 Q170,36 175,60 Q148,52 152,28Z" fill="rgba(255,252,185,0.62)"/>
-            <line x1="640" y1="360" x2="345" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="390" y2="28" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="442" y2="12" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="500" y2="8"  stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="568" y2="18" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
-            <line x1="640" y1="360" x2="622" y2="55" stroke="rgba(236,170,39,0.22)" stroke-width="1.5"/>
+          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <!-- Standing figure (right side, head at 512,240) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="500" cy="82" r="25" stroke="none"/>
-              <path d="M492,105 Q500,108 508,105 L506,122 Q500,125 494,122Z" stroke="none"/>
-              <path d="M462,122 Q500,117 538,122 L534,210 Q510,218 500,217 Q490,218 466,210Z" stroke="none"/>
-              <path d="M465,128 Q447,162 448,188" stroke-width="17" fill="none"/>
-              <path d="M448,188 Q457,155 482,90" stroke-width="15" fill="none"/>
-              <circle cx="482" cy="88" r="11" stroke="none"/>
-              <path d="M535,130 Q556,178 550,225" stroke-width="17" fill="none"/>
-              <path d="M475,212 Q467,278 470,355" stroke-width="22" fill="none"/>
-              <path d="M525,212 Q533,278 530,355" stroke-width="22" fill="none"/>
+              <circle cx="512" cy="240" r="22" stroke="none"/>
+              <path d="M507,261 Q512,264 517,261 L516,272 Q512,275 508,272Z" stroke="none"/>
+              <path d="M492,272 Q512,267 532,272 L528,330 Q512,336 496,330Z" stroke="none"/>
+              <path d="M494,278 Q478,305 474,335" stroke-width="13" fill="none"/>
+              <path d="M530,278 Q546,305 550,335" stroke-width="13" fill="none"/>
+              <path d="M499,328 Q494,344 492,360" stroke-width="17" fill="none"/>
+              <path d="M525,328 Q530,344 532,360" stroke-width="17" fill="none"/>
             </g>
+            <!-- Connector circles (head → bubble) -->
+            <circle cx="510" cy="218" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
+            <circle cx="490" cy="196" r="5.5" fill="rgba(8,3,0,0.70)" stroke="none"/>
+            <circle cx="472" cy="174" r="4" fill="rgba(8,3,0,0.65)" stroke="none"/>
+            <!-- Thought bubble ellipse -->
+            <ellipse cx="398" cy="92" rx="178" ry="70" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
+            <!-- Centre divider -->
+            <line x1="398" y1="24" x2="398" y2="160" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
+            <!-- FUN label -->
+            <text x="309" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="15" fill="rgba(236,170,39,0.92)" letter-spacing="3">FUN</text>
+            <!-- 4-point sparkle stars (FUN side) -->
+            <path d="M285,80 L287,87 L294,89 L287,91 L285,98 L283,91 L276,89 L283,87Z" fill="rgba(255,255,255,0.85)"/>
+            <path d="M338,102 L340,107 L345,109 L340,111 L338,116 L336,111 L331,109 L336,107Z" fill="rgba(255,255,255,0.70)"/>
+            <path d="M360,68 L361.5,73 L367,74.5 L361.5,76 L360,81 L358.5,76 L353,74.5 L358.5,73Z" fill="rgba(255,255,255,0.72)"/>
+            <!-- Sparkle crosses (FUN side) -->
+            <line x1="296" y1="116" x2="296" y2="124" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="292" y1="120" x2="300" y2="120" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="352" y1="98" x2="352" y2="104" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <line x1="349" y1="101" x2="355" y2="101" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <!-- Scattered dots (FUN side) -->
+            <circle cx="268" cy="102" r="2" fill="rgba(255,255,255,0.55)"/>
+            <circle cx="318" cy="128" r="1.5" fill="rgba(255,255,255,0.50)"/>
+            <circle cx="375" cy="120" r="2" fill="rgba(255,255,255,0.48)"/>
+            <circle cx="248" cy="82" r="1.5" fill="rgba(255,255,255,0.45)"/>
+            <!-- GROWTH label -->
+            <text x="487" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="12" fill="rgba(236,170,39,0.92)" letter-spacing="2">GROWTH</text>
+            <!-- Bold upward arrow (GROWTH side) -->
+            <line x1="422" y1="128" x2="422" y2="78" stroke="rgba(255,255,255,0.88)" stroke-width="4"/>
+            <path d="M413,87 L422,68 L431,87Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
+            <!-- Mountain peak + snow cap (GROWTH side) -->
+            <path d="M455,132 L478,88 L501,132Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M478,88 L484,100 L472,100Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
+            <!-- Rising dots (GROWTH side) -->
+            <circle cx="540" cy="128" r="2" fill="rgba(255,255,255,0.52)"/>
+            <circle cx="543" cy="115" r="2" fill="rgba(255,255,255,0.58)"/>
+            <circle cx="546" cy="102" r="2.5" fill="rgba(255,255,255,0.64)"/>
+            <circle cx="549" cy="90" r="1.5" fill="rgba(255,255,255,0.70)"/>
           </svg>
           <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
@@ -667,37 +697,54 @@
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
         <div class="scene-layer">
-          <svg class="scene-svg crossroads-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
-            <rect x="0" y="0" width="180" height="533" fill="url(#g_party_ig)"/>
-            <rect x="120" y="0" width="180" height="533" fill="url(#g_sun_ig)"/>
-            <circle cx="18" cy="22" r="1.5" fill="white" opacity="0.72"/>
-            <circle cx="48" cy="12" r="1" fill="white" opacity="0.55"/>
-            <circle cx="82" cy="38" r="2" fill="white" opacity="0.78"/>
-            <circle cx="115" cy="18" r="1.5" fill="white" opacity="0.60"/>
-            <circle cx="32" cy="65" r="1" fill="white" opacity="0.45"/>
-            <circle cx="75" cy="80" r="1.5" fill="white" opacity="0.40"/>
-            <circle cx="148" cy="25" r="1" fill="white" opacity="0.50"/>
-            <circle cx="175" cy="55" r="1.5" fill="white" opacity="0.35"/>
-            <circle cx="200" cy="28" r="2" fill="white" opacity="0.65"/>
-            <circle cx="255" cy="45" r="1" fill="white" opacity="0.50"/>
-            <circle cx="280" cy="22" r="1.5" fill="white" opacity="0.58"/>
-            <path d="M55,32 Q72,18 88,28 Q68,38 72,58 Q48,50 55,32Z" fill="rgba(255,252,185,0.58)"/>
-            <line x1="300" y1="0" x2="80"  y2="230" stroke="rgba(236,170,39,0.20)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="115" y2="235" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="152" y2="238" stroke="rgba(236,170,39,0.12)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="190" y2="235" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="240" y2="228" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+            <!-- Standing figure (right side, head at 175,352) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="152" cy="148" r="28" stroke="none"/>
-              <path d="M144,174 Q152,178 160,174 L158,192 Q152,195 146,192Z" stroke="none"/>
-              <path d="M114,192 Q152,186 190,192 L186,292 Q162,300 152,299 Q142,300 118,292Z" stroke="none"/>
-              <path d="M117,198 Q98,236 99,264" stroke-width="20" fill="none"/>
-              <path d="M99,264 Q110,228 136,156" stroke-width="18" fill="none"/>
-              <circle cx="137" cy="153" r="13" stroke="none"/>
-              <path d="M187,200 Q210,256 205,310" stroke-width="20" fill="none"/>
-              <path d="M128,294 Q120,372 123,460" stroke-width="26" fill="none"/>
-              <path d="M176,294 Q184,372 181,460" stroke-width="26" fill="none"/>
+              <circle cx="175" cy="352" r="20" stroke="none"/>
+              <path d="M170,371 Q175,374 180,371 L179,382 Q175,385 171,382Z" stroke="none"/>
+              <path d="M157,382 Q175,377 193,382 L190,430 Q175,436 160,430Z" stroke="none"/>
+              <path d="M159,388 Q145,410 142,438" stroke-width="12" fill="none"/>
+              <path d="M191,388 Q205,410 208,438" stroke-width="12" fill="none"/>
+              <path d="M163,428 Q159,450 157,480" stroke-width="15" fill="none"/>
+              <path d="M187,428 Q191,450 193,480" stroke-width="15" fill="none"/>
             </g>
+            <!-- Connector circles (head → bubble) -->
+            <circle cx="174" cy="328" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
+            <circle cx="166" cy="295" r="5" fill="rgba(8,3,0,0.70)" stroke="none"/>
+            <circle cx="158" cy="218" r="3.5" fill="rgba(8,3,0,0.65)" stroke="none"/>
+            <!-- Thought bubble ellipse -->
+            <ellipse cx="148" cy="148" rx="118" ry="62" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
+            <!-- Centre divider -->
+            <line x1="148" y1="88" x2="148" y2="208" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
+            <!-- FUN label -->
+            <text x="89" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="14" fill="rgba(236,170,39,0.92)" letter-spacing="2">FUN</text>
+            <!-- 4-point sparkle stars (FUN side) -->
+            <path d="M68,132 L70,138 L76,140 L70,142 L68,148 L66,142 L60,140 L66,138Z" fill="rgba(255,255,255,0.85)"/>
+            <path d="M108,148 L110,153 L115,155 L110,157 L108,162 L106,157 L101,155 L106,153Z" fill="rgba(255,255,255,0.70)"/>
+            <path d="M86,168 L87.5,172 L92,173.5 L87.5,175 L86,179 L84.5,175 L80,173.5 L84.5,172Z" fill="rgba(255,255,255,0.65)"/>
+            <!-- Sparkle crosses (FUN side) -->
+            <line x1="50" y1="150" x2="50" y2="158" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="46" y1="154" x2="54" y2="154" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="120" y1="122" x2="120" y2="128" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <line x1="117" y1="125" x2="123" y2="125" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <!-- Scattered dots (FUN side) -->
+            <circle cx="40" cy="132" r="1.5" fill="rgba(255,255,255,0.50)"/>
+            <circle cx="95" cy="178" r="1.5" fill="rgba(255,255,255,0.48)"/>
+            <circle cx="58" cy="178" r="2" fill="rgba(255,255,255,0.50)"/>
+            <circle cx="128" cy="165" r="1.5" fill="rgba(255,255,255,0.45)"/>
+            <!-- GROWTH label -->
+            <text x="207" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="11" fill="rgba(236,170,39,0.92)" letter-spacing="1">GROWTH</text>
+            <!-- Bold upward arrow (GROWTH side) -->
+            <line x1="172" y1="192" x2="172" y2="145" stroke="rgba(255,255,255,0.88)" stroke-width="3.5"/>
+            <path d="M164,154 L172,136 L180,154Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
+            <!-- Mountain peak + snow cap (GROWTH side) -->
+            <path d="M186,192 L206,152 L226,192Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M206,152 L211,163 L201,163Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
+            <!-- Rising dots (GROWTH side) -->
+            <circle cx="244" cy="190" r="1.5" fill="rgba(255,255,255,0.52)"/>
+            <circle cx="247" cy="179" r="2" fill="rgba(255,255,255,0.58)"/>
+            <circle cx="250" cy="168" r="1.5" fill="rgba(255,255,255,0.64)"/>
+            <circle cx="253" cy="158" r="1" fill="rgba(255,255,255,0.70)"/>
           </svg>
           <svg class="scene-svg thinker-svg" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
@@ -733,37 +780,54 @@
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
         <div class="scene-layer">
-          <svg class="scene-svg crossroads-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
-            <rect x="0" y="0" width="180" height="533" fill="url(#g_party_ig)"/>
-            <rect x="120" y="0" width="180" height="533" fill="url(#g_sun_ig)"/>
-            <circle cx="18" cy="22" r="1.5" fill="white" opacity="0.72"/>
-            <circle cx="48" cy="12" r="1" fill="white" opacity="0.55"/>
-            <circle cx="82" cy="38" r="2" fill="white" opacity="0.78"/>
-            <circle cx="115" cy="18" r="1.5" fill="white" opacity="0.60"/>
-            <circle cx="32" cy="65" r="1" fill="white" opacity="0.45"/>
-            <circle cx="75" cy="80" r="1.5" fill="white" opacity="0.40"/>
-            <circle cx="148" cy="25" r="1" fill="white" opacity="0.50"/>
-            <circle cx="175" cy="55" r="1.5" fill="white" opacity="0.35"/>
-            <circle cx="200" cy="28" r="2" fill="white" opacity="0.65"/>
-            <circle cx="255" cy="45" r="1" fill="white" opacity="0.50"/>
-            <circle cx="280" cy="22" r="1.5" fill="white" opacity="0.58"/>
-            <path d="M55,32 Q72,18 88,28 Q68,38 72,58 Q48,50 55,32Z" fill="rgba(255,252,185,0.58)"/>
-            <line x1="300" y1="0" x2="80"  y2="230" stroke="rgba(236,170,39,0.20)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="115" y2="235" stroke="rgba(236,170,39,0.16)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="152" y2="238" stroke="rgba(236,170,39,0.12)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="190" y2="235" stroke="rgba(236,170,39,0.14)" stroke-width="1.5"/>
-            <line x1="300" y1="0" x2="240" y2="228" stroke="rgba(236,170,39,0.18)" stroke-width="1.5"/>
+          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+            <!-- Standing figure (right side, head at 175,352) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="152" cy="148" r="28" stroke="none"/>
-              <path d="M144,174 Q152,178 160,174 L158,192 Q152,195 146,192Z" stroke="none"/>
-              <path d="M114,192 Q152,186 190,192 L186,292 Q162,300 152,299 Q142,300 118,292Z" stroke="none"/>
-              <path d="M117,198 Q98,236 99,264" stroke-width="20" fill="none"/>
-              <path d="M99,264 Q110,228 136,156" stroke-width="18" fill="none"/>
-              <circle cx="137" cy="153" r="13" stroke="none"/>
-              <path d="M187,200 Q210,256 205,310" stroke-width="20" fill="none"/>
-              <path d="M128,294 Q120,372 123,460" stroke-width="26" fill="none"/>
-              <path d="M176,294 Q184,372 181,460" stroke-width="26" fill="none"/>
+              <circle cx="175" cy="352" r="20" stroke="none"/>
+              <path d="M170,371 Q175,374 180,371 L179,382 Q175,385 171,382Z" stroke="none"/>
+              <path d="M157,382 Q175,377 193,382 L190,430 Q175,436 160,430Z" stroke="none"/>
+              <path d="M159,388 Q145,410 142,438" stroke-width="12" fill="none"/>
+              <path d="M191,388 Q205,410 208,438" stroke-width="12" fill="none"/>
+              <path d="M163,428 Q159,450 157,480" stroke-width="15" fill="none"/>
+              <path d="M187,428 Q191,450 193,480" stroke-width="15" fill="none"/>
             </g>
+            <!-- Connector circles (head → bubble) -->
+            <circle cx="174" cy="328" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
+            <circle cx="166" cy="295" r="5" fill="rgba(8,3,0,0.70)" stroke="none"/>
+            <circle cx="158" cy="218" r="3.5" fill="rgba(8,3,0,0.65)" stroke="none"/>
+            <!-- Thought bubble ellipse -->
+            <ellipse cx="148" cy="148" rx="118" ry="62" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
+            <!-- Centre divider -->
+            <line x1="148" y1="88" x2="148" y2="208" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
+            <!-- FUN label -->
+            <text x="89" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="14" fill="rgba(236,170,39,0.92)" letter-spacing="2">FUN</text>
+            <!-- 4-point sparkle stars (FUN side) -->
+            <path d="M68,132 L70,138 L76,140 L70,142 L68,148 L66,142 L60,140 L66,138Z" fill="rgba(255,255,255,0.85)"/>
+            <path d="M108,148 L110,153 L115,155 L110,157 L108,162 L106,157 L101,155 L106,153Z" fill="rgba(255,255,255,0.70)"/>
+            <path d="M86,168 L87.5,172 L92,173.5 L87.5,175 L86,179 L84.5,175 L80,173.5 L84.5,172Z" fill="rgba(255,255,255,0.65)"/>
+            <!-- Sparkle crosses (FUN side) -->
+            <line x1="50" y1="150" x2="50" y2="158" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="46" y1="154" x2="54" y2="154" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
+            <line x1="120" y1="122" x2="120" y2="128" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <line x1="117" y1="125" x2="123" y2="125" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+            <!-- Scattered dots (FUN side) -->
+            <circle cx="40" cy="132" r="1.5" fill="rgba(255,255,255,0.50)"/>
+            <circle cx="95" cy="178" r="1.5" fill="rgba(255,255,255,0.48)"/>
+            <circle cx="58" cy="178" r="2" fill="rgba(255,255,255,0.50)"/>
+            <circle cx="128" cy="165" r="1.5" fill="rgba(255,255,255,0.45)"/>
+            <!-- GROWTH label -->
+            <text x="207" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="11" fill="rgba(236,170,39,0.92)" letter-spacing="1">GROWTH</text>
+            <!-- Bold upward arrow (GROWTH side) -->
+            <line x1="172" y1="192" x2="172" y2="145" stroke="rgba(255,255,255,0.88)" stroke-width="3.5"/>
+            <path d="M164,154 L172,136 L180,154Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
+            <!-- Mountain peak + snow cap (GROWTH side) -->
+            <path d="M186,192 L206,152 L226,192Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M206,152 L211,163 L201,163Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
+            <!-- Rising dots (GROWTH side) -->
+            <circle cx="244" cy="190" r="1.5" fill="rgba(255,255,255,0.52)"/>
+            <circle cx="247" cy="179" r="2" fill="rgba(255,255,255,0.58)"/>
+            <circle cx="250" cy="168" r="1.5" fill="rgba(255,255,255,0.64)"/>
+            <circle cx="253" cy="158" r="1" fill="rgba(255,255,255,0.70)"/>
           </svg>
           <svg class="scene-svg thinker-svg" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
@@ -841,8 +905,8 @@
     }
 
     function setScene(scene) {
-      document.querySelectorAll('.crossroads-svg').forEach(el =>
-        el.classList.toggle('active', scene === 'crossroads'));
+      document.querySelectorAll('.funvsgrowth-svg').forEach(el =>
+        el.classList.toggle('active', scene === 'funvsgrowth'));
       document.querySelectorAll('.thinker-svg').forEach(el =>
         el.classList.toggle('active', scene === 'thinker'));
     }
