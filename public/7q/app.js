@@ -41,6 +41,7 @@ let state = {
   currentIndex: 0,
   tier: 1,
   totalAnswered: 0,
+  skippedCount: 0,
   questionStartTime: null,
   elapsedTimes: [],
   depthOffered: [],
@@ -178,6 +179,7 @@ async function startGame() {
   state.currentIndex = 0;
   state.tier = 1;
   state.totalAnswered = 0;
+  state.skippedCount = 0;
   state.questionStartTime = null;
   state.elapsedTimes = [];
   state.depthOffered = [];
@@ -236,7 +238,14 @@ document.getElementById('btn-next').addEventListener('click', () => {
 
 // --- Skip: advance without time tracking ---
 document.getElementById('btn-skip').addEventListener('click', () => {
+  state.skippedCount++;
   state.totalAnswered++;
+
+  fetch('/api/log', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event: 'question_skipped', session: SESSION_ID, answer: 'SKIPPED' }),
+  }).catch(() => {});
 
   if (state.totalAnswered >= TOTAL_QUESTIONS) {
     showPreDoneModal();
@@ -315,14 +324,14 @@ document.getElementById('pre-done-email-form').addEventListener('submit', async 
   setTimeout(() => {
     preDoneModal.style.display = 'none';
     resetPreDoneModal();
-    showScreen('done');
+    showDoneScreen();
   }, 1500);
 });
 
 document.getElementById('pre-done-skip').addEventListener('click', () => {
   preDoneModal.style.display = 'none';
   resetPreDoneModal();
-  showScreen('done');
+  showDoneScreen();
 });
 
 function resetPreDoneModal() {
@@ -333,6 +342,17 @@ function resetPreDoneModal() {
 }
 
 // --- Done screen ---
+function showDoneScreen() {
+  const note = document.getElementById('done-skip-note');
+  if (state.skippedCount > 0) {
+    note.textContent = `You skipped ${state.skippedCount} question${state.skippedCount > 1 ? 's' : ''}.`;
+    note.style.display = '';
+  } else {
+    note.style.display = 'none';
+  }
+  showScreen('done');
+}
+
 document.getElementById('done-restart').addEventListener('click', () => {
   state.relation = null;
   showScreen('relation');
