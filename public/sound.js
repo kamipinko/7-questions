@@ -2,29 +2,23 @@
   'use strict';
 
   const SOUND_MAP = {
-    'card-hover':       '/sounds/select-chime.wav',
-    'card-tap':         '/sounds/card-tap.wav',
-    'card-confirm':     '/sounds/alt-option.wav',
-    'transition-slash': '/sounds/transition-slash.wav',
-    'button-hover':     '/sounds/button-hover.wav',
-    'button-confirm':   '/sounds/button-confirm.wav',
-    'menu-open':        '/sounds/menu-open.wav',
-    'slash':            '/sounds/slash.mp3',
-    'slash-alt':        '/sounds/slash-alt.mp3',
-    'mega-transition':  '/sounds/mega-transition.wav',
+    'card-hover':       '/sounds/option-select.wav',
+    'card-tap':         '/sounds/confirm-chime-menu.wav',
+    'card-confirm':     '/sounds/confirm-chime-menu.wav',
+    'transition-slash': '/sounds/slash.mp3',
+    'button-hover':     '/sounds/option-select.wav',
+    'button-confirm':   '/sounds/confirm-chime-menu.wav',
+    'mega-transition':  '/sounds/slash-alt.mp3',
   };
 
   const SOUND_VOLUME = {
-    'card-hover':       0.12,
-    'card-tap':         0.55,
-    'card-confirm':     0.75,
-    'transition-slash': 0.80,
-    'button-hover':     0.10,
+    'card-hover':       0.18,
+    'card-tap':         0.70,
+    'card-confirm':     0.70,
+    'transition-slash': 0.90,
+    'button-hover':     0.15,
     'button-confirm':   0.70,
-    'menu-open':        0.55,
-    'slash':            0.9,
-    'slash-alt':        0.9,
-    'mega-transition':  0.70,
+    'mega-transition':  0.90,
   };
 
   const audioCache = new Map();
