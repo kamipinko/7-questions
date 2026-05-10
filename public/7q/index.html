@@ -6,12 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
   <title>7 Questions</title>
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=7" />
   <script>
     (function() {
       var saved = localStorage.getItem('7q_theme');
       var dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.setAttribute('data-theme', saved || (dark ? 'dark' : 'light'));
+      document.documentElement.setAttribute('data-theme', saved || 'dark');
     })();
   </script>
 </head>
@@ -100,6 +100,43 @@
     </div>
   </div>
 
+  <!-- Player Setup Modal -->
+  <div id="player-setup-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box player-setup-box">
+      <div class="modal-icon">🎯</div>
+      <h2 class="modal-title">Who's playing?</h2>
+      <p class="modal-desc">Add names so we know who's up.</p>
+      <div class="player-input-row">
+        <input type="text" id="player-name-input" class="player-name-input" placeholder="Enter a name..." maxlength="20" />
+        <button id="player-add-btn" class="player-add-btn" type="button">Add</button>
+      </div>
+      <div id="player-chips-list" class="player-chips-list"></div>
+      <div class="player-setup-actions">
+        <button id="player-setup-skip" class="modal-btn secondary">Skip →</button>
+        <button id="player-setup-spin" class="modal-btn depth-primary" disabled>Spin to Start →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spin Screen -->
+  <div id="screen-spin" class="screen">
+    <div class="spin-header">
+      <h2 class="spin-title">Who goes first?</h2>
+    </div>
+    <div class="spin-wheel-wrap">
+      <div id="spin-pointer" class="spin-pointer">▼</div>
+      <canvas id="spin-canvas" width="320" height="320"></canvas>
+    </div>
+    <button id="spin-btn" class="spin-btn">SPIN</button>
+    <div id="spin-result" class="spin-winner-panel" style="display:none;">
+      <div class="spin-winner-content">
+        <div id="spin-result-name" class="spin-result-name"></div>
+        <div class="spin-result-sub">answers first.</div>
+      </div>
+      <button id="spin-continue-btn" class="spin-continue-btn">Let's go →</button>
+    </div>
+  </div>
+
   <!-- Depth Prompt Modal (shown when user is engaged — offers to go deeper) -->
   <div id="engage-modal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
@@ -135,6 +172,10 @@
       <div class="question-meta">
         <span id="relation-badge" class="badge"></span>
       </div>
+    </div>
+
+    <div id="player-turn-banner" class="player-turn-banner" style="display:none;">
+      <span class="player-turn-text" id="player-turn-text"></span>
     </div>
 
     <div class="question-container">
@@ -388,7 +429,15 @@
   <!-- Secret tap zone — 10 taps at bottom center reveals spicy button -->
   <div id="spicy-tap-zone"></div>
 
-  <script src="app.js?v=5"></script>
+  <!-- Mini Spin Modal -->
+  <div id="mini-spin-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-box mini-spin-box">
+      <canvas id="mini-spin-canvas" width="200" height="200"></canvas>
+      <div id="mini-spin-result" class="mini-spin-result" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script src="app.js?v=7"></script>
   <script src="group.js?v=2"></script>
 </body>
 </html>
