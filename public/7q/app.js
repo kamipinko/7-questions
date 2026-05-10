@@ -210,7 +210,15 @@ function showQuestion() {
   state.questionStartTime = Date.now();
 
   if (playerState.players.length >= 2) {
-    runMiniSpin();
+    if (playerState._bigSpinWinner) {
+      const winner = playerState._bigSpinWinner;
+      playerState._bigSpinWinner = null;
+      playerState.currentPicker = winner;
+      playerState.lastPicked = winner;
+      showPlayerBanner(winner);
+    } else {
+      runMiniSpin();
+    }
   }
 }
 
@@ -432,6 +440,7 @@ function resetPlayerState() {
   playerState.players = [];
   playerState.lastPicked = null;
   playerState.currentPicker = null;
+  playerState._bigSpinWinner = null;
   document.getElementById('player-turn-banner').style.display = 'none';
 }
 
@@ -585,7 +594,8 @@ function showSpinScreen(onComplete) {
     try { getAudioCtx(); } catch (_) {}
     doSpin(canvas, playerState.players, (winner) => {
       playerState.currentPicker = winner;
-      playerState.lastPicked = winner;
+      playerState.lastPicked = null;
+      playerState._bigSpinWinner = winner;
       revealSpinWinner(winner, onComplete);
     });
   };
