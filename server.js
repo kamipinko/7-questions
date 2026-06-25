@@ -38,6 +38,8 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/play', express.static(path.join(__dirname, 'public/7q')));
 app.use('/autobiography', express.static(path.join(__dirname, 'public/autobiography')));
 app.use('/thumbnails', express.static(path.join(__dirname, 'public/thumbnails')));
+// Word-a-Day: never expose the user account store (auth tokens, emails) via the static /data mount
+app.use('/data/word-a-day/users', (req, res) => res.status(403).json({ error: 'Forbidden' }));
 app.use('/data', express.static(path.join(__dirname, 'data')));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -50,6 +52,15 @@ app.get('/thumbnails', (req, res) => res.sendFile(path.join(__dirname, 'public/t
 app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, 'public/contact.html')));
 app.get('/word-a-day', (req, res) => res.sendFile(path.join(__dirname, 'public/word-a-day/index.html')));
 app.get('/word-a-day/resume', (req, res) => res.redirect(`/word-a-day?token=${req.query.token}`));
+// Magic-link login: validate single-use login token, mint a long-lived authToken, redirect into the app logged in
+app.get('/word-a-day/login', (req, res) => {
+  const lt = String(req.query.lt || '');
+  const authToken = wadConsumeLoginToken(lt);
+  if (!authToken) {
+    return res.redirect('/word-a-day?login_error=expired');
+  }
+  res.redirect(`/word-a-day?auth=${authToken}`);
+});
 
 // ════════════════════════════════════════
 // WORD-A-DAY API
@@ -114,6 +125,358 @@ function advanceProgressDay(p) {
   }
 }
 
+// ════════════════════════════════════════
+// WORD-A-DAY ACCOUNT SYSTEM (magic-link, multi-language per user)
+// ════════════════════════════════════════
+const crypto = require('crypto');
+const WAD_USERS_DIR     = path.join(__dirname, 'data/word-a-day/users');
+const WAD_EMAIL_INDEX   = path.join(WAD_USERS_DIR, '_emailIndex.json');   // { emailLower: userId }
+const WAD_AUTH_INDEX    = path.join(WAD_USERS_DIR, '_authIndex.json');    // { authToken: userId }
+const WAD_LOGIN_TOKENS  = path.join(WAD_USERS_DIR, '_loginTokens.json');  // { loginToken: {email, code, expires, used} }
+const WAD_MIGRATED      = path.join(WAD_USERS_DIR, '_migrated.json');     // [ legacyToken, ... ]
+if (!fs.existsSync(WAD_USERS_DIR)) fs.mkdirSync(WAD_USERS_DIR, { recursive: true });
+
+const WAD_LANGS_MAP = { es:'Spanish', zh:'Chinese', ja:'Japanese', vi:'Vietnamese', sw:'Swahili', ki:'Kikuyu' };
+const WAD_LOGIN_TTL_MS = 15 * 60 * 1000; // 15 minutes
+
+function wadReadJson(file, fallback) {
+  try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; }
+}
+function wadWriteJson(file, data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+function wadNormEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+function wadValidEmail(email) {
+  const e = wadNormEmail(email);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e) && e.length <= 254;
+}
+
+function wadNewLangProgress() {
+  return {
+    tier: 1, week: 1, day: 1,
+    streak: 0, longestStreak: 0,
+    studyDays: [],
+    completedWords: [],
+    wordStats: {},
+    exams: [],
+    lastStudied: null,
+    createdAt: wadTodayStr(),
+  };
+}
+
+// ── User record I/O ──
+function wadUserPath(userId) { return path.join(WAD_USERS_DIR, `${userId}.json`); }
+function wadReadUser(userId) {
+  if (!userId || /[^a-f0-9]/i.test(userId)) return null; // userIds are hex only
+  return wadReadJson(wadUserPath(userId), null);
+}
+function wadWriteUser(user) {
+  wadWriteJson(wadUserPath(user.userId), user);
+}
+function wadUserIdForEmail(email, createIfMissing) {
+  const e = wadNormEmail(email);
+  const idx = wadReadJson(WAD_EMAIL_INDEX, {});
+  if (idx[e]) return idx[e];
+  if (!createIfMissing) return null;
+  const userId = crypto.randomBytes(16).toString('hex');
+  idx[e] = userId;
+  wadWriteJson(WAD_EMAIL_INDEX, idx);
+  const user = {
+    userId, email: e,
+    createdAt: new Date().toISOString(),
+    lastLogin: null,
+    authTokens: [],
+    languages: {},
+  };
+  wadWriteUser(user);
+  return userId;
+}
+function wadGetOrCreateUser(email) {
+  const userId = wadUserIdForEmail(email, true);
+  let user = wadReadUser(userId);
+  if (!user) { // index existed but file missing — rebuild
+    user = { userId, email: wadNormEmail(email), createdAt: new Date().toISOString(), lastLogin: null, authTokens: [], languages: {} };
+    wadWriteUser(user);
+  }
+  return user;
+}
+function wadUserByAuth(authToken) {
+  if (!authToken) return null;
+  const idx = wadReadJson(WAD_AUTH_INDEX, {});
+  const userId = idx[authToken];
+  if (!userId) return null;
+  const user = wadReadUser(userId);
+  if (!user || !Array.isArray(user.authTokens) || !user.authTokens.includes(authToken)) return null;
+  return user;
+}
+function wadMintAuthToken(user) {
+  const authToken = crypto.randomBytes(32).toString('hex');
+  if (!Array.isArray(user.authTokens)) user.authTokens = [];
+  user.authTokens.push(authToken);
+  user.lastLogin = new Date().toISOString();
+  wadWriteUser(user);
+  const idx = wadReadJson(WAD_AUTH_INDEX, {});
+  idx[authToken] = user.userId;
+  wadWriteJson(WAD_AUTH_INDEX, idx);
+  return authToken;
+}
+function wadRevokeAuthToken(authToken) {
+  const idx = wadReadJson(WAD_AUTH_INDEX, {});
+  const userId = idx[authToken];
+  if (userId) {
+    const user = wadReadUser(userId);
+    if (user && Array.isArray(user.authTokens)) {
+      user.authTokens = user.authTokens.filter(t => t !== authToken);
+      wadWriteUser(user);
+    }
+    delete idx[authToken];
+    wadWriteJson(WAD_AUTH_INDEX, idx);
+  }
+}
+
+// ── Login (magic-link) tokens ──
+function wadCreateLoginToken(email) {
+  const tokens = wadReadJson(WAD_LOGIN_TOKENS, {});
+  const now = Date.now();
+  // prune expired/used while we're here
+  for (const k of Object.keys(tokens)) {
+    if (tokens[k].used || tokens[k].expires < now) delete tokens[k];
+  }
+  const loginToken = crypto.randomBytes(32).toString('hex');
+  const code = String(crypto.randomInt(0, 1000000)).padStart(6, '0');
+  tokens[loginToken] = { email: wadNormEmail(email), code, expires: now + WAD_LOGIN_TTL_MS, used: false };
+  wadWriteJson(WAD_LOGIN_TOKENS, tokens);
+  return { loginToken, code };
+}
+// Validate + consume a login token (by link). Returns a freshly minted authToken or null.
+function wadConsumeLoginToken(loginToken) {
+  if (!loginToken) return null;
+  const tokens = wadReadJson(WAD_LOGIN_TOKENS, {});
+  const rec = tokens[loginToken];
+  if (!rec || rec.used || rec.expires < Date.now()) return null;
+  rec.used = true;
+  wadWriteJson(WAD_LOGIN_TOKENS, tokens);
+  const user = wadGetOrCreateUser(rec.email);
+  return wadMintAuthToken(user);
+}
+// Validate + consume by email + 6-digit code. Returns authToken or null.
+function wadConsumeLoginCode(email, code) {
+  const e = wadNormEmail(email);
+  const c = String(code || '').trim();
+  const tokens = wadReadJson(WAD_LOGIN_TOKENS, {});
+  const now = Date.now();
+  let matchKey = null;
+  for (const k of Object.keys(tokens)) {
+    const r = tokens[k];
+    if (!r.used && r.expires >= now && r.email === e && r.code === c) { matchKey = k; break; }
+  }
+  if (!matchKey) return null;
+  tokens[matchKey].used = true;
+  wadWriteJson(WAD_LOGIN_TOKENS, tokens);
+  const user = wadGetOrCreateUser(e);
+  return wadMintAuthToken(user);
+}
+
+// ── Public-safe account view (never leak authTokens) ──
+function wadPublicAccount(user) {
+  return {
+    userId: user.userId,
+    email: user.email,
+    createdAt: user.createdAt,
+    lastLogin: user.lastLogin,
+    languages: user.languages || {},
+  };
+}
+
+// ── Shared study mutations (used by both account + legacy paths) ──
+function wadApplyCompleteWord(p, wordId, accuracy) {
+  if (!wordId) return;
+  if (!Array.isArray(p.completedWords)) p.completedWords = [];
+  if (!p.completedWords.includes(wordId)) p.completedWords.push(wordId);
+  const acc = Number(accuracy);
+  if (!isNaN(acc) && accuracy !== null && accuracy !== undefined && accuracy !== '') {
+    const clamped = Math.max(0, Math.min(100, Math.round(acc)));
+    if (!p.wordStats || typeof p.wordStats !== 'object') p.wordStats = {};
+    const prev = p.wordStats[wordId] || { bestAccuracy: 0, timesSeen: 0 };
+    p.wordStats[wordId] = {
+      accuracy: clamped,
+      bestAccuracy: Math.max(prev.bestAccuracy || 0, clamped),
+      timesSeen: (prev.timesSeen || 0) + 1,
+      lastSeen: new Date().toISOString().slice(0, 10),
+    };
+  }
+}
+function wadApplyCompleteDay(p) {
+  const today = wadTodayStr();
+  if (!Array.isArray(p.studyDays)) p.studyDays = [];
+  if (!p.studyDays.includes(today)) p.studyDays.push(today);
+  p.lastStudied = today;
+  p.streak = computeStreak(p.studyDays);
+  p.longestStreak = Math.max(p.longestStreak || 0, p.streak);
+  advanceProgressDay(p);
+}
+function wadApplySubmitExam(p, { tier, week, score, grade, passed }) {
+  const canRetakeAt = passed ? null : wadAddDays(wadTodayStr(), 7);
+  p.exams = (p.exams || []).filter(e => !(e.tier === tier && e.week === week));
+  p.exams.push({ tier, week, score, grade, passed, takenAt: wadTodayStr(), canRetakeAt });
+}
+
+// Resolve a study request to a progress object + a save() fn.
+// Prefers account auth (authToken + language); falls back to legacy per-language token.
+function wadResolveStudy(body) {
+  if (body && body.authToken) {
+    const user = wadUserByAuth(body.authToken);
+    if (!user) return { error: 401 };
+    const lang = body.language || body.lang;
+    if (!lang || !WAD_LANGS_MAP[lang]) return { error: 400 };
+    if (!user.languages) user.languages = {};
+    if (!user.languages[lang]) user.languages[lang] = wadNewLangProgress();
+    const p = user.languages[lang];
+    if (!p.wordStats) p.wordStats = {};
+    return { p, lang, user, account: true, save: () => wadWriteUser(user) };
+  }
+  if (body && body.token) {
+    const p = wadReadProgress(body.token);
+    if (!p) return { error: 404 };
+    if (!p.wordStats) p.wordStats = {};
+    return { p, account: false, save: () => wadWriteProgress(body.token, p) };
+  }
+  return { error: 400 };
+}
+
+// ── Email helper (reuses existing Gmail OAuth creds) ──
+async function wadSendMail(to, subject, body) {
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET
+  );
+  oauth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN });
+  const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+  const message = [
+    `To: ${to}`,
+    `Subject: ${subject}`,
+    `Content-Type: text/plain; charset=utf-8`,
+    ``,
+    body,
+  ].join('\n');
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: { raw: Buffer.from(message).toString('base64url') },
+  });
+}
+
+function wadBaseUrl(req) {
+  const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0].trim();
+  return `${proto}://${req.get('host')}`;
+}
+
+// ── One-time migration of legacy progress files into the new account store ──
+function wadMigrateLegacy() {
+  let migrated = 0;
+  try {
+    const legacyIndex = wadReadJson(path.join(WAD_PROGRESS_DIR, '_index.json'), {});
+    const done = new Set(wadReadJson(WAD_MIGRATED, []));
+    let files = [];
+    try { files = fs.readdirSync(WAD_PROGRESS_DIR).filter(f => f.endsWith('.json') && f !== '_index.json'); } catch {}
+    for (const file of files) {
+      const legacyToken = file.replace(/\.json$/, '');
+      if (done.has(legacyToken)) continue;
+      const lp = wadReadJson(path.join(WAD_PROGRESS_DIR, file), null);
+      if (!lp || !lp.email || !lp.language) { done.add(legacyToken); continue; }
+      const user = wadGetOrCreateUser(lp.email);
+      if (!user.languages) user.languages = {};
+      if (!user.languages[lp.language]) {
+        user.languages[lp.language] = {
+          tier: lp.tier || 1, week: lp.week || 1, day: lp.day || 1,
+          streak: lp.streak || 0, longestStreak: lp.longestStreak || 0,
+          studyDays: lp.studyDays || [],
+          completedWords: lp.completedWords || [],
+          wordStats: lp.wordStats || {},
+          exams: lp.exams || [],
+          lastStudied: lp.lastStudied || null,
+          createdAt: lp.createdAt || wadTodayStr(),
+          migratedFrom: legacyToken,
+        };
+        wadWriteUser(user);
+        migrated++;
+      }
+      done.add(legacyToken);
+    }
+    wadWriteJson(WAD_MIGRATED, [...done]);
+    if (migrated > 0) console.log(`[wad] migrated ${migrated} legacy progress record(s) into accounts`);
+  } catch (e) {
+    console.error('[wad migrate]', e.message);
+  }
+  return migrated;
+}
+wadMigrateLegacy();
+
+// ════════════════════════════════════════
+// WORD-A-DAY AUTH ROUTES
+// ════════════════════════════════════════
+
+// POST /api/wad/auth/request {email} — email a magic link + 6-digit code
+app.post('/api/wad/auth/request', async (req, res) => {
+  const email = wadNormEmail(req.body && req.body.email);
+  if (!wadValidEmail(email)) return res.status(400).json({ error: 'A valid email is required' });
+
+  const { loginToken, code } = wadCreateLoginToken(email);
+  const loginUrl = `${wadBaseUrl(req)}/word-a-day/login?lt=${loginToken}`;
+  const body = [
+    `Welcome to A Word a Day 📚`,
+    ``,
+    `Click the link below to log in (valid for 15 minutes):`,
+    loginUrl,
+    ``,
+    `Or enter this 6-digit code in the app:`,
+    `    ${code}`,
+    ``,
+    `If you didn't request this, you can safely ignore this email.`,
+    ``,
+    `— A Word a Day`,
+  ].join('\n');
+
+  // Always log a redacted confirmation; never log the full token/code in production.
+  console.log(`[wad auth] login link issued for ${email}`);
+  try {
+    await wadSendMail(email, 'Your login link — A Word a Day 📚', body);
+    res.json({ ok: true, sent: true });
+  } catch (e) {
+    console.error('[wad auth/request] email failed:', e.message);
+    // Still return ok so the code path (verify-code) remains usable; token is stored.
+    res.json({ ok: true, sent: false });
+  }
+});
+
+// POST /api/wad/auth/verify-code {email, code} — same effect as clicking the link
+app.post('/api/wad/auth/verify-code', (req, res) => {
+  const email = wadNormEmail(req.body && req.body.email);
+  const code = String((req.body && req.body.code) || '').trim();
+  if (!wadValidEmail(email) || !/^\d{6}$/.test(code)) {
+    return res.status(400).json({ error: 'Email and 6-digit code required' });
+  }
+  const authToken = wadConsumeLoginCode(email, code);
+  if (!authToken) return res.status(401).json({ error: 'Invalid or expired code' });
+  const user = wadUserByAuth(authToken);
+  res.json({ ok: true, authToken, account: wadPublicAccount(user) });
+});
+
+// POST /api/wad/auth/me {authToken} — restore session
+app.post('/api/wad/auth/me', (req, res) => {
+  const user = wadUserByAuth(req.body && req.body.authToken);
+  if (!user) return res.status(401).json({ error: 'Not authenticated' });
+  res.json({ ok: true, account: wadPublicAccount(user) });
+});
+
+// POST /api/wad/auth/logout {authToken}
+app.post('/api/wad/auth/logout', (req, res) => {
+  const authToken = req.body && req.body.authToken;
+  if (authToken) wadRevokeAuthToken(authToken);
+  res.json({ ok: true });
+});
+
 // GET /api/wad/words/:lang — serve word list
 app.get('/api/wad/words/:lang', (req, res) => {
   const file = path.join(WAD_WORDS_DIR, `${req.params.lang}.json`);
@@ -164,46 +527,38 @@ app.post('/api/wad/session', async (req, res) => {
   res.json({ token, progress });
 });
 
-// POST /api/wad/complete-word
-app.post('/api/wad/complete-word', (req, res) => {
-  const { token, wordId, accuracy } = req.body;
-  const p = wadReadProgress(token);
-  if (!p) return res.status(404).json({ error: 'Session not found' });
+function wadStudyError(res, code) {
+  const map = { 400: 'authToken+language or token required', 401: 'Not authenticated', 404: 'Session not found' };
+  return res.status(code).json({ error: map[code] || 'Error' });
+}
 
-  if (!p.completedWords.includes(wordId)) p.completedWords.push(wordId);
-  wadWriteProgress(token, p);
-  res.json({ ok: true });
+// POST /api/wad/complete-word — records the word AND persists its accuracy (per-word stats)
+app.post('/api/wad/complete-word', (req, res) => {
+  const { wordId, accuracy } = req.body || {};
+  const r = wadResolveStudy(req.body);
+  if (r.error) return wadStudyError(res, r.error);
+  wadApplyCompleteWord(r.p, wordId, accuracy);
+  r.save();
+  res.json({ ok: true, wordStats: (r.p.wordStats && r.p.wordStats[wordId]) || null });
 });
 
 // POST /api/wad/complete-day
 app.post('/api/wad/complete-day', (req, res) => {
-  const { token } = req.body;
-  const p = wadReadProgress(token);
-  if (!p) return res.status(404).json({ error: 'Session not found' });
-
-  const today = wadTodayStr();
-  if (!p.studyDays.includes(today)) p.studyDays.push(today);
-  p.lastStudied = today;
-  p.streak = computeStreak(p.studyDays);
-  p.longestStreak = Math.max(p.longestStreak || 0, p.streak);
-  advanceProgressDay(p);
-  wadWriteProgress(token, p);
-  res.json(p);
+  const r = wadResolveStudy(req.body);
+  if (r.error) return wadStudyError(res, r.error);
+  wadApplyCompleteDay(r.p);
+  r.save();
+  res.json(r.p);
 });
 
 // POST /api/wad/submit-exam
 app.post('/api/wad/submit-exam', (req, res) => {
-  const { token, week, tier, score, grade, passed } = req.body;
-  const p = wadReadProgress(token);
-  if (!p) return res.status(404).json({ error: 'Session not found' });
-
-  const canRetakeAt = passed ? null : wadAddDays(wadTodayStr(), 7);
-  // Remove old attempt if retake
-  p.exams = (p.exams || []).filter(e => !(e.tier===tier && e.week===week));
-  p.exams.push({ tier, week, score, grade, passed, takenAt: wadTodayStr(), canRetakeAt });
-
-  wadWriteProgress(token, p);
-  res.json(p);
+  const { week, tier, score, grade, passed } = req.body || {};
+  const r = wadResolveStudy(req.body);
+  if (r.error) return wadStudyError(res, r.error);
+  wadApplySubmitExam(r.p, { tier, week, score, grade, passed });
+  r.save();
+  res.json(r.p);
 });
 
 // POST /api/wad/save-spot — email user their resume link
@@ -303,6 +658,390 @@ app.post('/api/generate-bg', express.json(), async (req, res) => {
   } catch (err) {
     console.error('[generate-bg]', err.message);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ════════════════════════════════════════
+// THUMBNAIL — STYLE GUIDE ENGINE  (POST /api/analyze-style)
+// ════════════════════════════════════════
+
+const PK_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
+function pkExtractVideoId(url) {
+  if (!url) return null;
+  let m;
+  if ((m = url.match(/[?&]v=([\w-]{11})/)))        return m[1];
+  if ((m = url.match(/youtu\.be\/([\w-]{11})/)))    return m[1];
+  if ((m = url.match(/\/shorts\/([\w-]{11})/)))     return m[1];
+  if ((m = url.match(/\/embed\/([\w-]{11})/)))      return m[1];
+  return null;
+}
+
+function pkExtractChannelId(url) {
+  const m = (url || '').match(/\/channel\/(UC[\w-]+)/);
+  return m ? m[1] : null;
+}
+
+// Resolve a /@handle, /c/name or /user/name page to its UC… channel id
+async function pkResolveChannelIdFromPage(url) {
+  try {
+    const r = await fetch(url, { headers: { 'User-Agent': PK_UA } });
+    if (!r.ok) return null;
+    const html = await r.text();
+    const m = html.match(/"channelId":"(UC[\w-]+)"/) || html.match(/"externalId":"(UC[\w-]+)"/);
+    return m ? m[1] : null;
+  } catch { return null; }
+}
+
+// Search a creator name → first channel result's UC… id
+async function pkSearchChannelId(name) {
+  try {
+    const r = await fetch('https://www.youtube.com/results?search_query=' + encodeURIComponent(name),
+      { headers: { 'User-Agent': PK_UA } });
+    if (!r.ok) return null;
+    const html = await r.text();
+    const m = html.match(/"channelId":"(UC[\w-]+)"/);
+    return m ? m[1] : null;
+  } catch { return null; }
+}
+
+// Most-recent video ids from a channel RSS feed
+async function pkRecentVideoIds(channelId, limit = 6) {
+  try {
+    const r = await fetch('https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId,
+      { headers: { 'User-Agent': PK_UA } });
+    if (!r.ok) return [];
+    const xml = await r.text();
+    return [...xml.matchAll(/<yt:videoId>([\w-]{11})<\/yt:videoId>/g)].map(x => x[1]).slice(0, limit);
+  } catch { return []; }
+}
+
+// Fetch a video's thumbnail (maxres → hqdefault fallback) as base64
+async function pkFetchThumbBase64(videoId) {
+  for (const q of ['maxresdefault', 'hqdefault']) {
+    try {
+      const r = await fetch(`https://img.youtube.com/vi/${videoId}/${q}.jpg`, { headers: { 'User-Agent': PK_UA } });
+      if (r.ok) {
+        const buf = Buffer.from(await r.arrayBuffer());
+        if (buf.length > 1500) return { mime: 'image/jpeg', data: buf.toString('base64') }; // skip 1x1 gray placeholder
+      }
+    } catch {}
+  }
+  return null;
+}
+
+function pkParseJson(txt) {
+  if (!txt) throw new Error('Empty response from model.');
+  try { return JSON.parse(txt); } catch {}
+  const obj = txt.match(/\{[\s\S]*\}/);
+  if (obj) { try { return JSON.parse(obj[0]); } catch {} }
+  const arr = txt.match(/\[[\s\S]*\]/);
+  if (arr) { try { return JSON.parse(arr[0]); } catch {} }
+  throw new Error('Model returned unparseable JSON.');
+}
+
+const PK_STYLE_SCHEMA = `{
+  "summary": "2-3 sentence description of the shared visual style",
+  "palette": { "dominant": ["#.."], "accent": ["#.."], "mood": "warm|cool|high-contrast|muted|..." },
+  "textPlacement": "top|center|bottom|left|right|split",
+  "textTreatment": "huge-bold|outlined|boxed|minimal|gradient",
+  "composition": "centric|rule-of-thirds|negative-space|busy|symmetrical",
+  "contrast": "extreme|high|medium|low",
+  "emotionalHook": "curiosity|fear|aspiration|controversy|calm|...",
+  "faceUsage": "big-face|small-face|no-face",
+  "fontWeightFeel": "ultra-heavy|heavy|medium|light",
+  "recurringMotifs": ["..."],
+  "applyHints": { "scene": "funvsgrowth|thinker|none", "headlineStyle": "...", "recommendedBgPrompt": "a Proles Kitchen on-brand background prompt distilled from this style, black bg, gold/red accents, NO faces" }
+}`;
+
+function pkStylePrompt() {
+  return `You are a YouTube thumbnail art director. Study the shared visual style across the attached thumbnails and return STRICT JSON ONLY (no markdown, no prose) matching exactly this schema:
+${PK_STYLE_SCHEMA}
+Base every field on what you actually observe across the images. For applyHints.recommendedBgPrompt, distill the style into an on-brand background prompt for "Proles Kitchen" (a philosophy/lifestyle channel): pure black background, gold (#ECAA27) and red (#e05252) accents, cinematic and atmospheric, NO faces, NO text, NO logos.`;
+}
+
+// Vision analysis: Gemini primary, OpenAI GPT-4o fallback
+async function pkAnalyzeImages(images) {
+  const promptText = pkStylePrompt();
+
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      const parts = [{ text: promptText }];
+      for (const img of images) parts.push({ inlineData: { mimeType: img.mime, data: img.data } });
+      const r = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+          body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseMimeType: 'application/json', temperature: 0.4 } })
+        }
+      );
+      const d = await r.json();
+      if (r.ok) {
+        const txt = d.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (txt) return pkParseJson(txt);
+      } else {
+        console.error('[analyze-style gemini]', d.error?.message || 'gemini vision failed');
+      }
+    } catch (e) { console.error('[analyze-style gemini]', e.message); }
+  }
+
+  if (process.env.OPENAI_API_KEY) {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const content = [{ type: 'text', text: promptText }];
+    for (const img of images) content.push({ type: 'image_url', image_url: { url: `data:${img.mime};base64,${img.data}` } });
+    const result = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [{ role: 'user', content }],
+      response_format: { type: 'json_object' },
+      max_tokens: 1200
+    });
+    return pkParseJson(result.choices?.[0]?.message?.content);
+  }
+
+  throw new Error('No vision API key available (set GEMINI_API_KEY or OPENAI_API_KEY).');
+}
+
+app.post('/api/analyze-style', async (req, res) => {
+  const { urls = [], images = [], creators = [] } = req.body || {};
+  const MAX = 10;
+  const collected = [];      // { mime, data }
+  const skipped = [];
+
+  try {
+    // 1. Video / channel URLs
+    for (const raw of urls) {
+      if (collected.length >= MAX) break;
+      const u = (raw || '').trim();
+      if (!u) continue;
+      try {
+        const vid = pkExtractVideoId(u);
+        if (vid) {
+          const img = await pkFetchThumbBase64(vid);
+          if (img) collected.push(img); else skipped.push(`${u} (no thumbnail)`);
+          continue;
+        }
+        let chId = pkExtractChannelId(u);
+        if (!chId && /youtube\.com\/(@|c\/|user\/)/.test(u)) chId = await pkResolveChannelIdFromPage(u);
+        if (chId) {
+          const vids = await pkRecentVideoIds(chId, 6);
+          if (!vids.length) skipped.push(`${u} (no videos in RSS)`);
+          for (const v of vids) {
+            if (collected.length >= MAX) break;
+            const img = await pkFetchThumbBase64(v);
+            if (img) collected.push(img);
+          }
+        } else {
+          skipped.push(`${u} (could not resolve)`);
+        }
+      } catch (e) { skipped.push(`${u} (${e.message})`); }
+    }
+
+    // 2. Creator names
+    for (const raw of creators) {
+      if (collected.length >= MAX) break;
+      const name = (raw || '').trim();
+      if (!name) continue;
+      try {
+        const chId = await pkSearchChannelId(name);
+        if (!chId) { skipped.push(`${name} (creator not found)`); continue; }
+        const vids = await pkRecentVideoIds(chId, 6);
+        if (!vids.length) skipped.push(`${name} (no videos in RSS)`);
+        for (const v of vids) {
+          if (collected.length >= MAX) break;
+          const img = await pkFetchThumbBase64(v);
+          if (img) collected.push(img);
+        }
+      } catch (e) { skipped.push(`${name} (${e.message})`); }
+    }
+
+    // 3. Uploaded data URLs
+    for (const raw of images) {
+      if (collected.length >= MAX) break;
+      const m = (raw || '').match(/^data:([^;]+);base64,(.+)$/);
+      if (m) collected.push({ mime: m[1], data: m[2] });
+      else skipped.push('uploaded image (invalid data URL)');
+    }
+
+    if (!collected.length) {
+      return res.status(400).json({ error: 'No images could be resolved from the provided inputs.', skipped });
+    }
+
+    const styleGuide = await pkAnalyzeImages(collected);
+    res.json({ styleGuide, analyzedCount: collected.length, skipped });
+  } catch (err) {
+    console.error('[analyze-style]', err.message);
+    res.status(500).json({ error: err.message, skipped });
+  }
+});
+
+// ════════════════════════════════════════
+// THUMBNAIL — POPULARITY BUILDER  (POST /api/popularity-suggest)
+// ════════════════════════════════════════
+
+// Curated knowledge base of winning thumbnail patterns for
+// philosophy / lifestyle / health / mindset YouTube.
+const PK_POPULARITY_RULES = [
+  '3-5 word headlines outperform long ones — the eye reads them in a single glance at feed size.',
+  'One focal point only. Competing elements split attention and lower click-through.',
+  'Maximize contrast: bright text/subject against a dark background survives compression and small sizes.',
+  'Curiosity-gap phrasing (open loops, "the truth about", "why nobody…") beats plain description.',
+  'A single emphasized word in an accent color anchors the gaze and adds rhythm.',
+  'Number or stark contrast hooks ("0 vs 100", "1 habit") trigger pattern-interrupt.',
+  'Emotional single-word punch (OVERRATED, BROKEN, LIED) carries more weight than a sentence.',
+  'Keep text in a safe zone (bottom-left or bottom band) away from the duration stamp.',
+  'Avoid clutter — generous negative space reads as premium and confident.',
+  'Consistency across thumbnails (palette, font, motif) compounds channel recognition.',
+];
+
+function pkRuleSuggestions(current = {}) {
+  const out = [];
+  const headlineRaw = (current.headline || '').replace(/\|/g, ' ').trim();
+  const words = headlineRaw ? headlineRaw.split(/\s+/) : [];
+
+  if (words.length > 5) {
+    out.push({
+      id: 's_headline_len', type: 'headline', title: 'Shorten the headline to 3-5 words',
+      detail: `Your headline is ${words.length} words. Shorter headlines read in one glance at thumbnail size and consistently outperform. Trim to the punchy core.`,
+      proposed: { headline: words.slice(0, 4).join(' ') }
+    });
+  }
+  if (!((current.accent || '').trim()) && words.length) {
+    out.push({
+      id: 's_accent', type: 'color', title: 'Add a gold accent word',
+      detail: 'One word in the brand gold creates a single high-contrast anchor the eye lands on first, adding rhythm without new colors.',
+      proposed: { accent: (words[words.length - 1] || '').toUpperCase() }
+    });
+  }
+  if (!((current.eyebrow || '').trim()) || /proles kitchen/i.test(current.eyebrow || '')) {
+    out.push({
+      id: 's_curiosity', type: 'text', title: 'Use a curiosity-gap eyebrow',
+      detail: 'A short tension phrase above the headline opens a curiosity loop and lifts click-through without adding clutter.',
+      proposed: { eyebrow: 'THE TRUTH ABOUT' }
+    });
+  }
+  if (current.scene === 'none') {
+    out.push({
+      id: 's_scene', type: 'scene', title: 'Add a single focal illustration',
+      detail: 'A lone iconographic figure (the Thinker) gives one clear focal point and reads instantly — better than an empty frame.',
+      proposed: { scene: 'thinker' }
+    });
+  }
+  if ((current.subline || '').split(/\s+/).filter(Boolean).length > 4) {
+    out.push({
+      id: 's_subline', type: 'text', title: 'Tighten the subline',
+      detail: 'Keep the subline to 2-3 words so it supports the headline instead of competing with it for attention.',
+      proposed: {}
+    });
+  }
+  out.push({
+    id: 's_contrast', type: 'composition', title: 'Push contrast to the extreme',
+    detail: 'High black-to-gold contrast survives feed compression and small sizes. Keep the background dark and the headline bright — let one element dominate.',
+    proposed: {}
+  });
+  return out;
+}
+
+// Optional Gemini text enrichment over the curated rules + current build
+async function pkGeminiSuggest(current) {
+  const rulesText = PK_POPULARITY_RULES.map(r => '- ' + r).join('\n');
+  const prompt = `You are a YouTube thumbnail growth strategist for "Proles Kitchen", a philosophy / lifestyle / mindset channel.
+Brand (immutable): pure black background, gold #ECAA27 + red #e05252 accents, Anton uppercase headlines, NO faces. Never propose changing the brand colors.
+
+Proven winning patterns:
+${rulesText}
+
+Current thumbnail build:
+${JSON.stringify(current, null, 2)}
+
+Return STRICT JSON ONLY: a JSON array (no wrapper object) of 4-6 concrete, specific improvement suggestions. Each element:
+{ "id":"s1", "type":"headline|composition|color|scene|text", "title":"short imperative title", "detail":"why it helps + exactly what to change", "proposed": { optional concrete values among headline, subline, eyebrow, accent, scene } }
+Only include keys in "proposed" you actually want changed. "scene" must be one of funvsgrowth|thinker|none. Tailor to the actual current build above.`;
+
+  const r = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.6 } })
+    }
+  );
+  const d = await r.json();
+  if (!r.ok) throw new Error(d.error?.message || 'gemini suggest failed');
+  const parsed = pkParseJson(d.candidates?.[0]?.content?.parts?.[0]?.text);
+  if (Array.isArray(parsed)) return parsed;
+  if (parsed && Array.isArray(parsed.suggestions)) return parsed.suggestions;
+  return null;
+}
+
+app.post('/api/popularity-suggest', async (req, res) => {
+  const { current = {} } = req.body || {};
+  try {
+    let suggestions = pkRuleSuggestions(current);
+    if (process.env.GEMINI_API_KEY) {
+      try {
+        const enriched = await pkGeminiSuggest(current);
+        if (enriched && enriched.length) suggestions = enriched;
+      } catch (e) { console.error('[popularity-suggest gemini]', e.message); }
+    }
+    res.json({ suggestions });
+  } catch (err) {
+    console.error('[popularity-suggest]', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ════════════════════════════════════════
+// THUMBNAIL — SUBJECT BACKGROUND REMOVAL  (POST /api/remove-bg)
+// Optional: shells out to Python `rembg`. If that infra is unavailable
+// (e.g. Railway without Python/rembg), it gracefully returns the image
+// unchanged with removed:false so the client can use it as-is.
+// ════════════════════════════════════════
+app.post('/api/remove-bg', express.json({ limit: '25mb' }), async (req, res) => {
+  const { image } = req.body || {};
+  if (!image) return res.status(400).json({ error: 'image (data URL) required' });
+
+  const m = String(image).match(/^data:([^;]+);base64,(.+)$/);
+  if (!m) return res.status(400).json({ error: 'image must be a base64 data URL' });
+  const inputBuf = Buffer.from(m[2], 'base64');
+
+  const py = [
+    'import sys, io, base64',
+    'from rembg import remove',
+    'from PIL import Image',
+    'data = sys.stdin.buffer.read()',
+    'img = Image.open(io.BytesIO(data)).convert("RGBA")',
+    'out = remove(img)',
+    'b = io.BytesIO(); out.save(b, "PNG")',
+    'sys.stdout.write(base64.b64encode(b.getvalue()).decode())'
+  ].join('\n');
+
+  const { spawn } = require('child_process');
+  const pyCmd = process.env.PYTHON_BIN || 'python';
+
+  try {
+    const out = await new Promise((resolve, reject) => {
+      let proc;
+      try { proc = spawn(pyCmd, ['-c', py]); }
+      catch (e) { return reject(e); }
+      let stdout = '', stderr = '';
+      const timer = setTimeout(() => { try { proc.kill(); } catch {} reject(new Error('rembg timeout')); }, 60000);
+      proc.on('error', err => { clearTimeout(timer); reject(err); });
+      proc.stdout.on('data', d => stdout += d);
+      proc.stderr.on('data', d => stderr += d);
+      proc.on('close', code => {
+        clearTimeout(timer);
+        if (code === 0 && stdout.trim()) resolve(stdout.trim());
+        else reject(new Error(stderr.slice(-200) || ('rembg exit ' + code)));
+      });
+      proc.stdin.write(inputBuf);
+      proc.stdin.end();
+    });
+    return res.json({ dataUrl: `data:image/png;base64,${out}`, removed: true });
+  } catch (err) {
+    console.error('[remove-bg] falling back, reason:', err.message);
+    // Graceful fallback: return the original image untouched.
+    return res.json({ dataUrl: image, removed: false, note: 'Auto background removal unavailable; using image as-is.' });
   }
 });
 

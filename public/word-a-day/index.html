@@ -240,6 +240,10 @@
       <span class="nav-title" id="navTitle">A Word a Day</span>
     </div>
     <div style="display:flex;gap:8px;align-items:center;">
+      <span id="accountChip" style="display:none;align-items:center;gap:6px;font-family:var(--font-mono);font-size:.6rem;color:var(--text-sub);max-width:42vw;">
+        <span id="accountEmail" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;" title=""></span>
+        <button id="logoutBtn" class="btn-sm-ghost" style="padding:4px 8px;font-size:.6rem;border-radius:2px;">Logout</button>
+      </span>
       <button class="theme-toggle btn-sm-ghost" id="progBtn" style="display:none;border-radius:2px;font-size:.68rem;padding:6px 12px;color:var(--text-sub);" title="View progress">Progress</button>
       <button class="theme-toggle" id="themeToggle">🌙</button>
     </div>
@@ -259,19 +263,32 @@
       <button class="btn-primary" id="startLangBtn" disabled>Begin →</button>
     </div>
 
-    <!-- ── SCREEN: Auth ── -->
+    <!-- ── SCREEN: Auth (magic-link login) ── -->
     <div class="screen" id="screen-auth">
       <div class="screen-header">
         <p class="screen-eyebrow" id="authLangLabel">Spanish</p>
-        <h1 class="screen-title">Your study spot</h1>
-        <p class="screen-sub">Enter your email and we'll keep your progress. You can always pick up right where you left off — no password needed.</p>
+        <h1 class="screen-title">Save your progress</h1>
+        <p class="screen-sub">Log in with just your email — no password. Your streak, words, and exams sync to every device.</p>
       </div>
       <div class="auth-card">
-        <div class="form-group">
-          <label class="form-label" for="emailInput">Email address</label>
-          <input class="form-input" type="email" id="emailInput" placeholder="you@example.com" />
+        <!-- Step 1: email -->
+        <div id="authStepEmail" style="display:flex;flex-direction:column;gap:18px;">
+          <div class="form-group">
+            <label class="form-label" for="emailInput">Email address</label>
+            <input class="form-input" type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" />
+          </div>
+          <button class="btn-primary" id="requestLinkBtn">Email me a login link →</button>
         </div>
-        <button class="btn-primary" id="startStudyBtn">Start studying →</button>
+        <!-- Step 2: code -->
+        <div id="authStepCode" style="display:none;flex-direction:column;gap:16px;">
+          <p class="auth-desc">Check your inbox — we sent a login link and a 6-digit code to <strong id="authSentEmail"></strong>. Click the link on this device, or enter the code below.</p>
+          <div class="form-group">
+            <label class="form-label" for="codeInput">6-digit code</label>
+            <input class="form-input" type="text" inputmode="numeric" maxlength="6" id="codeInput" placeholder="123456" autocomplete="one-time-code" style="letter-spacing:.3em;text-align:center;font-family:var(--font-mono);" />
+          </div>
+          <button class="btn-primary" id="verifyCodeBtn">Verify &amp; log in →</button>
+          <button class="btn-ghost" id="changeEmailBtn">Use a different email</button>
+        </div>
         <p class="form-status" id="authStatus"></p>
       </div>
       <button class="btn-ghost" id="backToLangBtn">← Choose different language</button>
@@ -492,11 +509,15 @@ themeToggle.addEventListener('click', () => {
 // STATE
 // ══════════════════════════════════════════════════════════
 let state = {
-  token: null,
+  token: null,        // legacy per-language token (backward compat)
+  authToken: null,    // account auth token (magic-link)
+  account: null,      // { email, userId, languages:{...} }
+  accountMode: false, // true when logged in via account
+  pendingEmail: null, // email awaiting code verification
   email: null,
   lang: null,         // language code
   langData: null,     // full language JSON
-  progress: null,     // server progress object
+  progress: null,     // server progress object (the active language's progress)
   words: [],          // filtered word list for current tier/week/day
   wordIdx: 0,         // index into words[]
   listenedOnce: false,
@@ -504,6 +525,26 @@ let state = {
   exam: null,         // exam session
   examIdx: 0,
 };
+
+// Build a request body for study endpoints — account-bound when logged in, else legacy token.
+function studyBody(extra) {
+  const b = Object.assign({}, extra || {});
+  if (state.accountMode && state.authToken) { b.authToken = state.authToken; b.language = state.lang; }
+  else { b.token = state.token; }
+  return b;
+}
+
+// Reflect logged-in state in the nav.
+function renderAccountChip() {
+  const chip = $('accountChip');
+  if (state.accountMode && state.account) {
+    chip.style.display = 'flex';
+    $('accountEmail').textContent = state.account.email;
+    $('accountEmail').title = state.account.email;
+  } else {
+    chip.style.display = 'none';
+  }
+}
 
 const LANGS = [
   {code:'es', name:'Spanish',   flag:'🇪🇸', sub:'6 months to survival'},
@@ -529,9 +570,11 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   $(id).classList.add('active');
 
-  const hasSession = !!state.token;
-  $('saveFab').classList.toggle('hidden', id !== 'screen-lesson');
+  const hasSession = !!state.token || !!state.accountMode;
+  // The legacy "Save My Spot" email FAB is only for anonymous token users; accounts auto-sync.
+  $('saveFab').classList.toggle('hidden', state.accountMode || id !== 'screen-lesson');
   $('progBtn').style.display = (hasSession && id !== 'screen-lang' && id !== 'screen-auth') ? '' : 'none';
+  renderAccountChip();
 }
 
 // ══════════════════════════════════════════════════════════
@@ -558,7 +601,13 @@ function buildLangGrid() {
 $('startLangBtn').addEventListener('click', async () => {
   if (!state.lang) return;
 
-  // Check if returning user with token for this lang
+  // Logged-in account: start this language straight away (progress lives under the account).
+  if (state.accountMode && state.authToken) {
+    await startLanguageForAccount(state.lang);
+    return;
+  }
+
+  // Legacy: returning anonymous user with a saved per-language token.
   const savedToken = localStorage.getItem(`wad_token_${state.lang}`);
   if (savedToken) {
     state.token = savedToken;
@@ -568,42 +617,121 @@ $('startLangBtn').addEventListener('click', async () => {
     return;
   }
 
-  // New user — go to auth
+  // New / logged-out user — go to magic-link login.
   const l = LANGS.find(x => x.code === state.lang);
   $('authLangLabel').textContent = l ? l.name : '';
+  showAuthEmailStep();
   showScreen('screen-auth');
 });
+
+// Begin (or resume) a language for the currently logged-in account.
+async function startLanguageForAccount(code) {
+  state.lang = code;
+  state.token = null;
+  const langs = (state.account && state.account.languages) || {};
+  state.progress = langs[code] || newEmptyProgress();
+  if (!langs[code] && state.account) { state.account.languages[code] = state.progress; }
+  await loadLangData();
+  updateNavTitle();
+  gotoLesson();
+}
+
+function newEmptyProgress() {
+  return { tier:1, week:1, day:1, streak:0, longestStreak:0, studyDays:[], completedWords:[], wordStats:{}, exams:[], lastStudied:null };
+}
 
 // ══════════════════════════════════════════════════════════
 // AUTH
 // ══════════════════════════════════════════════════════════
 $('backToLangBtn').addEventListener('click', () => showScreen('screen-lang'));
 
-$('startStudyBtn').addEventListener('click', async () => {
+function showAuthEmailStep() {
+  $('authStepEmail').style.display = 'flex';
+  $('authStepCode').style.display = 'none';
+  $('authStatus').textContent = '';
+}
+function showAuthCodeStep(email) {
+  $('authStepEmail').style.display = 'none';
+  $('authStepCode').style.display = 'flex';
+  $('authSentEmail').textContent = email;
+  $('authStatus').textContent = '';
+  setTimeout(() => $('codeInput').focus(), 50);
+}
+
+// Step 1 — request a magic link + code
+$('requestLinkBtn').addEventListener('click', async () => {
   const email = $('emailInput').value.trim();
-  if (!email || !email.includes('@')) { $('authStatus').textContent = 'Please enter a valid email.'; return; }
-
-  $('startStudyBtn').disabled = true;
-  $('authStatus').textContent = 'Setting up...';
-
+  if (!email || !email.includes('@') || !email.includes('.')) { $('authStatus').textContent = 'Please enter a valid email.'; return; }
+  $('requestLinkBtn').disabled = true;
+  $('authStatus').textContent = 'Sending your login link...';
   try {
-    const res = await fetch('/api/wad/session', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ email, language: state.lang })
+    const res = await fetch('/api/wad/auth/request', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email })
+    });
+    if (!res.ok) throw new Error('request failed');
+    state.pendingEmail = email;
+    showAuthCodeStep(email);
+  } catch(e) {
+    $('authStatus').textContent = 'Could not send the link. Please try again.';
+  }
+  $('requestLinkBtn').disabled = false;
+});
+
+// Step 2 — verify the 6-digit code
+$('verifyCodeBtn').addEventListener('click', verifyCode);
+$('codeInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') verifyCode(); });
+
+async function verifyCode() {
+  const code = $('codeInput').value.trim();
+  const email = state.pendingEmail;
+  if (!/^\d{6}$/.test(code)) { $('authStatus').textContent = 'Enter the 6-digit code from your email.'; return; }
+  $('verifyCodeBtn').disabled = true;
+  $('authStatus').textContent = 'Logging you in...';
+  try {
+    const res = await fetch('/api/wad/auth/verify-code', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, code })
     });
     const data = await res.json();
-    state.token = data.token;
-    state.email = email;
-    localStorage.setItem(`wad_token_${state.lang}`, data.token);
-    state.progress = data.progress;
-    await loadLangData();
-    $('authStatus').textContent = '';
-    gotoLesson();
+    if (!res.ok || !data.authToken) { $('authStatus').textContent = data.error || 'Invalid or expired code.'; $('verifyCodeBtn').disabled = false; return; }
+    onLoggedIn(data.authToken, data.account);
+    // Continue into the language the user was trying to start (or the picker).
+    if (state.lang) { await startLanguageForAccount(state.lang); }
+    else { showScreen('screen-lang'); }
   } catch(e) {
     $('authStatus').textContent = 'Something went wrong. Try again.';
   }
-  $('startStudyBtn').disabled = false;
+  $('verifyCodeBtn').disabled = false;
+}
+
+$('changeEmailBtn').addEventListener('click', () => { state.pendingEmail = null; $('codeInput').value=''; showAuthEmailStep(); });
+
+// Persist + apply a successful login.
+function onLoggedIn(authToken, account) {
+  state.authToken = authToken;
+  state.account = account || { languages: {} };
+  if (!state.account.languages) state.account.languages = {};
+  state.email = state.account.email;
+  state.accountMode = true;
+  state.token = null;
+  localStorage.setItem('wad_auth', authToken);
+  renderAccountChip();
+}
+
+// Logout
+$('logoutBtn').addEventListener('click', async () => {
+  const t = state.authToken;
+  state.authToken = null; state.account = null; state.accountMode = false;
+  state.email = null; state.token = null; state.lang = null; state.progress = null; state.langData = null;
+  localStorage.removeItem('wad_auth');
+  renderAccountChip();
+  $('navTitle').textContent = 'A Word a Day';
+  showScreen('screen-lang');
+  document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('active-lang'));
+  $('startLangBtn').disabled = true;
+  try { await fetch('/api/wad/auth/logout', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ authToken: t }) }); } catch(e){}
+  showToast('Logged out.');
 });
 
 // ══════════════════════════════════════════════════════════
@@ -844,12 +972,12 @@ $('retryBtn').addEventListener('click', () => {
 
 // ── Next word ──
 $('nextWordBtn').addEventListener('click', async () => {
-  // Mark word complete on server
+  // Mark word complete on server (accuracy is persisted server-side as per-word stats)
   const w = state.words[state.wordIdx];
   await fetch('/api/wad/complete-word', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ token: state.token, wordId: w.id, accuracy: state.accuracy || 70 })
+    body: JSON.stringify(studyBody({ wordId: w.id, accuracy: state.accuracy != null ? state.accuracy : 70 }))
   });
 
   state.wordIdx++;
@@ -858,9 +986,10 @@ $('nextWordBtn').addEventListener('click', async () => {
     const res = await fetch('/api/wad/complete-day', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ token: state.token })
+      body: JSON.stringify(studyBody({}))
     });
     state.progress = await res.json();
+    if (state.accountMode && state.account) state.account.languages[state.lang] = state.progress;
     showDayComplete();
   } else {
     state.listenedOnce = false;
@@ -887,6 +1016,9 @@ function showDayComplete() {
   // Check exam eligibility
   const examReady = checkExamEligibility(p);
   $('examBanner').style.display = examReady ? '' : 'none';
+
+  // Account users auto-sync; the legacy "email me my spot" button is only for anonymous users.
+  $('saveDaySpotBtn').style.display = state.accountMode ? 'none' : '';
 
   showScreen('screen-complete');
 }
@@ -928,6 +1060,7 @@ $('resumeTomorrowBtn').addEventListener('click', () => {
 // SAVE SPOT
 // ══════════════════════════════════════════════════════════
 async function saveSpot() {
+  if (state.accountMode) { showToast('Your progress is saved to your account. ✅'); return; }
   showToast('Sending email...');
   try {
     await fetch('/api/wad/save-spot', {
@@ -1169,14 +1302,14 @@ async function finishExam() {
   const res = await fetch('/api/wad/submit-exam', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      token: state.token,
+    body: JSON.stringify(studyBody({
       week: state.exam.weekToExam,
       tier: state.exam.tier,
       score, grade, passed
-    })
+    }))
   });
   state.progress = await res.json();
+  if (state.accountMode && state.account) state.account.languages[state.lang] = state.progress;
   showResults(score, grade, passed, sectionScores);
 }
 
@@ -1226,11 +1359,36 @@ $('continueAfterExamBtn').addEventListener('click', () => gotoLesson());
 $('progBtn').addEventListener('click', showProgressScreen);
 $('continueStudyingBtn').addEventListener('click', () => gotoLesson());
 $('switchLangBtn').addEventListener('click', () => {
+  // Keep the account/auth session; only drop the active language.
   state.lang = null; state.token = null; state.progress = null; state.langData = null;
   showScreen('screen-lang');
   $('navTitle').textContent = 'A Word a Day';
   $('progBtn').style.display = 'none';
+  document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('active-lang'));
+  $('startLangBtn').disabled = true;
+  decorateLangGrid();
 });
+
+// Mark language cards that already have progress under the logged-in account.
+function decorateLangGrid() {
+  const langs = (state.accountMode && state.account && state.account.languages) || {};
+  document.querySelectorAll('.lang-card').forEach(card => {
+    const code = card.dataset.code;
+    let badge = card.querySelector('.lang-progress-badge');
+    const p = langs[code];
+    if (p && (p.completedWords||[]).length > 0) {
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'lang-progress-badge';
+        badge.style.cssText = 'font-size:.62rem;color:var(--gold);font-family:var(--font-mono);';
+        card.appendChild(badge);
+      }
+      badge.textContent = `${(p.completedWords||[]).length} words · 🔥${p.streak||0}`;
+    } else if (badge) {
+      badge.remove();
+    }
+  });
+}
 
 function showProgressScreen() {
   const p = state.progress;
@@ -1318,11 +1476,55 @@ async function checkResume() {
 }
 
 // ══════════════════════════════════════════════════════════
+// SESSION RESTORE (account / magic-link)
+// ══════════════════════════════════════════════════════════
+async function restoreSession() {
+  const params = new URLSearchParams(location.search);
+
+  // Magic-link landing: ?auth=<authToken> — store it and clean the URL.
+  const urlAuth = params.get('auth');
+  if (urlAuth) {
+    localStorage.setItem('wad_auth', urlAuth);
+    cleanUrl();
+  }
+  if (params.get('login_error')) {
+    showToast('That login link expired. Please request a new one.');
+    cleanUrl();
+  }
+
+  const authToken = localStorage.getItem('wad_auth');
+  if (!authToken) return false;
+
+  try {
+    const res = await fetch('/api/wad/auth/me', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ authToken })
+    });
+    if (!res.ok) { localStorage.removeItem('wad_auth'); return false; }
+    const data = await res.json();
+    onLoggedIn(authToken, data.account);
+    decorateLangGrid();
+    if (urlAuth) showToast('Logged in! 👋');
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
+function cleanUrl() {
+  try { history.replaceState({}, '', location.pathname); } catch(e){}
+}
+
+// ══════════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════════
 buildLangGrid();
 showScreen('screen-lang');
-checkResume();
+(async () => {
+  const restored = await restoreSession();
+  // Legacy ?token= resume links still work for anonymous users.
+  if (!restored) checkResume();
+})();
 </script>
 </body>
 </html>
