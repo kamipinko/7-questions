@@ -619,11 +619,87 @@ app.post('/api/wad/save-spot', async (req, res) => {
 // THUMBNAIL — AI BACKGROUND GENERATION
 // ════════════════════════════════════════
 
+// ── Nano Banana Pro: render Pinko INTO the scene (identity-locked, 8 refs) ──
+const PK_REFS_DIR = path.join(__dirname, 'public/thumbnails/assets/refs');
+
+function pkLoadRefImages() {
+  const out = [];
+  for (let i = 1; i <= 8; i++) {
+    const p = path.join(PK_REFS_DIR, `ref${i}.jpg`);
+    if (fs.existsSync(p)) out.push({ mimeType: 'image/jpeg', data: fs.readFileSync(p).toString('base64') });
+  }
+  return out;
+}
+
+function pkSubjectScenePrompt(scene) {
+  const s = (scene && scene.trim()) || 'seated in a dark, moody study, contemplative, cinematic key light';
+  return `Photorealistic image of the SAME man shown in the provided reference photos — match his exact face, skin tone, light beard, and especially his hair: distinct twisted locs / two-strand twists with reddish-brown tips (NOT a smooth round afro). ${s}. Integrated cinematic lighting and shadows — he is genuinely part of the scene, not a flat cutout. Proles Kitchen mood: dark background, gold (#ECAA27) accents. No text.`;
+}
+
+// Calls gemini-3-pro-image-preview with the scene prompt + all 8 reference images.
+// The model can be slow (25-90s) and occasionally returns 503/UNAVAILABLE under load,
+// so each call uses a generous timeout and retries transient failures with backoff.
+async function pkRenderSubjectScene(scene, aspectRatio) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('GEMINI_API_KEY not set');
+  const refs = pkLoadRefImages();
+  if (!refs.length) throw new Error('No reference images found in assets/refs');
+  const ar = (aspectRatio === '9:16') ? '9:16' : '16:9';
+  const parts = [{ text: pkSubjectScenePrompt(scene) }];
+  for (const r of refs) parts.push({ inlineData: { mimeType: r.mimeType, data: r.data } });
+  const body = JSON.stringify({
+    contents: [{ parts }],
+    generationConfig: { responseModalities: ['TEXT', 'IMAGE'], imageConfig: { aspectRatio: ar, imageSize: '2K' } }
+  });
+
+  const MAX_ATTEMPTS = 4;
+  let lastErr = 'Nano Banana Pro generation failed';
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const resp = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+          body,
+          signal: AbortSignal.timeout(240000)
+        }
+      );
+      const d = await resp.json();
+      if (resp.ok) {
+        const outParts = d.candidates?.[0]?.content?.parts || [];
+        const imgPart = outParts.find(p => p.inlineData?.data || p.inline_data?.data);
+        if (!imgPart) throw new Error('No image returned by model');
+        const inl = imgPart.inlineData || imgPart.inline_data;
+        const mime = inl.mimeType || inl.mime_type || 'image/jpeg';
+        return `data:${mime};base64,${inl.data}`;
+      }
+      // Non-OK: retry on transient overload/rate-limit/server errors.
+      lastErr = d.error?.message || `HTTP ${resp.status}`;
+      const transient = [429, 500, 503, 504].includes(resp.status) || /UNAVAILABLE|RESOURCE_EXHAUSTED|overload|high demand/i.test(lastErr);
+      if (!transient || attempt === MAX_ATTEMPTS) throw new Error(lastErr);
+      console.warn(`[subject-scene] attempt ${attempt} got "${lastErr}" — retrying…`);
+    } catch (e) {
+      lastErr = e.message || String(e);
+      const retriable = /aborted|timeout|UNAVAILABLE|overload|high demand|HTTP 5|429/i.test(lastErr);
+      if (!retriable || attempt === MAX_ATTEMPTS) throw new Error(lastErr);
+      console.warn(`[subject-scene] attempt ${attempt} error "${lastErr}" — retrying…`);
+    }
+    await new Promise(r => setTimeout(r, 4000 * attempt)); // backoff: 4s, 8s, 12s
+  }
+  throw new Error(lastErr);
+}
+
 app.post('/api/generate-bg', express.json(), async (req, res) => {
-  const { prompt, provider = 'dalle' } = req.body;
-  if (!prompt) return res.status(400).json({ error: 'Prompt is required' });
+  const { prompt, provider = 'dalle', aspectRatio } = req.body;
+  if (!prompt && provider !== 'subject-scene') return res.status(400).json({ error: 'Prompt is required' });
 
   try {
+    if (provider === 'subject-scene') {
+      const dataUrl = await pkRenderSubjectScene(prompt, aspectRatio);
+      return res.json({ dataUrl });
+    }
+
     if (provider === 'gemini') {
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not set in Railway env vars' });
@@ -646,14 +722,27 @@ app.post('/api/generate-bg', express.json(), async (req, res) => {
     if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: 'OPENAI_API_KEY not set' });
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const result = await openai.images.generate({
-      model: 'dall-e-3',
+      model: 'gpt-image-1',
       prompt,
       n: 1,
-      size: '1792x1024',
-      quality: 'standard',
-      response_format: 'b64_json'
+      size: '1536x1024',
+      quality: 'high'
     });
-    res.json({ dataUrl: `data:image/png;base64,${result.data[0].b64_json}` });
+    // Newer OpenAI images API dropped `response_format`; it may return b64_json or a url.
+    const img = result.data[0];
+    let dataUrl;
+    if (img.b64_json) {
+      dataUrl = `data:image/png;base64,${img.b64_json}`;
+    } else if (img.url) {
+      const imgResp = await fetch(img.url);
+      if (!imgResp.ok) throw new Error(`Failed to fetch generated image (HTTP ${imgResp.status})`);
+      const buf = Buffer.from(await imgResp.arrayBuffer());
+      const mime = imgResp.headers.get('content-type') || 'image/png';
+      dataUrl = `data:${mime};base64,${buf.toString('base64')}`;
+    } else {
+      throw new Error('OpenAI returned no image data (neither b64_json nor url)');
+    }
+    res.json({ dataUrl });
 
   } catch (err) {
     console.error('[generate-bg]', err.message);
@@ -769,7 +858,7 @@ async function pkAnalyzeImages(images) {
       const parts = [{ text: promptText }];
       for (const img of images) parts.push({ inlineData: { mimeType: img.mime, data: img.data } });
       const r = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
@@ -894,6 +983,127 @@ const PK_POPULARITY_RULES = [
   'Consistency across thumbnails (palette, font, motif) compounds channel recognition.',
 ];
 
+// ── Proven high-CTR title FORMULAS for philosophy / mindset / lifestyle ──
+// {X} is the topic the user is making a thumbnail about.
+const PK_TITLE_FORMULAS = [
+  'The truth about {X}',
+  'Why nobody {X}',
+  '{X} is OVERRATED',
+  'What they don\'t tell you about {X}',
+  '0 vs 100: {X}',
+  'Stop {X}',
+  'The {X} nobody talks about',
+  'This is why you {X}',
+  '{X} changed everything',
+  'You are not {X}',
+  'Nobody is coming to {X}',
+  'The dark side of {X}',
+  'How {X} broke me',
+  'Read this before you {X}',
+];
+
+// Emotional single-word punches that survive feed compression.
+const PK_POWER_WORDS = [
+  'OVERRATED', 'BROKEN', 'LIED', 'TRUTH', 'SECRET', 'NOBODY', 'NEVER', 'WRONG',
+  'POWER', 'WEAK', 'FAKE', 'REAL', 'ALONE', 'FREE', 'PAIN', 'PEAK', 'LOST',
+  'SOFT', 'HARD', 'COMFORT', 'DISCIPLINE', 'QUIT', 'WIN', 'DELUSION',
+];
+
+// Named TEMPLATE DESIGNS — each pairs a layout with accent + emphasis + scene.
+// `apply` carries concrete control values the frontend can set directly.
+const PK_TEMPLATE_DESIGNS = [
+  {
+    name: 'Bottom-Left Authority',
+    detail: 'Massive Anton headline anchored bottom-left, the final word in a red box, single focal subject to the right. Commands the frame.',
+    apply: { scene: 'thinker' }
+  },
+  {
+    name: 'Centered Punch',
+    detail: 'Two stacked lines centered, one gold accent word, heavy negative space. Reads in a single glance.',
+    apply: { scene: 'none' }
+  },
+  {
+    name: 'Contrast Hook',
+    detail: 'A 0-vs-100 / before-after split with the headline as a number hook. Pattern-interrupt for the feed.',
+    apply: { scene: 'funvsgrowth' }
+  },
+];
+
+// ── Reference-thumbnail analysis (Gemini VISION over the 8 refs) ──
+const PK_REF_ANALYSIS_FILE = path.join(PK_REFS_DIR, '_analysis.json');
+
+async function pkAnalyzeRefs(force = false) {
+  if (!force && fs.existsSync(PK_REF_ANALYSIS_FILE)) {
+    try { return JSON.parse(fs.readFileSync(PK_REF_ANALYSIS_FILE, 'utf8')); } catch (_) {}
+  }
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) return null;
+  const refs = pkLoadRefImages();
+  if (!refs.length) return null;
+  const prompt = `You are analyzing reference thumbnails the channel owner hand-picked as the look he wants to emulate. Study the WORDING and the TEMPLATE/LAYOUT DESIGN across all of them.
+Return STRICT JSON ONLY (no prose):
+{
+  "wording": { "avgWordCount": number, "commonPowerWords": ["..."], "phrasingPatterns": ["short description of recurring phrasing"], "tone": "one phrase" },
+  "design": { "textPosition": "where headline sits", "accentStyle": "how a word is emphasized (color/box)", "emphasis": "font weight/size feel", "layoutNotes": ["..."] },
+  "templates": [ { "name": "short name", "description": "the recurring layout recipe" } ]
+}`;
+  const parts = [{ text: prompt }];
+  for (const r of refs) parts.push({ inlineData: { mimeType: r.mimeType, data: r.data } });
+  const resp = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseMimeType: 'application/json', temperature: 0.3 } }),
+      signal: AbortSignal.timeout(60000)
+    }
+  );
+  const d = await resp.json();
+  if (!resp.ok) throw new Error(d.error?.message || 'ref analysis failed');
+  const parsed = pkParseJson(d.candidates?.[0]?.content?.parts?.[0]?.text);
+  if (parsed) { try { fs.writeFileSync(PK_REF_ANALYSIS_FILE, JSON.stringify(parsed, null, 2)); } catch (_) {} }
+  return parsed;
+}
+
+// ── Live trending titles (best-effort YouTube search scrape, cached ~6h) ──
+const PK_TRENDING_QUERIES = [
+  'stoic discipline mindset', 'philosophy self improvement',
+  'why you feel lost', 'dark psychology truth', 'how to be disciplined',
+];
+let _pkTrendingCache = { at: 0, titles: [], words: [] };
+
+async function pkFetchTrending() {
+  const SIX_H = 6 * 3600 * 1000;
+  if (_pkTrendingCache.titles.length && (Date.now() - _pkTrendingCache.at) < SIX_H) return _pkTrendingCache;
+  const titles = [];
+  for (const q of PK_TRENDING_QUERIES) {
+    try {
+      const r = await fetch('https://www.youtube.com/results?search_query=' + encodeURIComponent(q), {
+        headers: { 'User-Agent': PK_UA, 'Accept-Language': 'en-US,en;q=0.9' },
+        signal: AbortSignal.timeout(8000)
+      });
+      const html = await r.text();
+      const re = /"title":\{"runs":\[\{"text":"((?:[^"\\]|\\.)*)"\}\]/g;
+      let m, c = 0;
+      while ((m = re.exec(html)) && c < 25) {
+        try { const t = JSON.parse('"' + m[1] + '"'); if (t && t.length > 6) { titles.push(t); c++; } } catch (_) {}
+      }
+    } catch (_) { /* best effort — trending is optional enrichment */ }
+  }
+  // Frequency of meaningful UPPER-able words (drop stopwords + short tokens).
+  const STOP = new Set(['the','a','an','to','of','and','or','for','in','on','is','are','you','your','my','how','why','this','that','with','what','it','i','be','do','not','was','will']);
+  const freq = {};
+  for (const t of titles) {
+    for (const w of t.toLowerCase().replace(/[^a-z0-9\s']/g, ' ').split(/\s+/)) {
+      if (w.length < 4 || STOP.has(w)) continue;
+      freq[w] = (freq[w] || 0) + 1;
+    }
+  }
+  const words = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 18).map(([w]) => w);
+  _pkTrendingCache = { at: Date.now(), titles: titles.slice(0, 60), words };
+  return _pkTrendingCache;
+}
+
 function pkRuleSuggestions(current = {}) {
   const out = [];
   const headlineRaw = (current.headline || '').replace(/\|/g, ' ').trim();
@@ -942,49 +1152,105 @@ function pkRuleSuggestions(current = {}) {
   return out;
 }
 
-// Optional Gemini text enrichment over the curated rules + current build
-async function pkGeminiSuggest(current) {
+// Gemini synthesis grounded in: curated rules + proven FORMULAS + POWER WORDS +
+// the owner's REFERENCE-THUMBNAIL analysis + LIVE TRENDING wording. Returns BOTH
+// improvement suggestions (with paired template-design fields) AND fresh headline
+// candidates the user can one-click apply.
+async function pkHeadlineIntelligence(current, refInsights, trending) {
   const rulesText = PK_POPULARITY_RULES.map(r => '- ' + r).join('\n');
+  const formulas = PK_TITLE_FORMULAS.map(f => '- ' + f).join('\n');
+  const templates = PK_TEMPLATE_DESIGNS.map(t => `- ${t.name}: ${t.detail}`).join('\n');
+  const topic = ((current.headline || '').replace(/\|/g, ' ').trim()) || (current.subline || '') || (current.scene || 'discipline & mindset');
+
   const prompt = `You are a YouTube thumbnail growth strategist for "Proles Kitchen", a philosophy / lifestyle / mindset channel.
-Brand (immutable): pure black background, gold #ECAA27 + red #e05252 accents, Anton uppercase headlines, NO faces. Never propose changing the brand colors.
+Brand (immutable): pure black background, gold #ECAA27 + red #e05252 accents, Anton uppercase headlines. Never propose changing the brand colors.
 
 Proven winning patterns:
 ${rulesText}
 
-Current thumbnail build:
-${JSON.stringify(current, null, 2)}
+High-CTR title FORMULAS ({X} = the topic):
+${formulas}
 
-Return STRICT JSON ONLY: a JSON array (no wrapper object) of 4-6 concrete, specific improvement suggestions. Each element:
-{ "id":"s1", "type":"headline|composition|color|scene|text", "title":"short imperative title", "detail":"why it helps + exactly what to change", "proposed": { optional concrete values among headline, subline, eyebrow, accent, scene } }
-Only include keys in "proposed" you actually want changed. "scene" must be one of funvsgrowth|thinker|none. Tailor to the actual current build above.`;
+Proven emotional POWER WORDS:
+${PK_POWER_WORDS.join(', ')}
+
+Named TEMPLATE DESIGNS (pair wording with a layout):
+${templates}
+
+OWNER'S REFERENCE THUMBNAILS — analyzed wording + design to emulate:
+${refInsights ? JSON.stringify(refInsights, null, 2) : '(none available)'}
+
+LIVE TRENDING wording in this niche right now (most-frequent words in current top search titles):
+${trending && trending.words && trending.words.length ? trending.words.join(', ') : '(unavailable)'}
+${trending && trending.titles && trending.titles.length ? 'Sample trending titles:\n' + trending.titles.slice(0, 14).map(t => '- ' + t).join('\n') : ''}
+
+Current thumbnail build (the topic to work from):
+${JSON.stringify(current, null, 2)}
+Topic for formulas: "${topic}"
+
+Return STRICT JSON ONLY in this exact shape:
+{
+  "headlines": [
+    { "text": "HEADLINE | SECOND LINE", "formula": "which formula/pattern it uses", "template": "one of the named template designs", "accent": "the single word to emphasize (UPPERCASE)", "scene": "funvsgrowth|thinker|none", "reason": "why it should perform, grounded in the refs/trending/formulas" }
+  ],
+  "suggestions": [
+    { "id":"s1", "type":"headline|composition|color|scene|text", "title":"short imperative title", "detail":"why it helps + exactly what to change", "proposed": { optional concrete values among headline, subline, eyebrow, accent, scene } }
+  ]
+}
+Rules:
+- Provide 6 "headlines" candidates. Each must use "|" for the line break, be 2-5 words total, draw on the FORMULAS/POWER WORDS, and reflect the owner's reference wording + the live trending words where natural.
+- "text" uppercase. "accent" must be one word that appears in "text". "scene" must be funvsgrowth|thinker|none.
+- Provide 4-5 "suggestions" that improve the CURRENT build; when a suggestion implies a layout, set "proposed.scene" to match a template design.
+- Ground every "reason"/"detail" in the refs, trending data, or a named formula — not generic advice.`;
 
   const r = await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.6 } })
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.7 } }),
+      signal: AbortSignal.timeout(45000)
     }
   );
   const d = await r.json();
-  if (!r.ok) throw new Error(d.error?.message || 'gemini suggest failed');
+  if (!r.ok) throw new Error(d.error?.message || 'gemini headline synthesis failed');
   const parsed = pkParseJson(d.candidates?.[0]?.content?.parts?.[0]?.text);
-  if (Array.isArray(parsed)) return parsed;
-  if (parsed && Array.isArray(parsed.suggestions)) return parsed.suggestions;
-  return null;
+  if (!parsed) return null;
+  return {
+    headlines: Array.isArray(parsed.headlines) ? parsed.headlines : [],
+    suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : (Array.isArray(parsed) ? parsed : [])
+  };
 }
 
 app.post('/api/popularity-suggest', async (req, res) => {
-  const { current = {} } = req.body || {};
+  const { current = {}, refresh = false } = req.body || {};
   try {
     let suggestions = pkRuleSuggestions(current);
+    let headlines = [];
+    let refInsights = null;
+    let trendingWords = [];
+
     if (process.env.GEMINI_API_KEY) {
+      // Ref-thumbnail analysis (cached on disk) + live trending (cached ~6h),
+      // gathered in parallel; both are best-effort enrichment.
+      const [refRes, trendRes] = await Promise.allSettled([
+        pkAnalyzeRefs(!!refresh),
+        pkFetchTrending()
+      ]);
+      refInsights = refRes.status === 'fulfilled' ? refRes.value : null;
+      const trending = trendRes.status === 'fulfilled' ? trendRes.value : { words: [], titles: [] };
+      trendingWords = (trending && trending.words) || [];
+
       try {
-        const enriched = await pkGeminiSuggest(current);
-        if (enriched && enriched.length) suggestions = enriched;
-      } catch (e) { console.error('[popularity-suggest gemini]', e.message); }
+        const intel = await pkHeadlineIntelligence(current, refInsights, trending);
+        if (intel) {
+          if (intel.suggestions && intel.suggestions.length) suggestions = intel.suggestions;
+          if (intel.headlines && intel.headlines.length) headlines = intel.headlines;
+        }
+      } catch (e) { console.error('[popularity-suggest synth]', e.message); }
     }
-    res.json({ suggestions });
+
+    res.json({ suggestions, headlines, trendingWords, refInsights });
   } catch (err) {
     console.error('[popularity-suggest]', err.message);
     res.status(500).json({ error: err.message });

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proles Kitchen — Thumbnail Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@700&family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -257,7 +257,7 @@
     ════════════════════════════════════════ */
     .ig-thumb {
       width: 300px;
-      height: 533px;
+      height: 533.333px;   /* exact 9:16 → 1080×1920 at 3.6× export scale */
       position: relative;
       overflow: hidden;
       border-radius: 10px;
@@ -418,6 +418,270 @@
       display: none;
     }
     .scene-svg.active { display: block; }
+
+    /* ════════════════════════════════════════
+       ENGINE PANELS — PERSONA 5 EDITOR CHROME
+       (P5 war paint applies to the editor controls only;
+        the thumbnail tiles below stay on the Proles Kitchen brand)
+    ════════════════════════════════════════ */
+    :root {
+      --p5-black: #0a0a0a;
+      --p5-red:   #c41a1f;
+      --p5-gold:  #ECAA27;   /* Proles brand gold maps onto P5 gold focus */
+      --p5-cream: #f5f1e6;
+      --p5-mono:  'Courier New', Courier, monospace;
+    }
+    .engine-panel {
+      width: 100%;
+      background: var(--p5-black);
+      border: 0;
+      margin-bottom: 22px;
+      position: relative;
+      /* aggressive geometry — notched corners, never a plain rectangle */
+      clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 22px 100%, 0 calc(100% - 22px));
+    }
+    .engine-panel::before {            /* committed red spine */
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+      background: var(--p5-red);
+    }
+    .engine-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 22px 14px 28px; cursor: pointer; user-select: none;
+      border-bottom: 2px solid transparent;
+    }
+    .engine-panel.open .engine-head { border-bottom: 2px solid var(--p5-red); }
+    .engine-head h3 {
+      font-family: 'Anton', sans-serif; font-weight: 400;
+      color: var(--p5-cream); font-size: 1.35rem;
+      text-transform: uppercase; letter-spacing: 0.02em;
+      transform: rotate(-1.5deg);     /* loud display tilt */
+    }
+    .engine-head h3::before { content: '// '; color: var(--p5-red); }
+    .engine-head .chev {
+      color: var(--p5-gold); font-size: 0.9rem;
+      transform: rotate(0deg); transition: transform 180ms ease-out;
+    }
+    .engine-panel.open .engine-head .chev { transform: rotate(90deg); }
+    .engine-body { display: none; padding: 18px 22px 22px 28px; flex-direction: column; gap: 16px; }
+    .engine-panel.open .engine-body { display: flex; }
+    .engine-row { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-end; }
+
+    /* monospace ALL-CAPS micro labels */
+    .engine-panel .control-group label {
+      font-family: var(--p5-mono); color: var(--p5-gold);
+      font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase;
+    }
+    /* inputs — hard-edged, gold focus */
+    .engine-panel input, .engine-panel select, .engine-panel textarea {
+      background: #050505; border: 1px solid #3a3a3a; border-radius: 0;
+      color: var(--p5-cream); font-family: 'Inter', sans-serif; font-size: 0.88rem;
+      padding: 9px 12px; transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+    }
+    .engine-panel textarea { resize: vertical; min-height: 60px; width: 280px; }
+    .engine-panel select { width: 180px; cursor: pointer; }
+    .engine-panel input:focus, .engine-panel select:focus, .engine-panel textarea:focus {
+      outline: none; border-color: var(--p5-gold); box-shadow: 0 0 0 2px rgba(236,170,39,0.28);
+    }
+
+    /* primary action buttons — stamps: hard edges, no soft shadow */
+    .engine-panel .btn-export {
+      background: var(--p5-gold); color: #000; border: 0; border-radius: 0;
+      padding: 11px 22px; font-weight: 900; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%);
+      transition: transform 160ms ease-out, background 160ms ease-out, filter 160ms ease-out;
+    }
+    .engine-panel .btn-export:hover { background: #ffc84d; transform: translate(-1px,-1px); }
+    .engine-panel .btn-export:active { transform: translate(1px,1px); filter: brightness(0.9); }
+
+    .btn-mini {
+      background: transparent; color: var(--p5-cream); border: 1.5px solid #555;
+      border-radius: 0; padding: 10px 16px; font-size: 0.72rem; cursor: pointer;
+      font-family: var(--p5-mono); font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+      clip-path: polygon(7px 0, 100% 0, 100% 100%, 0 100%, 0 7px);
+      transition: transform 160ms ease-out, border-color 160ms ease-out, color 160ms ease-out;
+    }
+    .btn-mini:hover { border-color: var(--p5-gold); color: var(--p5-gold); transform: translate(-1px,-1px); }
+
+    .drop-zone {
+      border: 1.5px dashed #4a4a4a; border-radius: 0; padding: 20px; text-align: center;
+      color: #888; font-family: var(--p5-mono); font-size: 0.64rem; letter-spacing: 0.12em;
+      text-transform: uppercase; line-height: 1.7; cursor: pointer; width: 280px;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      transition: border-color 160ms ease-out, background 160ms ease-out, color 160ms ease-out;
+    }
+    .drop-zone.drag { border-color: var(--p5-gold); background: rgba(236,170,39,0.08); color: var(--p5-gold); }
+    .thumb-previews { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .thumb-previews img {
+      width: 54px; height: 30px; object-fit: cover;
+      border-radius: 0; border: 1px solid var(--p5-red); cursor: pointer;
+    }
+
+    .style-readout {
+      background: #050505; border: 0; border-left: 4px solid var(--p5-red);
+      padding: 16px 18px; font-size: 0.8rem; line-height: 1.6; color: #cfc8b8; display: none;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+    }
+    .style-readout.show { display: block; }
+    .style-readout .sg-summary { color: var(--p5-cream); margin-bottom: 14px; font-size: 0.9rem; }
+    .style-readout .sg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px 18px; }
+    .style-readout .sg-k { color: var(--p5-red); font-family: var(--p5-mono); text-transform: uppercase; font-size: 0.58rem; letter-spacing: 0.22em; }
+    .style-readout .sg-v { color: var(--p5-gold); font-size: 0.82rem; font-weight: 700; }
+    .swatch { display: inline-block; width: 11px; height: 11px; border-radius: 0; margin-right: 3px; vertical-align: middle; border: 1px solid #444; }
+
+    .engine-status { font-family: var(--p5-mono); font-size: 0.72rem; letter-spacing: 0.08em; color: #777; min-height: 16px; }
+
+    .sugg-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+    /* headline & popularity engine — candidates + grounding readout */
+    .pop-section-label {
+      font-family: var(--p5-mono); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--p5-gold); margin: 14px 0 8px; font-weight: 700;
+    }
+    .pop-headlines { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pop-chip {
+      background: #0a0a0a; border: 1px solid #2a2a2a; border-left: 4px solid var(--p5-gold);
+      padding: 9px 13px; cursor: pointer; transition: transform 140ms ease-out, border-color 140ms ease-out, background 140ms;
+      max-width: 320px;
+    }
+    .pop-chip:hover { transform: translateY(-2px); border-left-color: var(--p5-red); background: #111; }
+    .pop-chip .pop-chip-text {
+      color: var(--p5-cream); font-family: 'Anton', sans-serif; font-size: 0.98rem; letter-spacing: 0.02em;
+      text-transform: uppercase; line-height: 1.1;
+    }
+    .pop-chip .pop-chip-text .acc { color: var(--p5-gold); }
+    .pop-chip .pop-chip-meta { font-family: var(--p5-mono); font-size: 0.56rem; letter-spacing: 0.1em; color: #6f6a5e; margin-top: 5px; text-transform: uppercase; }
+    .pop-chip.applied { border-left-color: #4caf50; }
+    .pop-intel { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .pop-intel-block { font-family: var(--p5-mono); font-size: 0.66rem; line-height: 1.6; color: #8a8475; }
+    .pop-intel-block b { color: var(--p5-gold); font-weight: 700; letter-spacing: 0.08em; }
+    .pop-intel-block .tw { display: inline-block; background: #141414; border: 1px solid #2a2a2a; padding: 2px 8px; margin: 2px 3px 0 0; color: #cfc7b5; }
+
+    /* suggestion cards read like P5 stamps / stickers */
+    .sugg-card {
+      background: #050505; border: 0; border-left: 5px solid var(--p5-gold);
+      padding: 14px 16px; position: relative;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 100%);
+      transition: transform 160ms ease-out, border-color 160ms ease-out;
+    }
+    .sugg-card:hover { transform: translateX(2px); }
+    .sugg-card.committed { border-left-color: var(--p5-red); }
+    .sugg-card h4 {
+      color: var(--p5-cream); font-family: 'Anton', sans-serif; font-weight: 400;
+      font-size: 1.05rem; letter-spacing: 0.02em; text-transform: uppercase;
+      margin-bottom: 6px; display: flex; align-items: center; transform: rotate(-0.6deg);
+    }
+    .sugg-card .sugg-type {
+      font-family: var(--p5-mono); font-size: 0.54rem; text-transform: uppercase; letter-spacing: 0.18em;
+      color: #000; background: var(--p5-gold); border-radius: 0; padding: 3px 7px; margin-left: 10px; font-weight: 700;
+      transform: rotate(2deg); clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+    }
+    .sugg-card p { color: #9a9486; font-size: 0.8rem; line-height: 1.55; margin-bottom: 12px; }
+    .sugg-actions { display: flex; gap: 10px; align-items: center; }
+    /* Accept = committed red fill, white text (no ambiguity) */
+    .btn-accept {
+      background: var(--p5-red); color: #fff; border: 0; border-radius: 0; padding: 8px 18px;
+      font-family: var(--p5-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+      clip-path: polygon(0 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%);
+      transition: transform 150ms ease-out, filter 150ms ease-out;
+    }
+    .btn-accept:hover { filter: brightness(1.15); transform: translate(-1px,-1px); }
+    .btn-accept:active { transform: scale(0.94) rotate(-1deg); }   /* stamp commit */
+    .btn-reject {
+      background: transparent; color: var(--p5-red); border: 1.5px solid #5a1a1a; border-radius: 0; padding: 8px 18px;
+      font-family: var(--p5-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
+      clip-path: polygon(7px 0, 100% 0, 100% 100%, 0 100%, 0 7px);
+      transition: transform 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+    }
+    .btn-reject:hover { border-color: var(--p5-red); color: #ff6b6b; transform: translate(1px,-1px); }
+    .saved-styles-row select { width: 200px; }
+
+    /* ════════════════════════════════════════
+       SUBJECT (FACE) LAYER + DIRECTIONAL MOTIFS
+       Brand evolution: Proles Kitchen now ALLOWS FACES.
+       Subject sits ABOVE the background/scene, BELOW the text.
+    ════════════════════════════════════════ */
+    .subject-img {
+      position: absolute;
+      bottom: 0;
+      height: 92%;
+      width: auto;
+      object-fit: contain;
+      object-position: bottom;     /* feet/torso-cropped, bottom-aligned */
+      z-index: 3;                  /* above bg(0) + scene(varies); text layers sit above */
+      pointer-events: none;
+      /* dark separation so the cutout reads on a black ground */
+      filter: drop-shadow(0 6px 22px rgba(0,0,0,0.95)) drop-shadow(0 0 40px rgba(0,0,0,0.6));
+    }
+    /* radial pedestal glow behind the subject for separation on black */
+    .subject-glow {
+      position: absolute; bottom: -6%; z-index: 2; pointer-events: none;
+      width: 60%; height: 80%;
+      background: radial-gradient(ellipse at center 70%, rgba(0,0,0,0.0) 30%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0) 100%);
+      display: none;
+    }
+    .yt-text, .ig-text { z-index: 6; }   /* keep text above subject + motifs */
+    .yt-brand, .ig-brand, .yt-accent-bar, .ig-accent-bar { z-index: 7; }
+
+    /* ── Handwritten script subline (Caveat) ── */
+    .yt-script {
+      font-family: 'Caveat', cursive; font-weight: 700;
+      font-size: 2.1rem; line-height: 1; color: #fff;
+      margin-top: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+      display: none;
+    }
+    .ig-script {
+      font-family: 'Caveat', cursive; font-weight: 700;
+      font-size: 1.5rem; line-height: 1; color: #fff;
+      margin-top: 8px; text-shadow: 0 2px 10px rgba(0,0,0,0.9);
+      display: none;
+    }
+
+    /* ── Boxed accent word (reference #4 "LEADING" in a box) ── */
+    .accent-box {
+      background: #e05252; color: #fff !important;
+      padding: 0 0.12em; box-decoration-break: clone; -webkit-box-decoration-break: clone;
+    }
+    .accent-box.gold-box { background: #ECAA27; color: #000 !important; }
+
+    /* ── Red arrow motif ── */
+    .motif-arrow {
+      position: absolute; z-index: 5; pointer-events: none; display: none;
+      width: 26%; height: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.7));
+    }
+    .ig-thumb .motif-arrow { width: 40%; }
+
+    /* ── Glowing symbol motif (cross/etc) ── */
+    .motif-symbol {
+      position: absolute; z-index: 5; pointer-events: none; display: none;
+      top: 10%; left: 6%;
+      font-size: 3.4rem; line-height: 1; color: #fff;
+      text-shadow: 0 0 18px rgba(255,255,255,0.95), 0 0 40px rgba(255,255,255,0.7), 0 0 70px rgba(236,170,39,0.5);
+    }
+    .ig-thumb .motif-symbol { font-size: 2.6rem; top: 8%; }
+
+    /* ── DAY 1 / DAY 2 split motif (lightweight label bar + divider) ── */
+    .day-split { position: absolute; inset: 0; z-index: 5; pointer-events: none; display: none; }
+    .day-split .ds-divider { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: rgba(255,255,255,0.5); }
+    .day-split .ds-a, .day-split .ds-b {
+      position: absolute; top: 18%; font-family: 'Anton', sans-serif; text-transform: uppercase;
+      font-size: 1.7rem; letter-spacing: 0.04em; color: #fff; text-shadow: 2px 2px 0 #000;
+    }
+    .day-split .ds-a { left: 7%; }
+    .day-split .ds-b { right: 7%; color: #ECAA27; }
+    .ig-thumb .day-split .ds-a, .ig-thumb .day-split .ds-b { font-size: 1.2rem; top: 9%; }
+
+    /* ── Subject control section ── */
+    .subj-section {
+      width: 100%; display: flex; flex-direction: column; gap: 10px;
+      padding-top: 18px; border-top: 1px solid #222; margin-top: 8px;
+    }
+    .subj-section-title { font-size: 0.7rem; color: #ECAA27; text-transform: uppercase; letter-spacing: 0.12em; }
+    .subj-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+    .subj-row input[type="range"] { width: 150px; }
+    .subj-check { display: flex; align-items: center; gap: 6px; color: #ccc; font-size: 0.8rem; }
+    .subj-check input { width: auto; }
+    #subj-status { font-size: 0.78rem; min-height: 16px; color: #666; }
   </style>
 </head>
 <body>
@@ -471,7 +735,7 @@
     </div>
     <div class="control-group">
       <label>Visual Scene</label>
-      <select id="ctrl-scene">
+      <select id="ctrl-scene" onchange="applyControls()">
         <option value="funvsgrowth" selected>Fun vs Growth</option>
         <option value="thinker">Thinker</option>
         <option value="none">None</option>
@@ -492,9 +756,10 @@
         </div>
         <div class="control-group">
           <label>Provider</label>
-          <select id="ctrl-ai-provider">
+          <select id="ctrl-ai-provider" onchange="onProviderChange()">
             <option value="dalle">DALL-E 3</option>
             <option value="gemini">Gemini Imagen</option>
+            <option value="subject-scene">Render me into the scene</option>
           </select>
         </div>
         <div class="control-group">
@@ -503,6 +768,147 @@
         </div>
       </div>
       <div id="ai-status"></div>
+    </div>
+
+    <!-- Subject (Face) + Motifs -->
+    <div class="subj-section">
+      <div class="subj-section-title">✦ Subject &amp; Motifs (faces ON)</div>
+      <div class="subj-row">
+        <div class="control-group">
+          <label>Subject image (transparent PNG / photo)</label>
+          <input type="file" id="ctrl-subj-file" accept="image/*" />
+        </div>
+        <div class="control-group">
+          <label>&nbsp;</label>
+          <button class="btn-export" onclick="useDefaultSubject()">Use Pinko (default)</button>
+        </div>
+        <div class="control-group">
+          <label>&nbsp;</label>
+          <button class="btn-export" onclick="clearSubject()" style="background:#444;color:#fff;">Remove subject</button>
+        </div>
+        <div class="control-group">
+          <label>Side</label>
+          <select id="ctrl-subj-side">
+            <option value="right" selected>Right</option>
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Size</label>
+          <input type="range" id="ctrl-subj-scale" min="0.5" max="1.4" step="0.05" value="1" oninput="applyControls()" />
+        </div>
+      </div>
+      <div class="subj-row">
+        <div class="control-group">
+          <label>Script subline (handwritten)</label>
+          <input type="text" id="ctrl-script" placeholder="Like Jesus Did." />
+        </div>
+        <label class="subj-check"><input type="checkbox" id="ctrl-accent-box" onchange="applyControls()" /> Box the accent word</label>
+        <div class="control-group">
+          <label>Box color</label>
+          <select id="ctrl-box-color" onchange="applyControls()">
+            <option value="gold" selected>Gold</option>
+            <option value="red">Red</option>
+          </select>
+        </div>
+        <label class="subj-check"><input type="checkbox" id="ctrl-arrow" onchange="applyControls()" /> Red arrow</label>
+        <label class="subj-check"><input type="checkbox" id="ctrl-symbol" onchange="applyControls()" /> Glow symbol</label>
+        <div class="control-group">
+          <label>Symbol</label>
+          <input type="text" id="ctrl-symbol-char" value="✝" style="width:70px;" oninput="applyControls()" />
+        </div>
+        <label class="subj-check"><input type="checkbox" id="ctrl-daysplit" onchange="applyControls()" /> DAY 1/DAY 2</label>
+        <label class="subj-check"><input type="checkbox" id="ctrl-yt-arrow" onchange="applyControls()" /> Show YT arrow accent</label>
+      </div>
+      <div id="subj-status"></div>
+    </div>
+  </div>
+
+  <!-- ════ EXPORT / RENDER ════ -->
+  <div class="engine-panel open" id="panel-export">
+    <div class="engine-head" onclick="togglePanel('panel-export')">
+      <h3>✦ Export / Render</h3><span class="chev">▶</span>
+    </div>
+    <div class="engine-body">
+      <div class="engine-row">
+        <div class="control-group">
+          <label>Variant</label>
+          <select id="exp-variant">
+            <option value="brand">With branding</option>
+            <option value="nobrand">Without branding</option>
+          </select>
+        </div>
+        <button class="btn-export" onclick="downloadYT()">Download YT 1280×720</button>
+        <button class="btn-export" onclick="downloadReels()">Download Reels 1080×1920</button>
+      </div>
+      <div class="engine-status" id="exp-status">Full-resolution PNG export — no DevTools needed.</div>
+    </div>
+  </div>
+
+  <!-- ════ STYLE GUIDE ENGINE ════ -->
+  <div class="engine-panel open" id="panel-style">
+    <div class="engine-head" onclick="togglePanel('panel-style')">
+      <h3>✦ Style Guide Engine</h3><span class="chev">▶</span>
+    </div>
+    <div class="engine-body">
+      <div class="engine-row">
+        <div class="control-group">
+          <label>Channel / Video URLs (one per line)</label>
+          <textarea id="sg-urls" placeholder="youtube.com/watch?v=...  ·  youtube.com/@channel"></textarea>
+        </div>
+        <div class="control-group">
+          <label>Creator names (one per line)</label>
+          <textarea id="sg-creators" placeholder="Einzelgänger&#10;Pursuit of Wonder"></textarea>
+        </div>
+        <div class="control-group">
+          <label>Upload example thumbnails</label>
+          <div class="drop-zone" id="sg-drop">Drag &amp; drop images here<br>or click to choose</div>
+          <input type="file" id="sg-file" accept="image/*" multiple style="display:none;" />
+          <div class="thumb-previews" id="sg-previews"></div>
+        </div>
+      </div>
+      <div class="engine-row">
+        <button class="btn-export" id="sg-analyze" onclick="analyzeStyle()">Analyze Style</button>
+        <div class="saved-styles-row control-group">
+          <label>Saved Styles</label>
+          <select id="sg-presets" onchange="onPresetSelect()"><option value="">— select a preset —</option></select>
+        </div>
+        <button class="btn-mini" onclick="deletePreset()">Delete preset</button>
+        <button class="btn-mini" id="sg-save" onclick="savePreset()" style="display:none;">Save as preset</button>
+        <button class="btn-mini" id="sg-apply" onclick="applyStyleGuide()" style="display:none;">Apply to tiles</button>
+      </div>
+      <div class="engine-status" id="sg-status"></div>
+      <div class="style-readout" id="sg-readout"></div>
+    </div>
+  </div>
+
+  <!-- ════ HEADLINE & POPULARITY ENGINE ════ -->
+  <div class="engine-panel" id="panel-pop">
+    <div class="engine-head" onclick="togglePanel('panel-pop')">
+      <h3>✦ Headline &amp; Popularity Engine</h3><span class="chev">▶</span>
+    </div>
+    <div class="engine-body">
+      <div class="engine-row">
+        <button class="btn-export" id="pop-get" onclick="getSuggestions()">Generate Headlines</button>
+        <button class="btn-export" id="pop-refresh" onclick="getSuggestions(true)" title="Re-analyze your reference thumbnails + refresh live trending data" style="background:#2a2a2a;">↻ Re-scan refs &amp; trends</button>
+      </div>
+      <div class="engine-status" id="pop-status"></div>
+
+      <!-- Generated headline candidates (grounded in formulas + your refs + live trending) -->
+      <div id="pop-headlines-wrap" style="display:none;margin-top:10px;">
+        <div class="pop-section-label">Headline candidates — click to apply (sets words + matching template)</div>
+        <div id="pop-headlines" class="pop-headlines"></div>
+      </div>
+
+      <!-- Grounding readout: live trending words + your-reference insights -->
+      <div id="pop-intel" class="pop-intel" style="display:none;">
+        <div id="pop-trending" class="pop-intel-block"></div>
+        <div id="pop-refinsights" class="pop-intel-block"></div>
+      </div>
+
+      <div class="pop-section-label" id="pop-sugg-label" style="display:none;">Refinements for your current build</div>
+      <div class="sugg-list" id="pop-list"></div>
     </div>
   </div>
 
@@ -520,6 +926,7 @@
         <div class="yt-vignette"></div>
         <div class="scene-layer">
           <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0,34)">
             <!-- Standing figure (right side, head at 512,240) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
               <circle cx="512" cy="240" r="22" stroke="none"/>
@@ -567,6 +974,7 @@
             <circle cx="543" cy="115" r="2" fill="rgba(255,255,255,0.58)"/>
             <circle cx="546" cy="102" r="2.5" fill="rgba(255,255,255,0.64)"/>
             <circle cx="549" cy="90" r="1.5" fill="rgba(255,255,255,0.70)"/>
+            </g>
           </svg>
           <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
@@ -582,12 +990,18 @@
             </g>
           </svg>
         </div>
+        <div class="subject-glow"></div>
+        <img class="subject-img" src="" alt="" style="display:none;" />
+        <div class="motif-symbol"></div>
+        <svg class="motif-arrow" style="display:none; left:30%; bottom:16%;" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M4,12 C40,8 70,18 86,40" fill="none" stroke="#e05252" stroke-width="7" stroke-linecap="round"/><path d="M68,44 L92,48 L82,24 Z" fill="#e05252"/></svg>
+        <div class="day-split"><div class="ds-divider"></div><div class="ds-a">DAY 1</div><div class="ds-b">DAY 2</div></div>
         <div class="yt-text">
           <div class="yt-eyebrow" id="yt-eyebrow-1"></div>
           <div class="yt-headline" id="yt-headline-1">
             <span class="red-word">FUN</span> IS<br><span class="accent-word">OVERRATED</span>
           </div>
           <div class="yt-subline" id="yt-subline-1">Go for Fulfillment</div>
+          <div class="yt-script" id="yt-script-1"></div>
         </div>
         <div class="yt-arrow">↙</div>
         <div class="yt-accent-bar"></div>
@@ -604,6 +1018,7 @@
         <div class="yt-vignette"></div>
         <div class="scene-layer">
           <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0,34)">
             <!-- Standing figure (right side, head at 512,240) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
               <circle cx="512" cy="240" r="22" stroke="none"/>
@@ -651,6 +1066,7 @@
             <circle cx="543" cy="115" r="2" fill="rgba(255,255,255,0.58)"/>
             <circle cx="546" cy="102" r="2.5" fill="rgba(255,255,255,0.64)"/>
             <circle cx="549" cy="90" r="1.5" fill="rgba(255,255,255,0.70)"/>
+            </g>
           </svg>
           <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
@@ -671,12 +1087,18 @@
           <div class="yt-brand-line"></div>
           <div class="yt-brand-sub">Philosophy & Lifestyle</div>
         </div>
+        <div class="subject-glow"></div>
+        <img class="subject-img" src="" alt="" style="display:none;" />
+        <div class="motif-symbol"></div>
+        <svg class="motif-arrow" style="display:none; left:30%; bottom:16%;" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M4,12 C40,8 70,18 86,40" fill="none" stroke="#e05252" stroke-width="7" stroke-linecap="round"/><path d="M68,44 L92,48 L82,24 Z" fill="#e05252"/></svg>
+        <div class="day-split"><div class="ds-divider"></div><div class="ds-a">DAY 1</div><div class="ds-b">DAY 2</div></div>
         <div class="yt-text">
           <div class="yt-eyebrow" id="yt-eyebrow-2"></div>
           <div class="yt-headline" id="yt-headline-2">
             <span class="red-word">FUN</span> IS<br><span class="accent-word">OVERRATED</span>
           </div>
           <div class="yt-subline" id="yt-subline-2">Go for Fulfillment</div>
+          <div class="yt-script" id="yt-script-2"></div>
         </div>
         <div class="yt-arrow">↙</div>
         <div class="yt-accent-bar"></div>
@@ -697,7 +1119,7 @@
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
         <div class="scene-layer">
-          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
             <!-- Standing figure (right side, head at 175,352) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
               <circle cx="175" cy="352" r="20" stroke="none"/>
@@ -746,7 +1168,7 @@
             <circle cx="250" cy="168" r="1.5" fill="rgba(255,255,255,0.64)"/>
             <circle cx="253" cy="158" r="1" fill="rgba(255,255,255,0.70)"/>
           </svg>
-          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
               <circle cx="148" cy="112" r="30" stroke="none"/>
               <path d="M128,150 Q166,144 178,150 Q195,185 204,228 Q210,264 213,305" stroke-width="42" fill="none"/>
@@ -760,12 +1182,18 @@
             </g>
           </svg>
         </div>
+        <div class="subject-glow"></div>
+        <img class="subject-img" src="" alt="" style="display:none;" />
+        <div class="motif-symbol"></div>
+        <svg class="motif-arrow" style="display:none; left:30%; bottom:30%;" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M4,12 C40,8 70,18 86,40" fill="none" stroke="#e05252" stroke-width="7" stroke-linecap="round"/><path d="M68,44 L92,48 L82,24 Z" fill="#e05252"/></svg>
+        <div class="day-split"><div class="ds-divider"></div><div class="ds-a">DAY 1</div><div class="ds-b">DAY 2</div></div>
         <div class="ig-text">
           <div class="ig-eyebrow" id="ig-eyebrow-1"></div>
           <div class="ig-headline" id="ig-headline-1">
             <span class="red-word">FUN</span> IS<br><span class="accent-word">OVER-<br>RATED</span>
           </div>
           <div class="ig-subline" id="ig-subline-1">Go for Fulfillment</div>
+          <div class="ig-script" id="ig-script-1"></div>
         </div>
         <div class="ig-accent-bar"></div>
       </div>
@@ -780,7 +1208,7 @@
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
         <div class="scene-layer">
-          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
             <!-- Standing figure (right side, head at 175,352) -->
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
               <circle cx="175" cy="352" r="20" stroke="none"/>
@@ -829,7 +1257,7 @@
             <circle cx="250" cy="168" r="1.5" fill="rgba(255,255,255,0.64)"/>
             <circle cx="253" cy="158" r="1" fill="rgba(255,255,255,0.70)"/>
           </svg>
-          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
             <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
               <circle cx="148" cy="112" r="30" stroke="none"/>
               <path d="M128,150 Q166,144 178,150 Q195,185 204,228 Q210,264 213,305" stroke-width="42" fill="none"/>
@@ -847,12 +1275,18 @@
           <div class="ig-brand-mark">✦ Proles Kitchen</div>
           <div class="ig-brand-line"></div>
         </div>
+        <div class="subject-glow"></div>
+        <img class="subject-img" src="" alt="" style="display:none;" />
+        <div class="motif-symbol"></div>
+        <svg class="motif-arrow" style="display:none; left:30%; bottom:30%;" viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><path d="M4,12 C40,8 70,18 86,40" fill="none" stroke="#e05252" stroke-width="7" stroke-linecap="round"/><path d="M68,44 L92,48 L82,24 Z" fill="#e05252"/></svg>
+        <div class="day-split"><div class="ds-divider"></div><div class="ds-a">DAY 1</div><div class="ds-b">DAY 2</div></div>
         <div class="ig-text">
           <div class="ig-eyebrow" id="ig-eyebrow-2"></div>
           <div class="ig-headline" id="ig-headline-2">
             <span class="red-word">FUN</span> IS<br><span class="accent-word">OVER-<br>RATED</span>
           </div>
           <div class="ig-subline" id="ig-subline-2">Go for Fulfillment</div>
+          <div class="ig-script" id="ig-script-2"></div>
         </div>
         <div class="ig-accent-bar"></div>
       </div>
@@ -868,6 +1302,12 @@
   </div>
 
   <script>
+    // Default subject = Pinko cutout (background-removed, bundled asset)
+    let pkSubjectSrc = '/thumbnails/assets/pinko.png';
+    // When true, Pinko is BAKED into the AI background (Nano Banana Pro "Render me into the scene").
+    // Suppresses the separate .subject-img cutout + scene SVG, and keeps bg at full opacity.
+    let pkSubjectSceneActive = false;
+
     function applyControls() {
       const headline = document.getElementById('ctrl-headline').value;
       const subline  = document.getElementById('ctrl-subline').value;
@@ -875,12 +1315,20 @@
       const accent   = document.getElementById('ctrl-accent').value.toUpperCase();
       const bgUrl    = document.getElementById('ctrl-bg').value.trim();
       const scene    = document.getElementById('ctrl-scene').value;
+      const boxed    = document.getElementById('ctrl-accent-box').checked;
+      const boxColor = document.getElementById('ctrl-box-color').value;   // gold | red
+      const script   = document.getElementById('ctrl-script').value.trim();
 
+      function emphasis(w) {
+        if (boxed) return `<span class="accent-box${boxColor === 'gold' ? ' gold-box' : ''}">${w}</span>`;
+        // un-boxed emphasis colour: gold (.accent-word) or red (.red-word)
+        return `<span class="${boxColor === 'gold' ? 'accent-word' : 'red-word'}">${w}</span>`;
+      }
       function buildHeadline(raw) {
         let lines = raw.split('|');
         return lines.map((line, i) => {
           let words = line.toUpperCase().split(' ').map(w =>
-            (accent && w === accent) ? `<span class="accent-word">${w}</span>` : w
+            (accent && w === accent) ? emphasis(w) : w
           ).join(' ');
           return words + (i < lines.length - 1 ? '<br>' : '');
         }).join('');
@@ -893,15 +1341,93 @@
         document.getElementById(`ig-eyebrow-${n}`).textContent  = eyebrow;
         document.getElementById(`ig-subline-${n}`).textContent  = subline;
         document.getElementById(`ig-headline-${n}`).innerHTML   = buildHeadline(headline);
+        // handwritten script subline
+        ['yt','ig'].forEach(pfx => {
+          const el = document.getElementById(`${pfx}-script-${n}`);
+          if (script) { el.textContent = script; el.style.display = 'block'; }
+          else        { el.style.display = 'none'; }
+        });
       });
 
-      ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
-        const img = document.getElementById(id);
-        if (bgUrl) { img.src = bgUrl; img.style.display = 'block'; }
-        else        { img.style.display = 'none'; }
-      });
+      // Skip the single-URL bg apply while subject-scene mode owns the per-aspect srcs.
+      if (!pkSubjectSceneActive) {
+        ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
+          const img = document.getElementById(id);
+          if (bgUrl) { img.src = bgUrl; img.style.display = 'block'; }
+          else        { img.style.display = 'none'; }
+        });
+      }
 
-      setScene(scene);
+      // ── Subject (face) layer on all 4 tiles ──
+      // In subject-scene mode Pinko is baked into the AI image, so the cutout stays hidden
+      // (showing it too would double him).
+      document.querySelectorAll('.subject-img').forEach(img => {
+        if (pkSubjectSrc && !pkSubjectSceneActive) { img.src = pkSubjectSrc; img.style.display = 'block'; }
+        else { img.removeAttribute('src'); img.style.display = 'none'; }
+      });
+      positionSubjects();
+
+      // ── Directional motifs ──
+      const showArrow  = document.getElementById('ctrl-arrow').checked;
+      const showSymbol = document.getElementById('ctrl-symbol').checked;
+      const showDay    = document.getElementById('ctrl-daysplit').checked;
+      const symChar    = document.getElementById('ctrl-symbol-char').value || '✝';
+      document.querySelectorAll('.motif-arrow').forEach(el => el.style.display = showArrow ? 'block' : 'none');
+      document.querySelectorAll('.motif-symbol').forEach(el => { el.textContent = symChar; el.style.display = showSymbol ? 'block' : 'none'; });
+      document.querySelectorAll('.day-split').forEach(el => el.style.display = showDay ? 'block' : 'none');
+
+      // ── Hard-coded gold ↙ arrow accent (YT only) — gated behind an opt-in toggle (default OFF) ──
+      const showYtArrow = document.getElementById('ctrl-yt-arrow').checked;
+      document.querySelectorAll('.yt-arrow').forEach(el => el.style.display = showYtArrow ? 'block' : 'none');
+
+      // ── Scene ⇆ Subject mutual exclusivity + long-headline guard ──
+      // A real face replaces the illustrated scene: when a subject is present, hide the
+      // Visual Scene SVG entirely so the chart/figure art never clutters behind the head.
+      // ADDITIONALLY: when the headline runs 3+ visual lines (>2 |-segments OR it wraps),
+      // suppress the scene SVG on that tile so long text never crowds the scene/bubble.
+      // In both cases we only hide the rendered layer — the chosen scene <select> value is
+      // left untouched (setScene keeps the right SVG flagged active), so shortening the
+      // headline back to ≤2 lines restores the user's chosen scene automatically.
+      const subjectActive = !!pkSubjectSrc || pkSubjectSceneActive;
+      document.querySelectorAll('.scene-layer').forEach(layer => {
+        const thumb = layer.closest('.yt-thumb, .ig-thumb');
+        const hl = thumb && thumb.querySelector('.yt-headline, .ig-headline');
+        const longHeadline = hl ? headlineLineCount(hl) >= 3 : false;
+        layer.style.display = (subjectActive || longHeadline) ? 'none' : '';
+      });
+      setScene(subjectActive ? 'none' : scene);
+    }
+
+    // Visual line count of a headline element: rendered height ÷ line-height.
+    // Captures BOTH explicit |→<br> breaks and natural word-wrap to 3+ lines.
+    function headlineLineCount(el) {
+      const lh = parseFloat(getComputedStyle(el).lineHeight);
+      if (lh && el.offsetHeight) return Math.max(1, Math.round(el.offsetHeight / lh));
+      return 1;
+    }
+
+    // Per-aspect-ratio subject composition (matches the reference thumbnails)
+    function positionSubjects() {
+      const side  = document.getElementById('ctrl-subj-side').value;        // left|right|center
+      const scale = parseFloat(document.getElementById('ctrl-subj-scale').value) || 1;
+      // 16:9 → right third, tall, feet-cropped, bottom-aligned
+      document.querySelectorAll('.yt-thumb .subject-img').forEach(img => {
+        img.style.height = (92 * scale) + '%';
+        img.style.left = 'auto'; img.style.right = 'auto'; let tx = '';
+        if (side === 'left')        { img.style.left = '1%'; }
+        else if (side === 'center') { img.style.left = '50%'; tx = 'translateX(-50%)'; }
+        else                        { img.style.right = '1%'; }
+        img.style.transform = tx;
+      });
+      // 9:16 → lower-dominant, centered-to-right, larger
+      document.querySelectorAll('.ig-thumb .subject-img').forEach(img => {
+        img.style.height = (64 * scale) + '%';
+        img.style.left = 'auto'; img.style.right = 'auto'; let tx = '';
+        if (side === 'left')        { img.style.left = '0%'; }
+        else if (side === 'center') { img.style.left = '50%'; tx = 'translateX(-50%)'; }
+        else                        { img.style.left = '50%'; tx = 'translateX(-30%)'; }  // centered-to-right
+        img.style.transform = tx;
+      });
     }
 
     function setScene(scene) {
@@ -913,13 +1439,30 @@
 
     setScene(document.getElementById('ctrl-scene').value);
 
+    // Switching away from subject-scene restores the normal cutout + faded-bg behavior.
+    function onProviderChange() {
+      const p = document.getElementById('ctrl-ai-provider').value;
+      if (p !== 'subject-scene' && pkSubjectSceneActive) {
+        pkSubjectSceneActive = false;
+        ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
+          document.getElementById(id).style.opacity = '';   // back to CSS default (0.72 / 0.65)
+        });
+        applyControls();
+      }
+    }
+
     async function generateBg() {
-      const prompt   = document.getElementById('ctrl-ai-prompt').value.trim();
       const provider = document.getElementById('ctrl-ai-provider').value;
+      if (provider === 'subject-scene') return generateSubjectScene();
+
+      const prompt   = document.getElementById('ctrl-ai-prompt').value.trim();
       const statusEl = document.getElementById('ai-status');
       const btn      = document.getElementById('btn-generate');
 
       if (!prompt) { statusEl.textContent = 'Enter a prompt first.'; statusEl.style.color = '#e05252'; return; }
+
+      // Leaving subject-scene mode: drop the baked-in flag + full-opacity override.
+      pkSubjectSceneActive = false;
 
       btn.disabled = true;
       statusEl.style.color = '#ECAA27';
@@ -934,12 +1477,13 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Generation failed');
 
-        // Apply to all thumbnails + fill the URL field
+        // Apply to all thumbnails + fill the URL field (faded bg via CSS default opacity)
         document.getElementById('ctrl-bg').value = data.dataUrl;
         ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
           const img = document.getElementById(id);
           img.src = data.dataUrl;
           img.style.display = 'block';
+          img.style.opacity = '';   // restore faded treatment if coming from subject-scene
         });
 
         statusEl.style.color = '#4caf50';
@@ -951,6 +1495,603 @@
         btn.disabled = false;
       }
     }
+
+    // "Render me into the scene" — two Nano Banana Pro passes (16:9 for YT, 9:16 for IG),
+    // Pinko's real face baked in. Cutout + scene SVG auto-off, bg at full opacity.
+    async function generateSubjectScene() {
+      const scene    = document.getElementById('ctrl-ai-prompt').value.trim();
+      const statusEl = document.getElementById('ai-status');
+      const btn      = document.getElementById('btn-generate');
+      const origLabel = btn.textContent;
+
+      btn.disabled = true;
+      btn.textContent = 'Rendering you into the scene… (~1 min)';
+      statusEl.style.color = '#ECAA27';
+      statusEl.textContent = 'Rendering you into the scene — two passes (16:9 + 9:16), can take 1–2 min…';
+
+      const call = async (aspectRatio) => {
+        const res = await fetch('/api/generate-bg', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: scene, provider: 'subject-scene', aspectRatio })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Generation failed');
+        return data.dataUrl;
+      };
+
+      try {
+        statusEl.textContent = 'Pass 1/2 — rendering 16:9 (YouTube)…';
+        const ytUrl = await call('16:9');
+        statusEl.textContent = 'Pass 2/2 — rendering 9:16 (Instagram)…';
+        const igUrl = await call('9:16');
+
+        pkSubjectSceneActive = true;
+        // YT tiles ← 16:9, IG tiles ← 9:16, full opacity (subject is IN the image).
+        ['yt-bg-img-1','yt-bg-img-2'].forEach(id => {
+          const im = document.getElementById(id);
+          im.src = ytUrl; im.style.display = 'block'; im.style.opacity = '1';
+        });
+        ['ig-bg-img-1','ig-bg-img-2'].forEach(id => {
+          const im = document.getElementById(id);
+          im.src = igUrl; im.style.display = 'block'; im.style.opacity = '1';
+        });
+        document.getElementById('ctrl-bg').value = ytUrl;   // keep a value in the URL field
+        applyControls();   // hides .subject-img cutout + scene SVG via the active flag
+
+        statusEl.style.color = '#4caf50';
+        statusEl.textContent = '✓ You are rendered into the scene on all 4 tiles (16:9 YT · 9:16 IG).';
+      } catch (err) {
+        statusEl.style.color = '#e05252';
+        statusEl.textContent = 'Error: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = origLabel;
+      }
+    }
+
+    /* ════════════════════════════════════════
+       STYLE GUIDE ENGINE
+    ════════════════════════════════════════ */
+    let sgUploaded = [];      // array of data URLs
+    let sgCurrentGuide = null;
+
+    function togglePanel(id) { document.getElementById(id).classList.toggle('open'); }
+
+    // Drag-and-drop / file input wiring
+    (function () {
+      const dz = document.getElementById('sg-drop');
+      const fi = document.getElementById('sg-file');
+      if (!dz || !fi) return;
+      dz.addEventListener('click', () => fi.click());
+      fi.addEventListener('change', e => handleFiles(e.target.files));
+      ['dragover', 'dragenter'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('drag'); }));
+      ['dragleave'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('drag'); }));
+      dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag'); handleFiles(e.dataTransfer.files); });
+    })();
+
+    function handleFiles(files) {
+      [...files].forEach(f => {
+        if (!f.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = () => { sgUploaded.push(reader.result); renderPreviews(); };
+        reader.readAsDataURL(f);
+      });
+    }
+    function renderPreviews() {
+      document.getElementById('sg-previews').innerHTML =
+        sgUploaded.map((d, i) => `<img src="${d}" title="click to remove" onclick="removeUpload(${i})"/>`).join('');
+    }
+    function removeUpload(i) { sgUploaded.splice(i, 1); renderPreviews(); }
+
+    async function analyzeStyle() {
+      const urls = document.getElementById('sg-urls').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const creators = document.getElementById('sg-creators').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const status = document.getElementById('sg-status');
+      const btn = document.getElementById('sg-analyze');
+      if (!urls.length && !creators.length && !sgUploaded.length) {
+        status.style.color = '#e05252'; status.textContent = 'Add at least one URL, creator name, or uploaded image.'; return;
+      }
+      btn.disabled = true;
+      status.style.color = '#ECAA27';
+      status.textContent = 'Analyzing — fetching thumbnails & running vision (10–25s)...';
+      try {
+        const res = await fetch('/api/analyze-style', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ urls, creators, images: sgUploaded })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Analysis failed');
+        sgCurrentGuide = data.styleGuide;
+        renderStyleGuide(data.styleGuide);
+        let msg = `Analyzed ${data.analyzedCount} thumbnail(s).`;
+        if (data.skipped && data.skipped.length) msg += ` Skipped: ${data.skipped.join('; ')}`;
+        status.style.color = '#4caf50'; status.textContent = msg;
+        document.getElementById('sg-apply').style.display = '';
+        document.getElementById('sg-save').style.display = '';
+      } catch (err) {
+        status.style.color = '#e05252'; status.textContent = 'Error: ' + err.message;
+      } finally { btn.disabled = false; }
+    }
+
+    function renderStyleGuide(g) {
+      const el = document.getElementById('sg-readout');
+      const sw = arr => (arr || []).map(c => `<span class="swatch" style="background:${c}"></span>${c}`).join('  ');
+      const rows = [
+        ['Mood', g.palette && g.palette.mood],
+        ['Dominant', sw(g.palette && g.palette.dominant)],
+        ['Accent', sw(g.palette && g.palette.accent)],
+        ['Text placement', g.textPlacement],
+        ['Text treatment', g.textTreatment],
+        ['Composition', g.composition],
+        ['Contrast', g.contrast],
+        ['Emotional hook', g.emotionalHook],
+        ['Face usage', g.faceUsage],
+        ['Font weight', g.fontWeightFeel],
+        ['Motifs', (g.recurringMotifs || []).join(', ')],
+        ['Scene hint', g.applyHints && g.applyHints.scene],
+        ['Headline style', g.applyHints && g.applyHints.headlineStyle],
+      ];
+      const bgPrompt = g.applyHints && g.applyHints.recommendedBgPrompt;
+      el.innerHTML =
+        `<div class="sg-summary">${g.summary || ''}</div>` +
+        `<div class="sg-grid">` +
+        rows.map(([k, v]) => `<div><div class="sg-k">${k}</div><div class="sg-v">${v || '—'}</div></div>`).join('') +
+        `</div>` +
+        (bgPrompt ? `<div style="margin-top:12px;"><div class="sg-k">Recommended BG prompt</div><div style="color:#ccc;font-size:0.78rem;">${bgPrompt}</div></div>` : '');
+      el.classList.add('show');
+    }
+
+    // Apply the style guide to all 4 tiles — within brand limits.
+    function applyStyleGuide() {
+      const g = sgCurrentGuide;
+      if (!g) return;
+      const hints = g.applyHints || {};
+
+      // 1. Scene
+      if (['funvsgrowth', 'thinker', 'none'].includes(hints.scene)) {
+        document.getElementById('ctrl-scene').value = hints.scene;
+      }
+      // 2. Headline weight/size emphasis
+      const heavy = ['ultra-heavy', 'heavy'].includes(g.fontWeightFeel) || g.textTreatment === 'huge-bold';
+      document.querySelectorAll('.yt-headline').forEach(el => el.style.fontSize = heavy ? '3.5rem' : '3.2rem');
+      document.querySelectorAll('.ig-headline').forEach(el => el.style.fontSize = heavy ? '2.05rem' : '1.85rem');
+      // 3a. Text placement → vertical justification of the 16:9 (YT) text layer
+      const place = g.textPlacement;
+      const just = place === 'top' ? 'flex-start' : place === 'bottom' ? 'flex-end' : 'center';
+      document.querySelectorAll('.yt-text').forEach(el => el.style.justifyContent = just);
+      // 3b. 9:16 (IG/Reels) adapts differently: the caption must stay in the lower safe zone
+      // (above the like/share UI), so we never push it to the very top — we only raise it.
+      const igBottom = place === 'top' ? '42%' : place === 'center' ? '24%' : '0';
+      document.querySelectorAll('.ig-text').forEach(el => el.style.bottom = igBottom);
+      // 4. Contrast/composition → background opacity + vignette intensity
+      const contrastMap = { extreme: 0.45, high: 0.55, medium: 0.7, low: 0.85 };
+      const op = contrastMap[g.contrast] != null ? contrastMap[g.contrast] : 0.72;
+      document.querySelectorAll('.yt-bg').forEach(el => el.style.opacity = op);
+      document.querySelectorAll('.ig-bg').forEach(el => el.style.opacity = Math.max(0.4, op - 0.07));
+      const vig = (g.composition === 'negative-space' || g.contrast === 'extreme') ? 0.85 : 0.75;
+      document.querySelectorAll('.yt-vignette, .ig-vignette').forEach(el => {
+        el.style.background = `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,${vig}) 100%)`;
+      });
+      // 5. Stage (do NOT auto-generate) the AI background prompt
+      if (hints.recommendedBgPrompt) document.getElementById('ctrl-ai-prompt').value = hints.recommendedBgPrompt;
+
+      applyControls();   // refresh tiles (brand colors untouched)
+      const status = document.getElementById('sg-status');
+      status.style.color = '#4caf50';
+      status.textContent = 'Style applied to all 4 tiles (brand colors preserved). BG prompt staged — review then click Generate when ready.';
+    }
+
+    // ── Presets (localStorage) ──
+    const PK_PRESET_KEY = 'pk_style_presets';
+    // Built-in presets (always present, not just localStorage)
+    const BUILTIN_PRESETS = { 'Proles Authority': '__proles_authority__' };
+    function loadPresets() { try { return JSON.parse(localStorage.getItem(PK_PRESET_KEY) || '{}'); } catch { return {}; } }
+    function savePresetsMap(m) { localStorage.setItem(PK_PRESET_KEY, JSON.stringify(m)); }
+    function refreshPresetDropdown() {
+      const m = loadPresets();
+      const sel = document.getElementById('sg-presets');
+      const cur = sel.value;
+      const builtinOpts = Object.keys(BUILTIN_PRESETS)
+        .map(n => `<option value="${n}">★ ${n}</option>`).join('');
+      sel.innerHTML = '<option value="">— select a preset —</option>' +
+        builtinOpts +
+        Object.keys(m).map(n => `<option value="${n.replace(/"/g, '&quot;')}">${n}</option>`).join('');
+      if (m[cur] || BUILTIN_PRESETS[cur]) sel.value = cur;
+    }
+
+    // ── "Proles Authority" template: faces ON, Pinko subject, black ground,
+    //    huge Anton headline bottom/left, emphasis word red, script subline, cross motif.
+    function applyProlesAuthority() {
+      pkSubjectSrc = '/thumbnails/assets/pinko.png';
+      document.getElementById('ctrl-headline').value   = 'YOU MUST|TAKE THE LEAD';
+      document.getElementById('ctrl-accent').value     = 'LEAD';
+      document.getElementById('ctrl-subline').value    = '';
+      document.getElementById('ctrl-eyebrow').value    = '';
+      document.getElementById('ctrl-bg').value         = '';      // pure black ground
+      document.getElementById('ctrl-scene').value      = 'none';  // real face replaces illustration
+      document.getElementById('ctrl-accent-box').checked = true;  // boxed emphasis (ref #4)
+      document.getElementById('ctrl-box-color').value  = 'red';   // red box (gold alternate available)
+      document.getElementById('ctrl-script').value     = 'Like Jesus Did.';
+      document.getElementById('ctrl-symbol').checked   = true;
+      document.getElementById('ctrl-symbol-char').value = '✝';
+      document.getElementById('ctrl-arrow').checked    = false;
+      document.getElementById('ctrl-daysplit').checked = false;
+      document.getElementById('ctrl-subj-side').value  = 'right';
+      document.getElementById('ctrl-subj-scale').value = '1.05';
+      // headline anchored bottom-left
+      document.querySelectorAll('.yt-text').forEach(el => el.style.justifyContent = 'flex-end');
+      document.querySelectorAll('.ig-text').forEach(el => el.style.bottom = '0');
+      applyControls();
+      const status = document.getElementById('sg-status');
+      if (status) { status.style.color = '#4caf50'; status.textContent = 'Applied "Proles Authority" — faces ON, Pinko on black, huge red-boxed headline + script subline.'; }
+    }
+    function savePreset() {
+      if (!sgCurrentGuide) return;
+      const def = (document.getElementById('sg-creators').value.split('\n')[0] || '').trim() ||
+        (sgCurrentGuide.summary || 'Style').slice(0, 28);
+      const name = prompt('Save style preset as:', def);
+      if (!name) return;
+      const m = loadPresets(); m[name] = sgCurrentGuide; savePresetsMap(m);
+      refreshPresetDropdown();
+      document.getElementById('sg-presets').value = name;
+      const status = document.getElementById('sg-status');
+      status.style.color = '#4caf50'; status.textContent = `Preset "${name}" saved.`;
+    }
+    function onPresetSelect() {
+      const name = document.getElementById('sg-presets').value;
+      if (!name) return;
+      if (BUILTIN_PRESETS[name] === '__proles_authority__') { applyProlesAuthority(); return; }
+      const g = loadPresets()[name];
+      if (!g) return;
+      sgCurrentGuide = g;
+      renderStyleGuide(g);
+      document.getElementById('sg-apply').style.display = '';
+      document.getElementById('sg-save').style.display = '';
+      const status = document.getElementById('sg-status');
+      status.style.color = '#ECAA27'; status.textContent = `Loaded preset "${name}". Click "Apply to tiles" to use it.`;
+    }
+    function deletePreset() {
+      const name = document.getElementById('sg-presets').value;
+      if (!name) { const s = document.getElementById('sg-status'); s.style.color = '#e05252'; s.textContent = 'Select a preset to delete.'; return; }
+      const m = loadPresets(); delete m[name]; savePresetsMap(m);
+      refreshPresetDropdown();
+      const status = document.getElementById('sg-status');
+      status.style.color = '#999'; status.textContent = `Preset "${name}" deleted.`;
+    }
+    refreshPresetDropdown();
+
+    /* ════════════════════════════════════════
+       SUBJECT (FACE) CONTROLS
+    ════════════════════════════════════════ */
+    function setSubjStatus(t, c) { const s = document.getElementById('subj-status'); if (s) { s.textContent = t; s.style.color = c || '#666'; } }
+    function useDefaultSubject() { pkSubjectSrc = '/thumbnails/assets/pinko.png'; applyControls(); setSubjStatus('Default subject (Pinko) loaded.', '#4caf50'); }
+    function clearSubject() { pkSubjectSrc = null; applyControls(); setSubjStatus('Subject removed.', '#999'); }
+
+    (function () {
+      const fi = document.getElementById('ctrl-subj-file');
+      if (!fi) return;
+      fi.addEventListener('change', async e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        const dataUrl = await new Promise(r => { const rd = new FileReader(); rd.onload = () => r(rd.result); rd.readAsDataURL(f); });
+        setSubjStatus('Processing subject…', '#ECAA27');
+        let finalSrc = dataUrl, removed = null;
+        try {
+          const res = await fetch('/api/remove-bg', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ image: dataUrl }) });
+          const d = await res.json();
+          if (res.ok && d.dataUrl) { finalSrc = d.dataUrl; removed = d.removed; }
+        } catch {}
+        pkSubjectSrc = finalSrc;
+        applyControls();
+        setSubjStatus(
+          removed === true ? 'Subject loaded — background removed server-side.'
+          : removed === false ? 'Subject loaded as-is (auto cut-out unavailable; upload a transparent PNG for best results).'
+          : 'Subject loaded.', '#4caf50');
+      });
+    })();
+
+    // Default-load Pinko on all four tiles
+    applyControls();
+
+    /* ════════════════════════════════════════
+       POPULARITY BUILDER
+    ════════════════════════════════════════ */
+    let popSuggestions = {};
+
+    async function getSuggestions(refresh = false) {
+      const status = document.getElementById('pop-status');
+      const btn = document.getElementById('pop-get');
+      const btn2 = document.getElementById('pop-refresh');
+      const current = {
+        headline: document.getElementById('ctrl-headline').value,
+        subline: document.getElementById('ctrl-subline').value,
+        eyebrow: document.getElementById('ctrl-eyebrow').value,
+        accent: document.getElementById('ctrl-accent').value,
+        scene: document.getElementById('ctrl-scene').value
+      };
+      btn.disabled = true; btn2.disabled = true;
+      status.style.color = '#ECAA27';
+      status.textContent = refresh
+        ? 'Re-analyzing your reference thumbnails + pulling fresh trending titles…'
+        : 'Generating headlines from proven formulas, your refs & live trends…';
+      try {
+        const res = await fetch('/api/popularity-suggest', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ current, refresh })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed');
+        renderHeadlines(data.headlines || []);
+        renderIntel(data.trendingWords || [], data.refInsights || null);
+        renderSuggestions(data.suggestions || []);
+        const nH = (data.headlines || []).length, nS = (data.suggestions || []).length;
+        status.style.color = '#4caf50';
+        status.textContent = `${nH} headline candidate(s) + ${nS} refinement(s). Click a headline to apply it.`;
+      } catch (err) {
+        status.style.color = '#e05252'; status.textContent = 'Error: ' + err.message;
+      } finally { btn.disabled = false; btn2.disabled = false; }
+    }
+
+    // Generated headline candidates — click to apply words + paired template design.
+    let popHeadlines = [];
+    function renderHeadlines(list) {
+      popHeadlines = list || [];
+      const wrap = document.getElementById('pop-headlines-wrap');
+      const c = document.getElementById('pop-headlines');
+      c.innerHTML = '';
+      if (!popHeadlines.length) { wrap.style.display = 'none'; return; }
+      wrap.style.display = 'block';
+      popHeadlines.forEach((h, i) => {
+        const text = (h.text || '').toString();
+        const accent = (h.accent || '').toString().trim();
+        // Render with the accent word highlighted gold.
+        let shown = text.replace(/\|/g, ' / ');
+        if (accent) {
+          const re = new RegExp('\\b(' + accent.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')\\b', 'i');
+          shown = shown.replace(re, '<span class="acc">$1</span>');
+        }
+        const meta = [h.formula, h.template].filter(Boolean).join(' · ');
+        const card = document.createElement('div');
+        card.className = 'pop-chip';
+        card.id = 'hl-' + i;
+        card.title = h.reason || '';
+        card.innerHTML = `<div class="pop-chip-text">${shown}</div>` + (meta ? `<div class="pop-chip-meta">${meta}</div>` : '');
+        card.onclick = () => applyHeadlineCandidate(i);
+        c.appendChild(card);
+      });
+    }
+
+    function applyHeadlineCandidate(i) {
+      const h = popHeadlines[i]; if (!h) return;
+      if (h.text) document.getElementById('ctrl-headline').value = h.text;
+      if (h.accent) document.getElementById('ctrl-accent').value = h.accent;
+      if (h.scene && ['funvsgrowth', 'thinker', 'none'].includes(h.scene))
+        document.getElementById('ctrl-scene').value = h.scene;
+      applyControls();
+      document.querySelectorAll('.pop-chip').forEach(el => el.classList.remove('applied'));
+      const card = document.getElementById('hl-' + i);
+      if (card) card.classList.add('applied');
+      const status = document.getElementById('pop-status');
+      status.style.color = '#4caf50';
+      status.textContent = `Applied "${(h.text || '').replace(/\|/g, ' / ')}"${h.template ? ' — ' + h.template + ' layout' : ''}.`;
+    }
+
+    // Grounding readout: live trending words + reference-thumbnail insights.
+    function renderIntel(trendingWords, refInsights) {
+      const box = document.getElementById('pop-intel');
+      const tEl = document.getElementById('pop-trending');
+      const rEl = document.getElementById('pop-refinsights');
+      let any = false;
+      if (trendingWords && trendingWords.length) {
+        tEl.innerHTML = '<b>Live trending words</b><br>' +
+          trendingWords.map(w => `<span class="tw">${w}</span>`).join('');
+        any = true;
+      } else { tEl.innerHTML = ''; }
+      if (refInsights && refInsights.wording) {
+        const w = refInsights.wording, d = refInsights.design || {};
+        const parts = [];
+        if (w.avgWordCount) parts.push(`avg ${w.avgWordCount} words/headline`);
+        if (w.tone) parts.push(`tone: ${w.tone}`);
+        if (d.textPosition) parts.push(`layout: ${d.textPosition}`);
+        if (d.accentStyle) parts.push(`accent: ${d.accentStyle}`);
+        rEl.innerHTML = '<b>From your reference thumbnails</b><br>' + parts.join(' &nbsp;·&nbsp; ') +
+          (w.commonPowerWords && w.commonPowerWords.length ? '<br>' + w.commonPowerWords.slice(0, 10).map(x => `<span class="tw">${x}</span>`).join('') : '');
+        any = true;
+      } else { rEl.innerHTML = ''; }
+      box.style.display = any ? 'flex' : 'none';
+    }
+
+    function renderSuggestions(list) {
+      popSuggestions = {};
+      const c = document.getElementById('pop-list');
+      c.innerHTML = '';
+      const lbl = document.getElementById('pop-sugg-label');
+      if (lbl) lbl.style.display = (list && list.length) ? 'block' : 'none';
+      list.forEach((s, i) => {
+        const id = s.id || ('s' + i);
+        popSuggestions[id] = s;
+        const card = document.createElement('div');
+        card.className = 'sugg-card';
+        card.id = 'card-' + id;
+        card.innerHTML =
+          `<h4>${s.title || 'Suggestion'}<span class="sugg-type">${s.type || ''}</span></h4>` +
+          `<p>${s.detail || ''}</p>` +
+          `<div class="sugg-actions">` +
+          `<button class="btn-accept" onclick="acceptSuggestion('${id}')">Accept</button>` +
+          `<button class="btn-reject" onclick="rejectSuggestion('${id}')">Reject</button>` +
+          `</div>`;
+        c.appendChild(card);
+      });
+    }
+
+    function acceptSuggestion(id) {
+      const s = popSuggestions[id];
+      if (!s) return;
+      const proposed = s.proposed || {};
+      const map = { headline: 'ctrl-headline', subline: 'ctrl-subline', eyebrow: 'ctrl-eyebrow', accent: 'ctrl-accent', scene: 'ctrl-scene' };
+      Object.entries(proposed).forEach(([k, v]) => {
+        if (map[k] && v != null && v !== '') document.getElementById(map[k]).value = v;
+      });
+      applyControls();
+      const card = document.getElementById('card-' + id);
+      if (card) {
+        card.style.borderLeftColor = '#2e7d32';
+        card.querySelector('.sugg-actions').innerHTML =
+          '<span style="color:#4caf50;font-size:0.78rem;font-weight:700;">✓ Applied</span>';
+      }
+    }
+    function rejectSuggestion(id) {
+      const card = document.getElementById('card-' + id);
+      if (card) card.remove();
+      delete popSuggestions[id];
+    }
+
+    /* ════════════════════════════════════════
+       TRUE-RESOLUTION EXPORT  (dependency-free)
+       Approach: serialize the chosen tile's real DOM into an SVG <foreignObject>,
+       embed the web fonts as base64 @font-face (so Anton/Inter/Playfair render
+       faithfully — not a fallback), inline the background image as a data URL
+       (avoids canvas taint + lets SVG-as-image load it), then draw the SVG onto
+       a canvas at the exact target pixel size and download a PNG.
+       This renders the ACTUAL composited DOM (every layer, scene SVG, colored
+       words, shadows, and any runtime style-guide tweaks) with no external lib.
+    ════════════════════════════════════════ */
+    function blobToDataURL(blob) {
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(blob);
+      });
+    }
+    async function imgSrcToDataURL(src) {
+      if (!src) return null;
+      if (src.startsWith('data:')) return src;
+      try {
+        const b = await (await fetch(src, { mode: 'cors' })).blob();
+        return await blobToDataURL(b);
+      } catch { return null; }
+    }
+
+    // Lazily fetch + base64-embed the Google fonts once (cached for the session).
+    let _pkFontCSS = null;
+    async function getEmbeddedFontCSS() {
+      if (_pkFontCSS !== null) return _pkFontCSS;
+      try {
+        const url = 'https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@700&family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap';
+        const css = await (await fetch(url)).text();
+        const faces = [...css.matchAll(/@font-face\s*\{[^}]*\}/g)].map(m => m[0]);
+        let out = '';
+        for (const face of faces) {
+          const um = face.match(/url\((https:\/\/[^)]+\.woff2)\)/);
+          if (!um) continue;
+          try {
+            const b = await (await fetch(um[1])).blob();
+            out += face.replace(um[1], await blobToDataURL(b)) + '\n';
+          } catch {}
+        }
+        _pkFontCSS = out;
+      } catch (e) {
+        _pkFontCSS = '';
+        console.warn('[export] font embed failed:', e.message);
+      }
+      return _pkFontCSS;
+    }
+
+    const PK_EXPORT_CFG = {
+      yt: { w: 1280, h: 720,  dw: 640, dh: 360 },
+      ig: { w: 1080, h: 1920, dw: 300, dh: 533.333 }
+    };
+
+    async function exportTile(format, variant, statusEl) {
+      const cfg = PK_EXPORT_CFG[format];
+      if (!cfg) throw new Error('unknown format');
+
+      let tile;
+      if (format === 'yt') {
+        tile = document.getElementById(variant === 'brand' ? 'yt-brand' : 'yt-no-brand');
+      } else {
+        const igs = document.querySelectorAll('.ig-thumb');
+        tile = variant === 'brand' ? igs[1] : igs[0];
+      }
+      if (!tile) throw new Error('tile not found');
+
+      if (statusEl) statusEl.textContent = 'Embedding fonts…';
+      const fontCSS = await getEmbeddedFontCSS();
+
+      if (statusEl) statusEl.textContent = 'Compositing layers…';
+      const clone = tile.cloneNode(true);
+      clone.style.borderRadius = '0';
+      clone.style.boxShadow = 'none';
+
+      // Inline any visible background image as a data URL (taint-safe + SVG-loadable)
+      const origImgs = tile.querySelectorAll('img');
+      const cloneImgs = clone.querySelectorAll('img');
+      for (let i = 0; i < origImgs.length; i++) {
+        const im = origImgs[i];
+        if (im.style.display !== 'none' && im.getAttribute('src')) {
+          const d = await imgSrcToDataURL(im.src);
+          if (d) cloneImgs[i].setAttribute('src', d);
+          else cloneImgs[i].style.display = 'none';
+        }
+      }
+
+      const pageCSS = [...document.querySelectorAll('style')].map(s => s.textContent).join('\n');
+      const cloneXML = new XMLSerializer().serializeToString(clone);
+      const htmlWrap =
+        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${cfg.dw}px;height:${cfg.dh}px;position:relative;overflow:hidden;background:#000;">${cloneXML}</div>`;
+      const svg =
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${cfg.w}" height="${cfg.h}" viewBox="0 0 ${cfg.dw} ${cfg.dh}">` +
+        `<foreignObject x="0" y="0" width="${cfg.dw}" height="${cfg.dh}">` +
+        `<style>${fontCSS}\n${pageCSS}</style>${htmlWrap}</foreignObject></svg>`;
+
+      const img = new Image();
+      await new Promise((res, rej) => {
+        img.onload = res;
+        img.onerror = () => rej(new Error('SVG render failed (foreignObject)'));
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = cfg.w; canvas.height = cfg.h;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, cfg.w, cfg.h);
+      ctx.drawImage(img, 0, 0, cfg.w, cfg.h);
+
+      const blob = await new Promise((res, rej) =>
+        canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob failed (image taint?)')), 'image/png'));
+
+      // Measure the real encoded PNG from its IHDR (bytes 16–23, big-endian)
+      const dv = new DataView(await blob.arrayBuffer());
+      const pngW = dv.getUint32(16), pngH = dv.getUint32(20);
+
+      const a = document.createElement('a');
+      a.download = `proles_${format}_${variant}_${cfg.w}x${cfg.h}.png`;
+      a.href = URL.createObjectURL(blob);
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      return { w: cfg.w, h: cfg.h, pngW, pngH, bytes: blob.size };
+    }
+
+    async function runExport(format) {
+      const status = document.getElementById('exp-status');
+      const variant = document.getElementById('exp-variant').value;
+      const label = format === 'yt' ? '1280×720' : '1080×1920';
+      status.style.color = '#ECAA27';
+      status.textContent = 'Rendering ' + label + '…';
+      try {
+        const dim = await exportTile(format, variant, status);
+        status.style.color = '#4caf50';
+        status.textContent = '✓ Downloaded ' + dim.pngW + '×' + dim.pngH + ' PNG (' + variant + ').';
+      } catch (e) {
+        status.style.color = '#e05252';
+        status.textContent = 'Export error: ' + e.message;
+      }
+    }
+    function downloadYT()    { runExport('yt'); }
+    function downloadReels() { runExport('ig'); }
   </script>
 </body>
 </html>

@@ -1,0 +1,36 @@
+{
+  "wording": {
+    "avgWordCount": 0,
+    "commonPowerWords": [],
+    "phrasingPatterns": [],
+    "tone": "No text present on thumbnails for analysis."
+  },
+  "design": {
+    "textPosition": "No text present on thumbnails for analysis.",
+    "accentStyle": "No text present on thumbnails for analysis.",
+    "emphasis": "No text present on thumbnails for analysis.",
+    "layoutNotes": [
+      "The channel owner is consistently the central and dominant figure in all thumbnails, occupying a large portion of the frame.",
+      "Framing is predominantly close-up to medium shots, often from a slightly low angle, creating a direct and engaging gaze.",
+      "Backgrounds vary from car interiors (most common), indoor settings (gym, home), to solid color backdrops. They are generally simple, sometimes slightly out of focus, to maintain focus on the subject.",
+      "Lighting often utilizes natural light, sometimes with strong highlights or shadows, contributing to a raw and authentic feel.",
+      "Expressions range from serious/neutral to subtle smirks, and occasionally a full, engaging smile (especially in branding shots).",
+      "The subject consistently wears a distinctive beaded necklace in most images, serving as a subtle personal branding element.",
+      "The overall design conveys an authentic, personal, and unpretentious vibe, focusing on the individual."
+    ]
+  },
+  "templates": [
+    {
+      "name": "Car Selfie",
+      "description": "Subject is seated in a car, often looking directly at the camera. The car interior serves as a natural, everyday background. Framing is typically chest-up or head-and-shoulders, often with natural lighting from windows, conveying a 'on-the-go' or personal moment."
+    },
+    {
+      "name": "Indoor Context",
+      "description": "Subject is in an indoor setting (e.g., gym, home), providing context to an activity or daily life. The background is relevant to the setting but not overly distracting. Framing is similar to car selfies, focusing on the subject within the environment."
+    },
+    {
+      "name": "Branding Portrait",
+      "description": "A more polished and intentional portrait, often with a clean or solid-color background, designed for strong visual impact and channel branding. Features a clear, engaging expression (e.g., a smile) and direct eye contact. Often cropped in a circular or tight frame for profile use."
+    }
+  ]
+}
