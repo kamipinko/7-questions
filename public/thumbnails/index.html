@@ -715,11 +715,11 @@
   <div class="controls">
     <div class="control-group">
       <label>Headline (use | for line break)</label>
-      <input type="text" id="ctrl-headline" value="FUN IS|OVERRATED" />
+      <input type="text" id="ctrl-headline" value="" placeholder="YOUR HEADLINE|SECOND LINE" />
     </div>
     <div class="control-group">
       <label>Subline</label>
-      <input type="text" id="ctrl-subline" value="Go for Fulfillment" />
+      <input type="text" id="ctrl-subline" value="" placeholder="subline" />
     </div>
     <div class="control-group">
       <label>Eyebrow text</label>
@@ -727,7 +727,7 @@
     </div>
     <div class="control-group">
       <label>Accent word (turns gold)</label>
-      <input type="text" id="ctrl-accent" value="OVERRATED" />
+      <input type="text" id="ctrl-accent" value="" placeholder="word to highlight" />
     </div>
     <div class="control-group">
       <label>Background image URL</label>
@@ -744,6 +744,10 @@
     <div class="control-group">
       <label>&nbsp;</label>
       <button class="btn-export" onclick="applyControls()">Apply Changes</button>
+    </div>
+    <div class="control-group">
+      <label>&nbsp;</label>
+      <button class="btn-export" onclick="pkStartFresh()" style="background:#444;color:#fff;" title="Clear everything and start from a blank thumbnail">Start Fresh</button>
     </div>
 
     <!-- AI Background Generation -->
@@ -1507,6 +1511,7 @@
           img.style.opacity = '';   // restore faded treatment if coming from subject-scene
         });
 
+        pkSaveState();   // persist the generated background so the next boot keeps it
         statusEl.style.color = '#4caf50';
         statusEl.textContent = 'Background applied! Use Apply Changes to update text if needed.';
       } catch (err) {
@@ -1812,7 +1817,73 @@
       });
     })();
 
-    // Default-load Pinko on all four tiles
+    /* ════════════════════════════════════════
+       SESSION PERSISTENCE
+       Resume the user's LAST build on every boot — never the stale baked-in
+       "FUN IS OVERRATED" example. A blank first-ever boot starts fresh.
+    ════════════════════════════════════════ */
+    const PK_STATE_KEY = 'pk_thumb_state_v2';
+    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt'];
+    const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝' };
+
+    function pkCollectState() {
+      const s = { v: {}, b: {} };
+      PK_TEXT_IDS.forEach(id => { const el = document.getElementById(id); if (el) s.v[id] = el.value; });
+      PK_BOOL_IDS.forEach(id => { const el = document.getElementById(id); if (el) s.b[id] = el.checked; });
+      s.subjectSrc = pkSubjectSrc;
+      s.sceneActive = pkSubjectSceneActive;
+      if (pkSubjectSceneActive) {
+        s.bgYt = (document.getElementById('yt-bg-img-1') || {}).src || '';
+        s.bgIg = (document.getElementById('ig-bg-img-1') || {}).src || '';
+      }
+      return s;
+    }
+
+    function pkSaveState() {
+      try {
+        const s = pkCollectState();
+        try { localStorage.setItem(PK_STATE_KEY, JSON.stringify(s)); }
+        catch (e) {
+          // localStorage quota (huge generated-bg data URLs) — drop the heavy
+          // images but ALWAYS keep the text/build so the headline never reverts.
+          delete s.bgYt; delete s.bgIg;
+          if (s.subjectSrc && String(s.subjectSrc).startsWith('data:')) s.subjectSrc = '/thumbnails/assets/pinko.png';
+          if (s.v && String(s.v['ctrl-bg'] || '').startsWith('data:')) s.v['ctrl-bg'] = '';
+          try { localStorage.setItem(PK_STATE_KEY, JSON.stringify(s)); } catch (_) {}
+        }
+      } catch (_) {}
+    }
+
+    function pkApplyState(s) {
+      if (!s) return;
+      PK_TEXT_IDS.forEach(id => { if (s.v && id in s.v) { const el = document.getElementById(id); if (el) el.value = s.v[id]; } });
+      PK_BOOL_IDS.forEach(id => { if (s.b && id in s.b) { const el = document.getElementById(id); if (el) el.checked = s.b[id]; } });
+      if (typeof s.subjectSrc !== 'undefined') pkSubjectSrc = s.subjectSrc;
+      pkSubjectSceneActive = !!s.sceneActive;
+      if (pkSubjectSceneActive) {
+        ['yt-bg-img-1','yt-bg-img-2'].forEach(id => { const im = document.getElementById(id); if (im && s.bgYt) { im.src = s.bgYt; im.style.display = 'block'; im.style.opacity = '1'; } });
+        ['ig-bg-img-1','ig-bg-img-2'].forEach(id => { const im = document.getElementById(id); if (im && s.bgIg) { im.src = s.bgIg; im.style.display = 'block'; im.style.opacity = '1'; } });
+      }
+    }
+
+    function pkLoadState() {
+      try { const raw = localStorage.getItem(PK_STATE_KEY); if (!raw) return false; pkApplyState(JSON.parse(raw)); return true; }
+      catch (_) { return false; }
+    }
+
+    function pkStartFresh() {
+      try { localStorage.removeItem(PK_STATE_KEY); } catch (_) {}
+      pkSubjectSceneActive = false;
+      pkSubjectSrc = '/thumbnails/assets/pinko.png';
+      PK_TEXT_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = PK_FRESH_DEFAULTS[id] || ''; });
+      PK_BOOL_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+      ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => { const im = document.getElementById(id); if (im) { im.removeAttribute('src'); im.style.display = 'none'; im.style.opacity = ''; } });
+      applyControls();
+    }
+
+    // Boot: resume the last build if one exists; otherwise the blank defaults stand.
+    pkLoadState();
     applyControls();
 
     /* ════════════════════════════════════════
