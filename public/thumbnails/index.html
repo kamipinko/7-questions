@@ -107,7 +107,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.72;
+      opacity: 0.96;
     }
 
     /* Placeholder gradient when no image */
@@ -131,11 +131,11 @@
       inset: 0;
       background: linear-gradient(
         105deg,
-        rgba(20,10,30,0.55) 0%,
-        rgba(10,5,15,0.7) 45%,
-        rgba(0,0,0,0.85) 50%,
-        rgba(40,20,0,0.5) 55%,
-        rgba(80,45,0,0.3) 100%
+        rgba(20,10,30,0.26) 0%,
+        rgba(10,5,15,0.34) 45%,
+        rgba(0,0,0,0.40) 50%,
+        rgba(40,20,0,0.22) 55%,
+        rgba(80,45,0,0.12) 100%
       );
     }
 
@@ -143,7 +143,7 @@
     .yt-vignette {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%);
+      background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.42) 100%);
     }
 
     /* Bottom-left red accent bar */
@@ -270,7 +270,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.65;
+      opacity: 0.94;
     }
     .ig-bg-placeholder {
       position: absolute;
@@ -287,15 +287,15 @@
     .ig-vignette {
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse at center 60%, transparent 30%, rgba(0,0,0,0.8) 100%);
+      background: radial-gradient(ellipse at center 60%, transparent 38%, rgba(0,0,0,0.48) 100%);
     }
     .ig-gradient-bottom {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      height: 60%;
-      background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+      height: 55%;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 45%, transparent 100%);
     }
     .ig-accent-bar {
       position: absolute;
@@ -1394,6 +1394,8 @@
         layer.style.display = (subjectActive || longHeadline) ? 'none' : '';
       });
       setScene(subjectActive ? 'none' : scene);
+
+      pkSaveState();   // persist this build so the next boot resumes it (never the baked-in example)
     }
 
     // Visual line count of a headline element: rendered height ÷ line-height.
@@ -1449,6 +1451,24 @@
       }
     }
 
+    // Export-safe brightness lift: AI backgrounds (esp. the "dark, moody" brand prompt)
+    // come back crushed-dark. CSS filter:brightness is IGNORED by html2canvas on export,
+    // so we bake the lift into real pixels via a canvas pass (which DOES export). Returns
+    // a new JPEG data URL; falls back to the original on any failure.
+    async function pkBrightenDataURL(src, factor = 1.18, sat = 1.06) {
+      try {
+        const img = new Image();
+        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = src; });
+        const c = document.createElement('canvas');
+        c.width = img.naturalWidth || img.width;
+        c.height = img.naturalHeight || img.height;
+        const ctx = c.getContext('2d');
+        ctx.filter = `brightness(${factor}) saturate(${sat})`;
+        ctx.drawImage(img, 0, 0);
+        return c.toDataURL('image/jpeg', 0.92);
+      } catch (e) { return src; }
+    }
+
     async function generateBg() {
       const provider = document.getElementById('ctrl-ai-provider').value;
       if (provider === 'subject-scene') return generateSubjectScene();
@@ -1475,11 +1495,14 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Generation failed');
 
-        // Apply to all thumbnails + fill the URL field (faded bg via CSS default opacity)
-        document.getElementById('ctrl-bg').value = data.dataUrl;
+        statusEl.textContent = 'Brightening + applying…';
+        const finalUrl = await pkBrightenDataURL(data.dataUrl);
+
+        // Apply to all thumbnails + fill the URL field
+        document.getElementById('ctrl-bg').value = finalUrl;
         ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
           const img = document.getElementById(id);
-          img.src = data.dataUrl;
+          img.src = finalUrl;
           img.style.display = 'block';
           img.style.opacity = '';   // restore faded treatment if coming from subject-scene
         });
@@ -1520,9 +1543,9 @@
 
       try {
         statusEl.textContent = 'Pass 1/2 — rendering 16:9 (YouTube)…';
-        const ytUrl = await call('16:9');
+        const ytUrl = await pkBrightenDataURL(await call('16:9'));
         statusEl.textContent = 'Pass 2/2 — rendering 9:16 (Instagram)…';
-        const igUrl = await call('9:16');
+        const igUrl = await pkBrightenDataURL(await call('9:16'));
 
         pkSubjectSceneActive = true;
         // YT tiles ← 16:9, IG tiles ← 9:16, full opacity (subject is IN the image).
