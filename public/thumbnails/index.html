@@ -253,6 +253,22 @@
     }
 
     /* ════════════════════════════════════════
+       P5 STYLING LAYER  (export-safe: inline-SVG shapes, NO clip-path —
+       html2canvas does not render clip-path, but rasterizes SVG fine)
+    ════════════════════════════════════════ */
+    .p5-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+    .p5-overlay svg { width: 100%; height: 100%; display: block; }
+    /* Headline becomes a slanted P5 "stamp" — counter-rotated against the panel. */
+    .p5-on .yt-headline { transform: rotate(-2deg) skewX(-5deg); position: relative; z-index: 6; }
+    .p5-on .ig-headline { transform: rotate(-2deg) skewX(-5deg); position: relative; z-index: 6; }
+    .p5-on .yt-text, .p5-on .ig-text { z-index: 6; }
+    /* Tiny mono kicker w/ slash separators reads as P5 UI label. */
+    .p5-on .yt-eyebrow, .p5-on .ig-eyebrow { font-family: 'Inter', sans-serif; letter-spacing: 0.34em; }
+    /* When P5 owns the contrast (its angular panel), soften the old square split so
+       we don't double-darken the text side. */
+    .p5-on .yt-split, .p5-on .ig-gradient-bottom { opacity: 0.35; }
+
+    /* ════════════════════════════════════════
        INSTAGRAM REEL  1080 × 1920  (scaled ~28%)
     ════════════════════════════════════════ */
     .ig-thumb {
@@ -744,6 +760,14 @@
     <div class="control-group">
       <label>&nbsp;</label>
       <button class="btn-export" onclick="applyControls()">Apply Changes</button>
+    </div>
+    <div class="control-group">
+      <label>P5 Styling</label>
+      <select id="ctrl-p5" onchange="applyControls()">
+        <option value="off">Off</option>
+        <option value="standard" selected>Standard</option>
+        <option value="heavy">Heavy</option>
+      </select>
     </div>
     <div class="control-group">
       <label>&nbsp;</label>
@@ -1310,6 +1334,73 @@
     // Suppresses the separate .subject-img cutout + scene SVG, and keeps bg at full opacity.
     let pkSubjectSceneActive = false;
 
+    /* ── P5 styling layer: builds an inline-SVG overlay (export-safe) per tile ── */
+    function pkHalftone(ox, oy, cols, rows, gap, r, color) {
+      let s = '';
+      for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+        const op = Math.max(0.06, 0.46 - i * 0.045 - j * 0.05);
+        s += `<circle cx="${ox + i * gap}" cy="${oy + j * gap}" r="${r}" fill="${color || '#ECAA27'}" opacity="${op.toFixed(2)}"/>`;
+      }
+      return s;
+    }
+
+    function pkBuildP5(kind) {
+      if (kind === 'ig') {
+        // Portrait: angular contrast panel anchored to the BOTTOM (where text sits).
+        return `<svg viewBox="0 0 300 533" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="p5pIg" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stop-color="#0a0a0a" stop-opacity="0.9"/>
+            <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="0.55"/>
+            <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
+          </linearGradient></defs>
+          <text x="14" y="430" font-family="Anton,sans-serif" font-size="240" fill="#ffffff" opacity="0.05" transform="rotate(-8 14 430)">5</text>
+          <polygon points="0,533 0,300 300,360 300,533" fill="url(#p5pIg)"/>
+          <polygon points="0,300 0,322 300,382 300,360" fill="#c41a1f"/>
+          <polygon points="0,322 0,330 300,390 300,382" fill="#ECAA27"/>
+          <polygon points="0,0 138,0 0,150" fill="#0a0a0a"/>
+          <polygon points="0,0 116,0 0,126" fill="#c41a1f"/>
+          <polygon points="300,0 300,108 196,0" fill="#0a0a0a" opacity="0.9"/>
+          <polygon points="300,108 300,120 214,0 196,0" fill="#ECAA27"/>
+          ${pkHalftone(20, 470, 9, 4, 12, 2.4, '#ECAA27')}
+        </svg>`;
+      }
+      // Landscape (YouTube): angular contrast panel on the LEFT (text side).
+      return `<svg viewBox="0 0 640 360" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="p5pYt" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#0a0a0a" stop-opacity="0.9"/>
+          <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="0.5"/>
+          <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
+        </linearGradient></defs>
+        <text x="120" y="318" font-family="Anton,sans-serif" font-size="360" fill="#ffffff" opacity="0.05" transform="rotate(-6 120 318)">5</text>
+        <polygon points="0,0 372,0 262,360 0,360" fill="url(#p5pYt)"/>
+        <polygon points="368,0 392,0 282,360 258,360" fill="#c41a1f"/>
+        <polygon points="392,0 400,0 290,360 282,360" fill="#ECAA27"/>
+        <polygon points="0,0 182,0 0,116" fill="#0a0a0a"/>
+        <polygon points="0,0 158,0 0,98" fill="#c41a1f"/>
+        <polygon points="640,360 640,228 484,360" fill="#0a0a0a" opacity="0.92"/>
+        <polygon points="640,228 640,242 506,360 484,360" fill="#ECAA27"/>
+        ${pkHalftone(34, 250, 8, 5, 13, 2.6, '#ECAA27')}
+      </svg>`;
+    }
+
+    function pkApplyP5() {
+      const on = !!(document.getElementById('ctrl-p5') && document.getElementById('ctrl-p5').checked);
+      document.querySelectorAll('.yt-thumb, .ig-thumb').forEach(tile => {
+        tile.classList.toggle('p5-on', on);
+        let ov = tile.querySelector('.p5-overlay');
+        if (on) {
+          if (!ov) {
+            ov = document.createElement('div');
+            ov.className = 'p5-overlay';
+            tile.insertBefore(ov, tile.querySelector('.yt-text, .ig-text'));  // sits behind the text
+          }
+          ov.innerHTML = pkBuildP5(tile.classList.contains('ig-thumb') ? 'ig' : 'yt');
+        } else if (ov) {
+          ov.remove();
+        }
+      });
+    }
+
     function applyControls() {
       const headline = document.getElementById('ctrl-headline').value;
       const subline  = document.getElementById('ctrl-subline').value;
@@ -1399,6 +1490,7 @@
       });
       setScene(subjectActive ? 'none' : scene);
 
+      pkApplyP5();     // P5 high-contrast angular overlay (toggle: ctrl-p5)
       pkSaveState();   // persist this build so the next boot resumes it (never the baked-in example)
     }
 
@@ -1824,7 +1916,7 @@
     ════════════════════════════════════════ */
     const PK_STATE_KEY = 'pk_thumb_state_v2';
     const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt'];
-    const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
+    const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow','ctrl-p5'];
     const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝' };
 
     function pkCollectState() {
@@ -1877,7 +1969,7 @@
       pkSubjectSceneActive = false;
       pkSubjectSrc = '/thumbnails/assets/pinko.png';
       PK_TEXT_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = PK_FRESH_DEFAULTS[id] || ''; });
-      PK_BOOL_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
+      PK_BOOL_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.checked = (id === 'ctrl-p5'); });  // P5 stays ON by default
       ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => { const im = document.getElementById(id); if (im) { im.removeAttribute('src'); im.style.display = 'none'; im.style.opacity = ''; } });
       applyControls();
     }
