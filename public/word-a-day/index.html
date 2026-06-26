@@ -28,7 +28,8 @@
     }
     [data-theme="light"]{
       --bg:#680707;--surface:rgba(255,255,255,0.13);--surface2:rgba(255,255,255,0.2);
-      --text:#000;--text-sub:rgba(0,0,0,0.6);--text-body:rgba(255,255,255,0.92);
+      /* Deep-red brand background → use warm light tones for legible contrast */
+      --text:rgba(255,255,255,0.95);--text-sub:rgba(255,255,255,0.72);--text-body:rgba(255,255,255,0.92);
       --border:#ECAA27;--border-dim:rgba(236,170,39,0.4);
     }
 
@@ -219,12 +220,79 @@
     /* ── No speech support notice ── */
     .no-speech-note{font-size:.78rem;color:var(--text-sub);text-align:center;padding:8px 12px;background:rgba(236,170,39,.06);border:1px solid var(--border-dim);border-radius:8px;}
 
+    /* ── Spaced-repetition Review button ── */
+    .btn-review{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 22px;background:rgba(236,170,39,.1);color:var(--gold);border:1px solid var(--gold);border-radius:4px;font-family:var(--font-mono);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .15s ease-out,transform .15s ease-out;}
+    .btn-review:hover{background:rgba(236,170,39,.18);transform:translateY(-1px);}
+    .btn-review .due-pill{background:var(--gold);color:#000;border-radius:100px;padding:1px 9px;font-size:.7rem;}
+
+    /* ── Milestone celebration banner ── */
+    .milestone-banner{width:100%;background:linear-gradient(135deg,rgba(236,170,39,.18),rgba(104,7,7,.25));border:1px solid var(--gold);border-radius:14px;padding:14px 18px;display:flex;flex-direction:column;gap:4px;text-align:center;animation:milestonePop .5s cubic-bezier(.22,1.2,.36,1);}
+    .milestone-title{font-family:var(--font-serif);font-size:1.1rem;color:var(--gold);}
+    .milestone-desc{font-size:.82rem;color:var(--text-body);}
+    @keyframes milestonePop{0%{transform:scale(.85);opacity:0;}100%{transform:scale(1);opacity:1;}}
+
+    /* ── Day-complete flame burst (tasteful, brand gold) ── */
+    .complete-flames{position:relative;height:0;width:100%;pointer-events:none;}
+    .complete-flames span{position:absolute;top:0;left:50%;font-size:1.1rem;opacity:0;will-change:transform,opacity;}
+    .complete-flames.burst span{animation:flameRise 1.4s ease-out forwards;}
+    @keyframes flameRise{0%{opacity:0;transform:translate(-50%,10px) scale(.6);}15%{opacity:1;}100%{opacity:0;transform:translate(var(--dx,-50%),-90px) scale(1.1);}}
+    .complete-icon.celebrate{animation:iconBounce .6s cubic-bezier(.22,1.4,.36,1);}
+    @keyframes iconBounce{0%{transform:scale(.5);}60%{transform:scale(1.25);}100%{transform:scale(1);}}
+
+    /* ── Mastery card ── */
+    .mastery-card{background:var(--surface);border:1px solid var(--border-dim);border-left:3px solid var(--gold);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;}
+    .mastery-head{display:flex;align-items:center;justify-content:space-between;}
+    .mastery-title{font-family:var(--font-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-sub);}
+    .mastery-pct{font-family:var(--font-serif);font-size:1.2rem;color:var(--gold);}
+    .mastery-bar{height:8px;background:rgba(236,170,39,.15);border-radius:100px;overflow:hidden;}
+    .mastery-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-h));border-radius:100px;transition:width .5s cubic-bezier(.25,0,0,1);}
+    .mastery-sub{font-size:.74rem;color:var(--text-sub);}
+    .week-mastery-bar{height:3px;background:rgba(236,170,39,.15);border-radius:100px;margin-top:4px;overflow:hidden;}
+    .week-mastery-fill{height:100%;background:var(--gold);border-radius:100px;}
+
+    /* ── Region/fallback voice note (honest Kikuyu disclosure) ── */
+    .region-voice-note{font-size:.76rem;color:var(--text-body);text-align:center;line-height:1.55;padding:9px 14px;background:rgba(236,170,39,.08);border:1px solid var(--border-dim);border-left:3px solid var(--gold);border-radius:8px;width:100%;}
+    .region-voice-note strong{color:var(--gold);}
+
+    /* ── Replay / retry action row inside accuracy display ── */
+    .accuracy-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;width:100%;}
+    .btn-replay{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:none;color:var(--gold);border:1px solid var(--border-dim);border-radius:2px;font-family:var(--font-mono);font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;min-height:40px;transition:background .15s ease-out,border-color .15s ease-out,transform .15s ease-out;}
+    .btn-replay:hover{background:rgba(236,170,39,.1);border-color:var(--gold);transform:translateY(-1px);}
+
+    /* ── Manual "I said it" confirm (no-SpeechRecognition fallback) ── */
+    .btn-manual{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 28px;background:rgba(236,170,39,.1);color:var(--gold);border:2px dashed var(--gold);border-radius:4px;font-family:var(--font-mono);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .15s ease-out,transform .15s ease-out;}
+    .btn-manual:hover{background:rgba(236,170,39,.16);transform:translateY(-1px);}
+    .btn-manual:disabled{opacity:.6;pointer-events:none;border-style:solid;}
+
+    /* ── Screen entrance + button micro-interactions ── */
+    @keyframes screenIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+    .screen.active{animation:screenIn .32s cubic-bezier(.25,0,0,1);}
+    .btn-primary:active,.btn-ghost:active,.btn-listen:active,.btn-record:active,.btn-sm:active,.btn-review:active,.btn-replay:active,.btn-manual:active,.lang-card:active,.theme-toggle:active,.nav-back:active{transform:translateY(1px) scale(.99);}
+    .accuracy-ring-fill{will-change:stroke-dashoffset;}
+
     /* ── Mobile ── */
     @media(max-width:480px){
       .shell{padding:64px 16px 90px;}
       .lang-grid{grid-template-columns:1fr 1fr;}
       .word-card{padding:24px 20px;}
       .word-target{font-size:2rem;}
+      /* Ensure comfortable tap targets on phones */
+      .theme-toggle{width:40px;height:40px;}
+      .nav-back{padding:9px 12px;}
+      .btn-sm,.btn-sm-ghost{min-height:40px;}
+      .exam-choice{padding:15px 16px;}
+      /* Keep the top nav on one line — drop the long email, keep Logout */
+      .top-nav{padding:10px 14px;gap:6px;}
+      .nav-left{min-width:0;flex:1;}
+      .nav-title{font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+      #accountEmail{display:none;}
+      #progBtn{padding:6px 9px;}
+    }
+
+    /* ── Respect reduced-motion preference ── */
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
+      .btn-listen.playing,.btn-record.recording{animation:none!important;}
     }
   </style>
 </head>
@@ -330,6 +398,8 @@
           Listen
         </button>
 
+        <div id="regionVoiceNote" class="region-voice-note" style="display:none;"></div>
+
         <div class="pronunciation-section" id="pronSection">
           <p class="pronunciation-hint" id="pronHint">Listen first, then try saying the word aloud.</p>
 
@@ -340,6 +410,12 @@
           <button class="btn-record" id="recordBtn" disabled>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             <span id="recordBtnLabel">Hold to Speak</span>
+          </button>
+
+          <!-- Manual confirm: shown when SpeechRecognition is unsupported so the lesson stays completable -->
+          <button class="btn-manual" id="manualSayBtn" style="display:none;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="manualSayLabel">I said it aloud</span>
           </button>
 
           <div class="accuracy-display" id="accuracyDisplay" style="display:none;">
@@ -353,7 +429,13 @@
             </div>
             <p class="accuracy-heard">Heard: "<span id="heardText"></span>"</p>
             <p class="accuracy-feedback" id="accuracyFeedback"></p>
-            <button class="btn-sm" id="retryBtn" style="display:none;">Try Again</button>
+            <div class="accuracy-actions">
+              <button class="btn-replay" id="replayTargetBtn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                Hear it
+              </button>
+              <button class="btn-sm" id="retryBtn" style="display:none;">Try Again</button>
+            </div>
           </div>
         </div>
 
@@ -364,14 +446,20 @@
     <!-- ── SCREEN: Day Complete ── -->
     <div class="screen" id="screen-complete">
       <div class="complete-card">
+        <div class="complete-flames" id="completeFlames"></div>
         <div class="complete-icon" id="completeIcon">🎉</div>
         <h2 class="complete-title" id="completeTitle">Day Complete!</h2>
         <p class="complete-sub" id="completeSub">You studied 3 words today.</p>
+        <div class="milestone-banner" id="milestoneBanner" style="display:none;">
+          <div class="milestone-title" id="milestoneTitle"></div>
+          <div class="milestone-desc" id="milestoneDesc"></div>
+        </div>
         <div class="stat-row">
           <div class="stat-box"><div class="stat-num" id="statStreak">1</div><div class="stat-label">Day Streak</div></div>
-          <div class="stat-box"><div class="stat-num" id="statTotal">3</div><div class="stat-label">Words Learned</div></div>
-          <div class="stat-box"><div class="stat-num" id="statWeek">W1</div><div class="stat-label">Week</div></div>
+          <div class="stat-box"><div class="stat-num" id="statTotal">3</div><div class="stat-label">Words Today</div></div>
+          <div class="stat-box"><div class="stat-num" id="statAcc">—</div><div class="stat-label">Avg Accuracy</div></div>
         </div>
+        <button class="btn-review" id="reviewCtaComplete" style="display:none;"></button>
         <div class="exam-unlock-banner" id="examBanner" style="display:none;">
           <div class="exam-banner-title">🎓 Exam Unlocked!</div>
           <div class="exam-banner-desc">You've studied enough to take the weekly exam. Ready?</div>
@@ -433,6 +521,20 @@
         <div class="stat-box"><div class="stat-num" id="progStatWords">0</div><div class="stat-label">Words</div></div>
         <div class="stat-box"><div class="stat-num" id="progStatDays">0</div><div class="stat-label">Days</div></div>
       </div>
+
+      <!-- Mastery overview (from per-word bestAccuracy) -->
+      <div class="mastery-card">
+        <div class="mastery-head">
+          <span class="mastery-title">Mastery</span>
+          <span class="mastery-pct" id="masteryPct">0%</span>
+        </div>
+        <div class="mastery-bar"><div class="mastery-fill" id="masteryFill" style="width:0%"></div></div>
+        <div class="mastery-sub" id="masterySub">0 of 0 words at 80%+ accuracy</div>
+      </div>
+
+      <!-- Spaced-repetition review CTA -->
+      <button class="btn-review" id="reviewCtaProgress" style="display:none;"></button>
+
       <div class="tier-cards" id="tierCards"></div>
       <button class="btn-primary" id="continueStudyingBtn">Continue Studying →</button>
       <button class="btn-ghost" id="switchLangBtn">Switch Language</button>
@@ -491,6 +593,88 @@ function addDays(dateStr, n) {
 }
 
 // ══════════════════════════════════════════════════════════
+// WORD-ID PARSING + WEEK MATH  (id = "<lang>-<tier>-<week>-<day>-<slot>")
+//   index 1 = tier, 2 = week (GLOBAL: tier1=wk1-4, tier2=wk5-8, tier3=wk9-12),
+//   3 = day, 4 = slot.  word.week fields are also GLOBAL.
+//   Backend progress (p.week) is LOCAL (1-4 within a tier), so map with globalWeek().
+// ══════════════════════════════════════════════════════════
+function parseWordId(id) {
+  const parts = String(id || '').split('-');
+  // parts[0] = lang code (may itself be absent for malformed ids)
+  return {
+    lang: parts[0],
+    tier: parseInt(parts[1], 10),
+    week: parseInt(parts[2], 10),   // GLOBAL week
+    day:  parseInt(parts[3], 10),
+    slot: parseInt(parts[4], 10),
+  };
+}
+// Map a progress object's (tier, localWeek 1-4) to a GLOBAL week number.
+function globalWeek(tier, localWeek) { return (tier - 1) * 4 + localWeek; }
+function progGlobalWeek(p) { return globalWeek(p.tier, p.week); }
+
+function daysBetween(a, b) {
+  // whole days between two YYYY-MM-DD strings (b - a)
+  return Math.floor((Date.parse(b + 'T00:00:00') - Date.parse(a + 'T00:00:00')) / 86400000);
+}
+function daysSince(lastSeen) {
+  if (!lastSeen) return 99999;
+  const d = String(lastSeen).slice(0, 10);
+  return Math.max(0, daysBetween(d, today()));
+}
+
+// ══════════════════════════════════════════════════════════
+// SPACED REPETITION  (fuel = wordStats[id] = {accuracy,bestAccuracy,timesSeen,lastSeen})
+// Simple, understandable tiered intervals. Weak words (bestAccuracy < 70)
+// come back fast; strong words space out (doubling, capped).
+// ══════════════════════════════════════════════════════════
+function reviewIntervalDays(stat) {
+  const best = stat.bestAccuracy || 0;
+  const seen = Math.max(1, stat.timesSeen || 1);
+  if (best < 50) return 0;                 // struggling — always due
+  if (best < 70) return 1;                 // shaky — review next day
+  if (best < 85) return Math.min(2 + (seen - 1) * 2, 14); // ok — gradual spacing
+  return Math.min(4 * Math.pow(2, seen - 1), 30);          // strong — space out, cap 30d
+}
+function statIsDue(stat) {
+  if (!stat) return false;
+  return daysSince(stat.lastSeen) >= reviewIntervalDays(stat);
+}
+// Returns due word OBJECTS (joined to langData), sorted by priority:
+//   lowest bestAccuracy → longest since lastSeen → fewest timesSeen.
+function getDueWords(p, langData) {
+  const stats = (p && p.wordStats) || {};
+  const byId = {};
+  ((langData && langData.words) || []).forEach(w => { byId[w.id] = w; });
+  const due = [];
+  for (const id of Object.keys(stats)) {
+    const word = byId[id];
+    if (!word) continue;               // word not in this language's set
+    const stat = stats[id];
+    if (statIsDue(stat)) due.push({ word, stat });
+  }
+  due.sort((a, b) => {
+    const ba = a.stat.bestAccuracy || 0, bb = b.stat.bestAccuracy || 0;
+    if (ba !== bb) return ba - bb;
+    const da = daysSince(a.stat.lastSeen), db = daysSince(b.stat.lastSeen);
+    if (da !== db) return db - da;
+    return (a.stat.timesSeen || 0) - (b.stat.timesSeen || 0);
+  });
+  return due;
+}
+// Mastery: % of seen words whose bestAccuracy >= 80. Optionally scoped by predicate.
+function masteryStats(p, predicate) {
+  const stats = (p && p.wordStats) || {};
+  let total = 0, mastered = 0;
+  for (const id of Object.keys(stats)) {
+    if (predicate && !predicate(id, stats[id])) continue;
+    total++;
+    if ((stats[id].bestAccuracy || 0) >= 80) mastered++;
+  }
+  return { total, mastered, pct: total ? Math.round((mastered / total) * 100) : 0 };
+}
+
+// ══════════════════════════════════════════════════════════
 // THEME
 // ══════════════════════════════════════════════════════════
 const themeToggle = $('themeToggle');
@@ -518,12 +702,15 @@ let state = {
   lang: null,         // language code
   langData: null,     // full language JSON
   progress: null,     // server progress object (the active language's progress)
-  words: [],          // filtered word list for current tier/week/day
+  words: [],          // active word list (today's lesson OR review session)
   wordIdx: 0,         // index into words[]
   listenedOnce: false,
   accuracy: null,
   exam: null,         // exam session
   examIdx: 0,
+  reviewMode: false,  // true while running a spaced-repetition review session
+  sessionScores: [],  // accuracy of each word completed this session (for celebration)
+  wordAttempts: 0,    // failed attempts on the current word (adaptive difficulty)
 };
 
 // Build a request body for study endpoints — account-bound when logged in, else legacy token.
@@ -762,9 +949,10 @@ function gotoLesson() {
     return;
   }
 
-  // Get today's 3 words
-  const { tier, week, day } = p;
-  state.words = state.langData.words.filter(w => w.tier===tier && w.week===week && w.day===day);
+  // Get today's 3 words. word.week is GLOBAL; p.week is LOCAL → map it.
+  const { tier, day } = p;
+  const gWeek = progGlobalWeek(p);
+  state.words = state.langData.words.filter(w => w.tier===tier && w.week===gWeek && w.day===day);
 
   if (!state.words.length) {
     // Advance to next day
@@ -772,9 +960,12 @@ function gotoLesson() {
     return;
   }
 
+  state.reviewMode = false;
   state.wordIdx = 0;
   state.listenedOnce = false;
   state.accuracy = null;
+  state.sessionScores = [];
+  state.wordAttempts = 0;
   renderLesson();
   showScreen('screen-lesson');
   updateNavTitle();
@@ -789,20 +980,28 @@ function renderLesson() {
   const p = state.progress;
   const w = state.words[state.wordIdx];
 
+  const n = state.words.length || 1;
+  state.wordAttempts = 0;  // fresh word — reset adaptive attempt counter
+
   // Badge
-  const tierName = ['','Survival','Communicate','Vocabulary'][p.tier];
-  $('lessonBadge').textContent = `${tierName} · Week ${p.week} · Day ${p.day}`;
+  if (state.reviewMode) {
+    $('lessonBadge').textContent = `🔁 Review · ${n} word${n!==1?'s':''}`;
+  } else {
+    const tierName = ['','Survival','Communicate','Vocabulary'][p.tier];
+    $('lessonBadge').textContent = `${tierName} · Week ${progGlobalWeek(p)} · Day ${p.day}`;
+  }
   $('streakBadge').textContent = `🔥 ${p.streak || 0}`;
 
   // Progress bar
-  const frac = state.wordIdx / 3;
+  const frac = state.wordIdx / n;
   $('progFill').style.width = (frac*100)+'%';
-  $('progFrac').textContent = `${state.wordIdx} / 3`;
+  $('progLabel').textContent = state.reviewMode ? 'Review progress' : 'Day progress';
+  $('progFrac').textContent = `${state.wordIdx} / ${n}`;
 
   // Dots
   const dots = $('wordDots');
   dots.innerHTML = '';
-  for (let i=0; i<3; i++) {
+  for (let i=0; i<n; i++) {
     const d = document.createElement('div');
     d.className = 'word-dot' + (i<state.wordIdx?' done':i===state.wordIdx?' current':'');
     dots.appendChild(d);
@@ -832,37 +1031,124 @@ function renderLesson() {
   $('nextWordBtn').style.display = 'none';
   $('pronHint').textContent = 'Listen first, then try saying the word aloud.';
   $('retryBtn').style.display = 'none';
+  // Reset manual-confirm fallback button
+  $('manualSayBtn').style.display = 'none';
+  $('manualSayBtn').disabled = false;
+  $('manualSayLabel').textContent = 'I said it aloud';
 
-  // Check speech API
+  // Honest TTS disclosure: Kikuyu has no native voice, so it uses a Swahili (sw-KE) voice.
+  const regionNote = $('regionVoiceNote');
+  if (state.lang === 'ki') {
+    regionNote.style.display = '';
+    regionNote.innerHTML = '🔊 <strong>Audio uses a close regional voice.</strong> No native Gĩkũyũ voice exists, so playback uses Swahili pronunciation — lean on the written form and phonetic guide.';
+  } else {
+    regionNote.style.display = 'none';
+  }
+
+  // Adaptive difficulty: gently flag words the learner has struggled with before.
+  const prevStat = state.progress && state.progress.wordStats && state.progress.wordStats[w.id];
+  if (prevStat && (prevStat.bestAccuracy || 0) < 60 && (prevStat.timesSeen || 0) >= 1) {
+    $('pronHint').textContent = '💪 This one was tricky last time — take it slow, you\'ve got it.';
+  }
+
+  // Check speech API. When SpeechRecognition is unsupported (Safari/Firefox),
+  // hide scoring and offer a manual "I said it aloud" confirm so the lesson
+  // stays completable instead of dead-ending.
   const hasSpeech = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
   $('noSpeechNote').style.display = hasSpeech ? 'none' : '';
   if (!hasSpeech) {
     $('recordBtn').style.display = 'none';
-    // Allow skip with no speech
-    setTimeout(() => { $('nextWordBtn').style.display = ''; }, 1500);
+    $('manualSayBtn').style.display = '';
+    $('pronHint').textContent = 'Listen, then say the word aloud. Tap below when you have practiced it.';
+  } else {
+    $('recordBtn').style.display = '';
+    $('manualSayBtn').style.display = 'none';
   }
+}
+
+// Manual confirm path (no SpeechRecognition) — count as practiced, no score.
+$('manualSayBtn').addEventListener('click', () => {
+  state.accuracy = null; // nextWord defaults a neutral score when null
+  $('manualSayBtn').disabled = true;
+  $('manualSayLabel').textContent = 'Nice — marked as practiced';
+  const isLast = state.wordIdx >= (state.words.length - 1);
+  $('nextWordBtn').style.display = '';
+  $('nextWordBtn').textContent = isLast ? (state.reviewMode ? 'Finish Review →' : 'Finish Day →') : 'Next Word →';
+});
+
+// Replay the target word from the accuracy panel.
+$('replayTargetBtn').addEventListener('click', () => {
+  const w = state.words[state.wordIdx];
+  if (w) speak(w.target);
+});
+
+// ══════════════════════════════════════════════════════════
+// TEXT-TO-SPEECH  (best-voice selection + learner-paced rate)
+// Voices load asynchronously; getVoices() is often empty on first call,
+// so we cache and refresh on the 'voiceschanged' event.
+// ══════════════════════════════════════════════════════════
+const synth = window.speechSynthesis || null;
+let _voices = [];
+function refreshVoices() { if (synth) _voices = synth.getVoices() || []; return _voices; }
+if (synth) {
+  refreshVoices();
+  // Some browsers fire voiceschanged once voices are ready.
+  if (typeof synth.addEventListener === 'function') synth.addEventListener('voiceschanged', refreshVoices);
+  else synth.onvoiceschanged = refreshVoices;
+}
+
+// Pick the best available voice for a BCP-47 language tag.
+//   1) exact lang match (prefer a local/native voice over a remote one)
+//   2) same base language (e.g. es-MX when es-ES is requested)
+//   3) null → browser default for the utterance.lang
+function pickVoice(langTag) {
+  const voices = _voices.length ? _voices : refreshVoices();
+  if (!voices || !voices.length) return null;
+  const norm = s => String(s || '').toLowerCase().replace('_', '-');
+  const want = norm(langTag);
+  const base = want.split('-')[0];
+  const preferLocal = list => list.slice().sort((a, b) => (b.localService ? 1 : 0) - (a.localService ? 1 : 0))[0];
+  const exact = voices.filter(v => norm(v.lang) === want);
+  if (exact.length) return preferLocal(exact);
+  const sameBase = voices.filter(v => norm(v.lang).split('-')[0] === base);
+  if (sameBase.length) return preferLocal(sameBase);
+  return null;
+}
+
+// Speak target-language text with the best voice, learner-paced.
+function speak(text, opts) {
+  opts = opts || {};
+  if (!synth) { if (opts.onerror) opts.onerror(); return null; }
+  const langTag = (state.langData && state.langData.tts_lang) || 'en-US';
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = langTag;
+  const v = pickVoice(langTag);
+  if (v) u.voice = v;
+  u.rate = opts.rate != null ? opts.rate : 0.88; // slightly slow for learners
+  u.pitch = opts.pitch != null ? opts.pitch : 1.0;
+  if (opts.onstart) u.onstart = opts.onstart;
+  if (opts.onend) u.onend = opts.onend;
+  if (opts.onerror) u.onerror = opts.onerror;
+  synth.cancel();
+  synth.speak(u);
+  return u;
 }
 
 // ── Listen button ──
 $('listenBtn').addEventListener('click', () => {
   const w = state.words[state.wordIdx];
-  const lang = state.langData;
-  const utterance = new SpeechSynthesisUtterance(w.target);
-  utterance.lang = lang.tts_lang;
-  utterance.rate = 0.85;
-
   $('listenBtn').classList.add('playing');
-  utterance.onend = () => {
-    $('listenBtn').classList.remove('playing');
-    if (!state.listenedOnce) {
-      state.listenedOnce = true;
-      $('recordBtn').disabled = false;
-      $('pronHint').textContent = 'Now try saying it yourself. Hold the button while you speak.';
-    }
-  };
-  utterance.onerror = () => $('listenBtn').classList.remove('playing');
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utterance);
+  speak(w.target, {
+    onend: () => {
+      $('listenBtn').classList.remove('playing');
+      if (!state.listenedOnce) {
+        state.listenedOnce = true;
+        if ($('recordBtn').style.display !== 'none') $('recordBtn').disabled = false;
+        $('pronHint').textContent = 'Now try saying it yourself. Hold the button while you speak.';
+      }
+    },
+    onerror: () => $('listenBtn').classList.remove('playing'),
+  });
 });
 
 // ── Record button (hold to speak) ──
@@ -953,13 +1239,26 @@ function showAccuracy(score, spoken, word) {
 
   state.accuracy = score;
 
+  const isLast = state.wordIdx >= (state.words.length - 1);
+  const nextLabel = isLast ? (state.reviewMode ? 'Finish Review →' : 'Finish Day →') : 'Next Word →';
+
   if (score >= PASS) {
+    state.wordAttempts = 0;
     $('retryBtn').style.display = 'none';
     $('nextWordBtn').style.display = '';
-    $('nextWordBtn').textContent = state.wordIdx < 2 ? 'Next Word →' : 'Finish Day →';
+    $('nextWordBtn').textContent = nextLabel;
   } else {
+    // Adaptive difficulty: encourage retries, but never hard-block. After two
+    // misses, let them move on — the word will resurface in Review anyway.
+    state.wordAttempts = (state.wordAttempts || 0) + 1;
     $('retryBtn').style.display = '';
-    $('nextWordBtn').style.display = 'none';
+    if (state.wordAttempts >= 2) {
+      feedback.textContent = 'Tough one! We\'ll bring it back in Review — keep going.';
+      $('nextWordBtn').style.display = '';
+      $('nextWordBtn').textContent = nextLabel;
+    } else {
+      $('nextWordBtn').style.display = 'none';
+    }
   }
 }
 
@@ -972,17 +1271,32 @@ $('retryBtn').addEventListener('click', () => {
 
 // ── Next word ──
 $('nextWordBtn').addEventListener('click', async () => {
-  // Mark word complete on server (accuracy is persisted server-side as per-word stats)
+  // Mark word complete on server (accuracy is persisted server-side as per-word stats).
+  // This is the spaced-repetition fuel — review sessions update it too.
   const w = state.words[state.wordIdx];
-  await fetch('/api/wad/complete-word', {
+  const acc = state.accuracy != null ? state.accuracy : 70;
+  state.sessionScores.push(acc);
+  const cwRes = await fetch('/api/wad/complete-word', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(studyBody({ wordId: w.id, accuracy: state.accuracy != null ? state.accuracy : 70 }))
+    body: JSON.stringify(studyBody({ wordId: w.id, accuracy: acc }))
   });
+  // Keep the local wordStats in sync so Review/mastery reflect the latest answer immediately.
+  try {
+    const cw = await cwRes.json();
+    if (cw && cw.wordStats && state.progress) {
+      if (!state.progress.wordStats) state.progress.wordStats = {};
+      state.progress.wordStats[w.id] = cw.wordStats;
+    }
+  } catch(e){}
 
   state.wordIdx++;
-  if (state.wordIdx >= 3) {
-    // Day complete
+  if (state.wordIdx >= state.words.length) {
+    if (state.reviewMode) {
+      finishReview();
+      return;
+    }
+    // Day complete — advance the curriculum + streak.
     const res = await fetch('/api/wad/complete-day', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -1001,17 +1315,56 @@ $('nextWordBtn').addEventListener('click', async () => {
 // ══════════════════════════════════════════════════════════
 // DAY COMPLETE
 // ══════════════════════════════════════════════════════════
+// Words touched today (from wordStats.lastSeen) + their average latest accuracy.
+function todaysStats(p) {
+  const stats = (p && p.wordStats) || {};
+  const t = today();
+  let count = 0, sum = 0;
+  for (const id of Object.keys(stats)) {
+    if (String(stats[id].lastSeen).slice(0,10) === t) {
+      count++; sum += (stats[id].accuracy || 0);
+    }
+  }
+  return { count, avg: count ? Math.round(sum / count) : null };
+}
+
+const STREAK_MILESTONES = {
+  3:  ['⭐ 3-Day Streak!', 'Three days straight — the habit is forming.'],
+  7:  ['🔥 One Week Strong!', 'Seven days in a row. This is how fluency starts.'],
+  14: ['🏆 Two Weeks!', 'Fourteen days of showing up. Unstoppable.'],
+  30: ['👑 30-Day Legend!', 'A full month. You\'ve built something real.'],
+};
+
 function showDayComplete() {
   const p = state.progress;
   const total = p.completedWords ? p.completedWords.length : 0;
   const streak = p.streak || 0;
+  const ts = todaysStats(p);
 
   $('completeIcon').textContent = streak >= 7 ? '🔥' : streak >= 3 ? '⭐' : '🎉';
   $('completeTitle').textContent = streak >= 7 ? 'On Fire!' : 'Day Complete!';
-  $('completeSub').textContent = `You've studied ${total} word${total!==1?'s':''} total.`;
+  $('completeSub').textContent = `${total} word${total!==1?'s':''} learned so far · Week ${progGlobalWeek(p)}, Day ${p.day}`;
+
+  // Concrete wins: streak, words today, avg accuracy today.
   $('statStreak').textContent = streak;
-  $('statTotal').textContent = total;
-  $('statWeek').textContent = 'W' + p.week;
+  $('statTotal').textContent = ts.count || (state.sessionScores.length || 0);
+  $('statAcc').textContent = ts.avg != null ? ts.avg + '%' : '—';
+
+  // Milestone celebration (streak-based).
+  const ms = STREAK_MILESTONES[streak];
+  if (ms) {
+    $('milestoneBanner').style.display = '';
+    $('milestoneTitle').textContent = ms[0];
+    $('milestoneDesc').textContent = ms[1];
+  } else {
+    $('milestoneBanner').style.display = 'none';
+  }
+
+  // Flame/confetti burst + icon bounce.
+  triggerCelebration(streak >= 7 ? '🔥' : '🎉');
+
+  // Spaced-repetition Review CTA.
+  refreshReviewCta('reviewCtaComplete');
 
   // Check exam eligibility
   const examReady = checkExamEligibility(p);
@@ -1023,33 +1376,113 @@ function showDayComplete() {
   showScreen('screen-complete');
 }
 
+// Tasteful gold flame burst on the complete card.
+function triggerCelebration(glyph) {
+  const icon = $('completeIcon');
+  icon.classList.remove('celebrate'); void icon.offsetWidth; icon.classList.add('celebrate');
+
+  const host = $('completeFlames');
+  if (!host) return;
+  host.innerHTML = '';
+  const glyphs = [glyph, '✨', '🔥', '⭐', '✨', glyph];
+  glyphs.forEach((g, i) => {
+    const s = document.createElement('span');
+    s.textContent = g;
+    s.style.setProperty('--dx', (Math.round((i - glyphs.length/2) * 22) - 50) + 'px');
+    s.style.animationDelay = (i * 60) + 'ms';
+    host.appendChild(s);
+  });
+  host.classList.remove('burst'); void host.offsetWidth; host.classList.add('burst');
+}
+
+// ══════════════════════════════════════════════════════════
+// SPACED-REPETITION REVIEW FLOW
+// ══════════════════════════════════════════════════════════
+// Update a Review CTA button (id) with the current due count, or hide if 0.
+function refreshReviewCta(btnId) {
+  const btn = $(btnId);
+  if (!btn) return;
+  if (!state.langData || !state.progress) { btn.style.display = 'none'; return; }
+  const due = getDueWords(state.progress, state.langData);
+  if (!due.length) { btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  btn.innerHTML = `🔁 Review weak words <span class="due-pill">${due.length} due</span>`;
+}
+
+function startReview() {
+  if (!state.langData || !state.progress) return;
+  const due = getDueWords(state.progress, state.langData);
+  if (!due.length) {
+    showToast('All caught up — come back tomorrow! 🌟');
+    return;
+  }
+  // 5–10 highest-priority due words.
+  const pick = due.slice(0, Math.min(10, Math.max(5, Math.min(due.length, 8))));
+  state.reviewMode = true;
+  state.words = pick.map(d => d.word);
+  state.wordIdx = 0;
+  state.listenedOnce = false;
+  state.accuracy = null;
+  state.sessionScores = [];
+  state.wordAttempts = 0;
+  renderLesson();
+  showScreen('screen-lesson');
+  updateNavTitle();
+}
+
+function finishReview() {
+  state.reviewMode = false;
+  const scores = state.sessionScores.slice();
+  const n = scores.length;
+  const avg = n ? Math.round(scores.reduce((a,b)=>a+b,0)/n) : 0;
+  const p = state.progress;
+
+  // Reuse the complete screen as a review summary (no day advance / no streak change).
+  $('completeFlames') && triggerCelebration('✨');
+  $('completeIcon').textContent = avg >= 80 ? '🌟' : '🔁';
+  $('completeTitle').textContent = 'Review Complete!';
+  $('completeSub').textContent = `You refreshed ${n} word${n!==1?'s':''}. Spaced repetition locks them in.`;
+  $('statStreak').textContent = p.streak || 0;
+  $('statTotal').textContent = n;
+  $('statAcc').textContent = avg + '%';
+  $('milestoneBanner').style.display = 'none';
+  $('examBanner').style.display = 'none';
+  $('saveDaySpotBtn').style.display = 'none';
+  // Any words still due? offer another round.
+  refreshReviewCta('reviewCtaComplete');
+  showScreen('screen-complete');
+}
+
 function checkExamEligibility(p) {
-  // Exam unlocks after studying 4+ days in a 7-day window, for any completed week
+  // Exam unlocks after studying 4+ days, for a week the learner has actually studied.
   const days = p.studyDays || [];
   if (days.length < 4) return false;
 
-  // Check if current week is fully studied (all 7 days × 3 words = 21 words done)
-  const wordsThisWeek = (p.completedWords || []).filter(id => {
-    const parts = id.split('-');
-    return parseInt(parts[2]) === p.tier && parseInt(parts[3]) === p.week;
-  });
-
-  // If past day 4 of week, offer exam for the previous week
-  const examsDone = (p.exams || []).map(e => `${e.tier}-${e.week}`);
+  // Which (LOCAL) week to offer? Once past day 4, offer the current week; else the prior one.
   const weekToExam = p.day >= 5 ? p.week : p.week - 1;
   if (weekToExam < 1) return false;
-  if (examsDone.includes(`${p.tier}-${weekToExam}`)) return false;
+  const gWeek = globalWeek(p.tier, weekToExam);
 
-  // Check retake lock
-  const lastExam = (p.exams || []).find(e => e.tier===p.tier && e.week===weekToExam);
-  if (lastExam && !lastExam.passed) {
+  // Must have studied words in that week. id = "<lang>-<tier>-<week>-<day>-<slot>"
+  //   → index 1 = tier, index 2 = GLOBAL week (was wrongly read as 2/3 before).
+  const wordsThatWeek = (p.completedWords || []).filter(id => {
+    const w = parseWordId(id);
+    return w.tier === p.tier && w.week === gWeek;
+  });
+  if (wordsThatWeek.length < 1) return false;
+
+  // Already passed → done. Failed but still inside retake lock → not yet.
+  const lastExam = (p.exams || []).find(e => e.tier === p.tier && e.week === weekToExam);
+  if (lastExam) {
+    if (lastExam.passed) return false;
     if (lastExam.canRetakeAt && today() < lastExam.canRetakeAt) return false;
   }
-
-  return days.length >= 4;
+  return true;
 }
 
 $('goExamBtn').addEventListener('click', () => startExam());
+$('reviewCtaComplete').addEventListener('click', startReview);
+$('reviewCtaProgress').addEventListener('click', startReview);
 $('saveDaySpotBtn').addEventListener('click', saveSpot);
 $('resumeTomorrowBtn').addEventListener('click', () => {
   showToast("See you tomorrow! 🌟");
@@ -1080,8 +1513,9 @@ $('saveFab').addEventListener('click', saveSpot);
 // ══════════════════════════════════════════════════════════
 function startExam() {
   const p = state.progress;
-  const weekToExam = p.day >= 5 ? p.week : p.week - 1;
-  const allWords = state.langData.words.filter(w => w.tier===p.tier && w.week===weekToExam);
+  const weekToExam = p.day >= 5 ? p.week : p.week - 1;        // LOCAL week (1-4) for records
+  const gWeek = globalWeek(p.tier, weekToExam);               // GLOBAL week to match word data
+  const allWords = state.langData.words.filter(w => w.tier===p.tier && w.week===gWeek);
 
   // Build 21 questions across 4 sections
   const shuffled = [...allWords].sort(() => Math.random() - 0.5);
@@ -1103,7 +1537,7 @@ function startExam() {
   state.exam = { questions, answers: [], weekToExam, tier: p.tier };
   state.examIdx = 0;
   renderExamQuestion();
-  $('examBadge').textContent = `Tier ${p.tier} · Week ${weekToExam} Exam`;
+  $('examBadge').textContent = `Tier ${p.tier} · Week ${gWeek} Exam`;
   showScreen('screen-exam');
 }
 
@@ -1153,12 +1587,7 @@ function renderExamQuestion() {
     listenQ.className = 'btn-listen';
     listenQ.style.marginBottom = '12px';
     listenQ.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Play Word`;
-    listenQ.addEventListener('click', () => {
-      const u = new SpeechSynthesisUtterance(q.audioTarget);
-      u.lang = state.langData.tts_lang; u.rate = 0.85;
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(u);
-    });
+    listenQ.addEventListener('click', () => { speak(q.audioTarget); });
     wrap.appendChild(listenQ);
     renderMultipleChoice(q, wrap);
     // Auto-play once
@@ -1328,6 +1757,20 @@ function showResults(score, grade, passed, sectionScores) {
   $('reportTitle').textContent = passed ? "Week Complete! 🎓" : "Keep Practicing";
   $('reportDesc').textContent = messages[grade];
 
+  // Tier-completion milestone: all 4 weekly exams of this tier passed.
+  if (passed && state.exam) {
+    const tier = state.exam.tier;
+    const passedWeeks = new Set(
+      (state.progress.exams || []).filter(e => e.tier === tier && e.passed).map(e => e.week)
+    );
+    if (passedWeeks.size >= 4) {
+      const tierNames = ['','Survival','Communicate','General Vocabulary'];
+      $('reportTitle').textContent = `🏆 Tier ${tier} Complete!`;
+      $('reportDesc').textContent = `You've conquered ${tierNames[tier]}. A whole new tier of words awaits.`;
+      showToast(`🏆 Tier ${tier} mastered!`, 3500);
+    }
+  }
+
   // Breakdown
   const rows = $('breakdownRows');
   rows.innerHTML = '';
@@ -1401,6 +1844,15 @@ function showProgressScreen() {
   $('progStatWords').textContent = (p.completedWords || []).length;
   $('progStatDays').textContent = (p.studyDays || []).length;
 
+  // Overall mastery (% of seen words at >=80% bestAccuracy)
+  const m = masteryStats(p);
+  $('masteryPct').textContent = m.pct + '%';
+  $('masteryFill').style.width = m.pct + '%';
+  $('masterySub').textContent = `${m.mastered} of ${m.total} words at 80%+ accuracy`;
+
+  // Spaced-repetition review CTA
+  refreshReviewCta('reviewCtaProgress');
+
   // Tier cards
   const tierNames = ['','Survival','Communicate','General Vocabulary'];
   const tierDescs = ['','Get what you need. Navigate, ask for help, order food.','Understand and be understood. Go beyond basic requests.','Everyday vocabulary. Describe the world around you.'];
@@ -1418,18 +1870,25 @@ function showProgressScreen() {
     const status = !unlocked ? 'locked-status' : allPassed ? 'complete-status' : '';
     const statusText = !unlocked ? 'Locked' : allPassed ? 'Complete' : 'In Progress';
 
-    // Weeks grid
+    // Weeks grid. localW (1-4) drives progress/exam comparisons (p.week & exams are LOCAL);
+    // gWeek (global) drives word-id matching (ids/word.week are GLOBAL).
     const maxWeeks = 4;
     let weeksHTML = '';
-    for (let w=1; w<=maxWeeks; w++) {
-      const weekNum = (t-1)*4 + w;
-      const isDone = p.week > weekNum || (p.week===weekNum && p.day > 7);
-      const isCurr = p.tier===t && p.week===weekNum;
-      const exam = (p.exams||[]).find(e=>e.tier===t&&e.week===weekNum);
-      const wordsInWeek = (p.completedWords||[]).filter(id=>id.includes(`-${t}-${weekNum}-`)).length;
+    for (let localW=1; localW<=maxWeeks; localW++) {
+      const gWeek = globalWeek(t, localW);
+      const isDone = (t < p.tier) || (t === p.tier && p.week > localW);
+      const isCurr = p.tier===t && p.week===localW;
+      const exam = (p.exams||[]).find(e=>e.tier===t && e.week===localW);
+      // Correct id parse: index 1 = tier, index 2 = GLOBAL week.
+      const wordsInWeek = (p.completedWords||[]).filter(id=>{
+        const wi = parseWordId(id);
+        return wi.tier === t && wi.week === gWeek;
+      }).length;
+      const wkMastery = masteryStats(p, (id)=>{ const wi=parseWordId(id); return wi.tier===t && wi.week===gWeek; });
       weeksHTML += `<div class="week-cell${isDone?' done-week':''}${isCurr?' current-week':''}">
-        <div class="week-label">W${w}</div>
+        <div class="week-label">W${gWeek}</div>
         <div class="week-days">${wordsInWeek}/21</div>
+        <div class="week-mastery-bar"><div class="week-mastery-fill" style="width:${wkMastery.pct}%"></div></div>
         ${exam ? `<div style="font-size:.6rem;color:${exam.passed?'#4ade80':'#f87171'};margin-top:2px;">${exam.grade||''}</div>` : ''}
       </div>`;
     }
