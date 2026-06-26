@@ -261,6 +261,8 @@
     /* Headline becomes a slanted P5 "stamp" — counter-rotated against the panel. */
     .p5-on .yt-headline { transform: rotate(-2deg) skewX(-5deg); position: relative; z-index: 6; }
     .p5-on .ig-headline { transform: rotate(-2deg) skewX(-5deg); position: relative; z-index: 6; }
+    .p5-heavy .yt-headline { transform: rotate(-3deg) skewX(-8deg); }
+    .p5-heavy .ig-headline { transform: rotate(-3deg) skewX(-8deg); }
     .p5-on .yt-text, .p5-on .ig-text { z-index: 6; }
     /* Tiny mono kicker w/ slash separators reads as P5 UI label. */
     .p5-on .yt-eyebrow, .p5-on .ig-eyebrow { font-family: 'Inter', sans-serif; letter-spacing: 0.34em; }
@@ -1344,13 +1346,22 @@
       return s;
     }
 
-    function pkBuildP5(kind) {
+    function pkP5Slashes(set) {  // diagonal white accent slashes
+      return set.map(s => `<line x1="${s[0]}" y1="${s[1]}" x2="${s[2]}" y2="${s[3]}" stroke="#ffffff" stroke-width="${s[4]}" opacity="${s[5]}"/>`).join('');
+    }
+    function pkP5Star(cx, cy, r, fill) {  // P5 4-point sparkle star
+      const i = r * 0.22;
+      return `<path d="M${cx},${cy - r} L${cx + i},${cy - i} L${cx + r},${cy} L${cx + i},${cy + i} L${cx},${cy + r} L${cx - i},${cy + i} L${cx - r},${cy} L${cx - i},${cy - i} Z" fill="${fill}"/>`;
+    }
+
+    function pkBuildP5(kind, level) {
+      const heavy = level === 'heavy';
       if (kind === 'ig') {
         // Portrait: angular contrast panel anchored to the BOTTOM (where text sits).
         return `<svg viewBox="0 0 300 533" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
           <defs><linearGradient id="p5pIg" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0" stop-color="#0a0a0a" stop-opacity="0.9"/>
-            <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="0.55"/>
+            <stop offset="0" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.96' : '0.9'}"/>
+            <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.62' : '0.55'}"/>
             <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
           </linearGradient></defs>
           <text x="14" y="430" font-family="Anton,sans-serif" font-size="240" fill="#ffffff" opacity="0.05" transform="rotate(-8 14 430)">5</text>
@@ -1362,13 +1373,22 @@
           <polygon points="300,0 300,108 196,0" fill="#0a0a0a" opacity="0.9"/>
           <polygon points="300,108 300,120 214,0 196,0" fill="#ECAA27"/>
           ${pkHalftone(20, 470, 9, 4, 12, 2.4, '#ECAA27')}
+          ${heavy ? `
+            <polygon points="0,256 0,272 300,332 300,316" fill="#c41a1f" opacity="0.85"/>
+            <polygon points="0,533 104,533 0,414" fill="#c41a1f"/>
+            <polygon points="0,0 300,0 300,24 0,50" fill="#c41a1f"/>
+            <polygon points="0,0 300,0 300,12 0,25" fill="#0a0a0a" opacity="0.55"/>
+            ${pkP5Slashes([[214,30,172,150,5,0.5],[238,42,198,158,3.5,0.4],[258,56,222,166,2.5,0.3]])}
+            ${pkP5Star(250,250,17,'#c41a1f')}
+            <text x="120" y="190" font-family="Anton,sans-serif" font-size="120" fill="#c41a1f" opacity="0.12" transform="rotate(-8 120 190)">!</text>
+          ` : ''}
         </svg>`;
       }
       // Landscape (YouTube): angular contrast panel on the LEFT (text side).
       return `<svg viewBox="0 0 640 360" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <defs><linearGradient id="p5pYt" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#0a0a0a" stop-opacity="0.9"/>
-          <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="0.5"/>
+          <stop offset="0" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.96' : '0.9'}"/>
+          <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.58' : '0.5'}"/>
           <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
         </linearGradient></defs>
         <text x="120" y="318" font-family="Anton,sans-serif" font-size="360" fill="#ffffff" opacity="0.05" transform="rotate(-6 120 318)">5</text>
@@ -1380,13 +1400,26 @@
         <polygon points="640,360 640,228 484,360" fill="#0a0a0a" opacity="0.92"/>
         <polygon points="640,228 640,242 506,360 484,360" fill="#ECAA27"/>
         ${pkHalftone(34, 250, 8, 5, 13, 2.6, '#ECAA27')}
+        ${heavy ? `
+          <polygon points="404,0 422,0 312,360 294,360" fill="#c41a1f" opacity="0.8"/>
+          <polygon points="0,0 640,0 640,16 0,32" fill="#c41a1f"/>
+          <polygon points="0,360 640,360 640,344 0,328" fill="#c41a1f" opacity="0.85"/>
+          <polygon points="640,0 470,0 640,104" fill="#0a0a0a" opacity="0.85"/>
+          <polygon points="640,0 508,0 640,86" fill="#c41a1f"/>
+          ${pkP5Slashes([[472,40,402,182,6,0.45],[502,30,432,182,4,0.35],[527,50,462,188,3,0.28]])}
+          ${pkP5Star(560,300,20,'#c41a1f')}
+          <text x="430" y="132" font-family="Anton,sans-serif" font-size="150" fill="#c41a1f" opacity="0.11" transform="rotate(8 430 132)">!</text>
+        ` : ''}
       </svg>`;
     }
 
     function pkApplyP5() {
-      const on = !!(document.getElementById('ctrl-p5') && document.getElementById('ctrl-p5').checked);
+      const sel = document.getElementById('ctrl-p5');
+      const level = sel ? sel.value : 'standard';   // off | standard | heavy
+      const on = !!level && level !== 'off';
       document.querySelectorAll('.yt-thumb, .ig-thumb').forEach(tile => {
         tile.classList.toggle('p5-on', on);
+        tile.classList.toggle('p5-heavy', level === 'heavy');
         let ov = tile.querySelector('.p5-overlay');
         if (on) {
           if (!ov) {
@@ -1394,7 +1427,7 @@
             ov.className = 'p5-overlay';
             tile.insertBefore(ov, tile.querySelector('.yt-text, .ig-text'));  // sits behind the text
           }
-          ov.innerHTML = pkBuildP5(tile.classList.contains('ig-thumb') ? 'ig' : 'yt');
+          ov.innerHTML = pkBuildP5(tile.classList.contains('ig-thumb') ? 'ig' : 'yt', level);
         } else if (ov) {
           ov.remove();
         }
@@ -1915,9 +1948,9 @@
        "FUN IS OVERRATED" example. A blank first-ever boot starts fresh.
     ════════════════════════════════════════ */
     const PK_STATE_KEY = 'pk_thumb_state_v2';
-    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt'];
-    const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow','ctrl-p5'];
-    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝' };
+    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
+    const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
 
     function pkCollectState() {
       const s = { v: {}, b: {} };
@@ -1969,7 +2002,7 @@
       pkSubjectSceneActive = false;
       pkSubjectSrc = '/thumbnails/assets/pinko.png';
       PK_TEXT_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = PK_FRESH_DEFAULTS[id] || ''; });
-      PK_BOOL_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.checked = (id === 'ctrl-p5'); });  // P5 stays ON by default
+      PK_BOOL_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.checked = false; });
       ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => { const im = document.getElementById(id); if (im) { im.removeAttribute('src'); im.style.display = 'none'; im.style.opacity = ''; } });
       applyControls();
     }
