@@ -1294,13 +1294,11 @@
   </div>
 
   <div class="export-hint">
-    <strong>How to export full-resolution thumbnails:</strong><br>
-    1. Open this page in Chrome → Right-click a thumbnail → <strong>Inspect</strong><br>
-    2. Find the <code>.yt-thumb</code> or <code>.ig-thumb</code> element → right-click → <strong>Capture node screenshot</strong><br>
-    3. Chrome saves a full-resolution PNG. Scale is 2× at 50% display → ~1280×720 for YouTube.<br><br>
+    <strong>Download full-resolution thumbnails:</strong> use the <strong>Download YT 1280×720</strong> or <strong>Download Reels 1080×1920</strong> button in the Export / Render panel above. The PNG saves straight to your downloads at exact resolution — no DevTools, no inspect needed.<br><br>
     <strong>To use a generated background image:</strong> paste the file path into the "Background image URL" field above and click Apply.
   </div>
 
+  <script src="/thumbnails/assets/html2canvas.min.js"></script>
   <script>
     // Default subject = Pinko cutout (background-removed, bundled asset)
     let pkSubjectSrc = '/thumbnails/assets/pinko.png';
@@ -2007,6 +2005,7 @@
     async function exportTile(format, variant, statusEl) {
       const cfg = PK_EXPORT_CFG[format];
       if (!cfg) throw new Error('unknown format');
+      if (typeof html2canvas !== 'function') throw new Error('renderer not loaded — refresh the page');
 
       let tile;
       if (format === 'yt') {
@@ -2017,62 +2016,53 @@
       }
       if (!tile) throw new Error('tile not found');
 
-      if (statusEl) statusEl.textContent = 'Embedding fonts…';
-      const fontCSS = await getEmbeddedFontCSS();
+      // Use the tile's REAL on-screen size so the scale lands on the exact target px.
+      const rect = tile.getBoundingClientRect();
+      const dw = rect.width || cfg.dw, dh = rect.height || cfg.dh;
+      const scale = cfg.w / dw;   // e.g. 1280/640 = 2×, 1080/300 = 3.6×
 
-      if (statusEl) statusEl.textContent = 'Compositing layers…';
-      const clone = tile.cloneNode(true);
-      clone.style.borderRadius = '0';
-      clone.style.boxShadow = 'none';
+      if (statusEl) statusEl.textContent = 'Rendering full-resolution PNG…';
 
-      // Inline any visible background image as a data URL (taint-safe + SVG-loadable)
-      const origImgs = tile.querySelectorAll('img');
-      const cloneImgs = clone.querySelectorAll('img');
-      for (let i = 0; i < origImgs.length; i++) {
-        const im = origImgs[i];
-        if (im.style.display !== 'none' && im.getAttribute('src')) {
-          const d = await imgSrcToDataURL(im.src);
-          if (d) cloneImgs[i].setAttribute('src', d);
-          else cloneImgs[i].style.display = 'none';
+      // html2canvas renders the ACTUAL composited DOM (bg image, scene SVG, colored
+      // words, shadows, runtime style-guide tweaks) at `scale` — no fragile SVG/foreignObject,
+      // and it draws large data-URL backgrounds as real images (the old method choked on those).
+      const rendered = await html2canvas(tile, {
+        scale,
+        backgroundColor: '#000',
+        useCORS: true,
+        allowTaint: false,
+        logging: false,
+        width: dw,
+        height: dh,
+        windowWidth: document.documentElement.scrollWidth,
+        onclone: (doc) => {
+          // Square the corners + drop the preview shadow on the exported copy.
+          doc.querySelectorAll('.yt-thumb, .ig-thumb').forEach(el => {
+            el.style.borderRadius = '0';
+            el.style.boxShadow = 'none';
+          });
         }
-      }
-
-      const pageCSS = [...document.querySelectorAll('style')].map(s => s.textContent).join('\n');
-      const cloneXML = new XMLSerializer().serializeToString(clone);
-      const htmlWrap =
-        `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${cfg.dw}px;height:${cfg.dh}px;position:relative;overflow:hidden;background:#000;">${cloneXML}</div>`;
-      const svg =
-        `<svg xmlns="http://www.w3.org/2000/svg" width="${cfg.w}" height="${cfg.h}" viewBox="0 0 ${cfg.dw} ${cfg.dh}">` +
-        `<foreignObject x="0" y="0" width="${cfg.dw}" height="${cfg.dh}">` +
-        `<style>${fontCSS}\n${pageCSS}</style>${htmlWrap}</foreignObject></svg>`;
-
-      const img = new Image();
-      await new Promise((res, rej) => {
-        img.onload = res;
-        img.onerror = () => rej(new Error('SVG render failed (foreignObject)'));
-        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
       });
 
-      const canvas = document.createElement('canvas');
-      canvas.width = cfg.w; canvas.height = cfg.h;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, cfg.w, cfg.h);
-      ctx.drawImage(img, 0, 0, cfg.w, cfg.h);
+      // Normalize to the EXACT target resolution (guards against sub-pixel rounding).
+      let canvas = rendered;
+      if (rendered.width !== cfg.w || rendered.height !== cfg.h) {
+        canvas = document.createElement('canvas');
+        canvas.width = cfg.w; canvas.height = cfg.h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, cfg.w, cfg.h);
+        ctx.drawImage(rendered, 0, 0, cfg.w, cfg.h);
+      }
 
       const blob = await new Promise((res, rej) =>
-        canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob failed (image taint?)')), 'image/png'));
-
-      // Measure the real encoded PNG from its IHDR (bytes 16–23, big-endian)
-      const dv = new DataView(await blob.arrayBuffer());
-      const pngW = dv.getUint32(16), pngH = dv.getUint32(20);
+        canvas.toBlob(b => b ? res(b) : rej(new Error('toBlob failed')), 'image/png'));
 
       const a = document.createElement('a');
       a.download = `proles_${format}_${variant}_${cfg.w}x${cfg.h}.png`;
       a.href = URL.createObjectURL(blob);
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-      return { w: cfg.w, h: cfg.h, pngW, pngH, bytes: blob.size };
+      return { w: cfg.w, h: cfg.h, pngW: canvas.width, pngH: canvas.height, bytes: blob.size };
     }
 
     async function runExport(format) {
