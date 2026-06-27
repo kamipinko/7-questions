@@ -2111,14 +2111,28 @@ async function restoreSession() {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ authToken })
     });
-    if (!res.ok) { localStorage.removeItem('wad_auth'); return false; }
-    const data = await res.json();
+    // ONLY a definitive 401/403 means the server rejected this token as invalid —
+    // that's the single non-intentional case where we drop the stored session.
+    // Transient failures (5xx, rate-limit, CDN/proxy hiccups, network errors, or a
+    // malformed 200 served during a redeploy) must NEVER destroy a valid persistent
+    // session: keep the token and let the next page load restore it. This is what
+    // makes login persist "indefinitely until intentional Logout" per spec.
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem('wad_auth');
+      return false;
+    }
+    if (!res.ok) return false; // transient server error — keep token, retry next load
+    const data = await res.json().catch(() => null);
+    // Require a well-formed authenticated payload before trusting the session.
+    // Mirrors the shared auth-widget boot() contract (gates on data.ok). Don't fake
+    // a logged-in state off a bad 200; keep the token for a future valid response.
+    if (!data || data.ok !== true || !data.account) return false;
     onLoggedIn(authToken, data.account);
     decorateLangGrid();
     if (urlAuth) showToast('Logged in! 👋');
     return true;
   } catch(e) {
-    return false;
+    return false; // network error — keep token, restore on the next load
   }
 }
 
