@@ -310,6 +310,7 @@
     <div style="display:flex;gap:8px;align-items:center;">
       <span id="accountChip" style="display:none;align-items:center;gap:6px;font-family:var(--font-mono);font-size:.6rem;color:var(--text-sub);max-width:42vw;">
         <span id="accountEmail" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px;" title=""></span>
+        <button id="addEmailBtn" class="btn-sm-ghost" style="display:none;padding:4px 8px;font-size:.6rem;border-radius:2px;">Save progress</button>
         <button id="logoutBtn" class="btn-sm-ghost" style="padding:4px 8px;font-size:.6rem;border-radius:2px;">Logout</button>
       </span>
       <button class="theme-toggle btn-sm-ghost" id="progBtn" style="display:none;border-radius:2px;font-size:.68rem;padding:6px 12px;color:var(--text-sub);" title="View progress">Progress</button>
@@ -346,6 +347,11 @@
             <input class="form-input" type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" />
           </div>
           <button class="btn-primary" id="requestLinkBtn">Email me a login link →</button>
+          <div class="auth-or" style="display:flex;align-items:center;gap:10px;color:var(--text-sub);font-size:.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.15em;">
+            <span style="flex:1;height:1px;background:var(--border,rgba(255,255,255,.15));"></span>or<span style="flex:1;height:1px;background:var(--border,rgba(255,255,255,.15));"></span>
+          </div>
+          <button class="btn-ghost" id="continueNoLoginBtn">Just start learning →</button>
+          <p class="auth-desc" style="text-align:center;opacity:.75;">No email needed. Your progress saves on this device — add an email anytime to sync across devices.</p>
         </div>
         <!-- Step 2: code -->
         <div id="authStepCode" style="display:none;flex-direction:column;gap:16px;">
@@ -726,8 +732,11 @@ function renderAccountChip() {
   const chip = $('accountChip');
   if (state.accountMode && state.account) {
     chip.style.display = 'flex';
-    $('accountEmail').textContent = state.account.email;
-    $('accountEmail').title = state.account.email;
+    const isGuest = !state.account.email;
+    $('accountEmail').textContent = isGuest ? '👤 Guest' : state.account.email;
+    $('accountEmail').title = isGuest ? 'Progress saved on this device' : state.account.email;
+    // Guests get a "Save progress" upgrade button instead of (alongside) logout.
+    $('addEmailBtn').style.display = isGuest ? '' : 'none';
   } else {
     chip.style.display = 'none';
   }
@@ -845,6 +854,34 @@ function showAuthCodeStep(email) {
   setTimeout(() => $('codeInput').focus(), 50);
 }
 
+// "Just start learning" — create a device-local (anonymous) account and dive in.
+$('continueNoLoginBtn').addEventListener('click', async () => {
+  $('continueNoLoginBtn').disabled = true;
+  $('authStatus').textContent = 'Setting up your progress...';
+  try {
+    const res = await fetch('/api/wad/auth/anon', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: '{}'
+    });
+    const data = await res.json();
+    if (!res.ok || !data.authToken) throw new Error('anon failed');
+    onLoggedIn(data.authToken, data.account);
+    decorateLangGrid();
+    if (state.lang) { await startLanguageForAccount(state.lang); }
+    else { showScreen('screen-lang'); }
+  } catch(e) {
+    $('authStatus').textContent = 'Could not start a guest session. Please try again.';
+  }
+  $('continueNoLoginBtn').disabled = false;
+});
+
+// "Save progress" (guest → email): reopen the email step to attach an email.
+$('addEmailBtn').addEventListener('click', () => {
+  const l = LANGS.find(x => x.code === state.lang);
+  $('authLangLabel').textContent = l ? l.name : '';
+  showAuthEmailStep();
+  showScreen('screen-auth');
+});
+
 // Step 1 — request a magic link + code
 $('requestLinkBtn').addEventListener('click', async () => {
   const email = $('emailInput').value.trim();
@@ -856,11 +893,19 @@ $('requestLinkBtn').addEventListener('click', async () => {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ email })
     });
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error('request failed');
-    state.pendingEmail = email;
-    showAuthCodeStep(email);
+    // The server stores the code even if delivery fails; only advance to the
+    // code step when the email actually went out. Otherwise be honest and
+    // steer the user to the no-login fallback.
+    if (data.sent === false) {
+      $('authStatus').textContent = "We couldn't send your code right now — try “Just start learning” below to begin immediately.";
+    } else {
+      state.pendingEmail = email;
+      showAuthCodeStep(email);
+    }
   } catch(e) {
-    $('authStatus').textContent = 'Could not send the link. Please try again.';
+    $('authStatus').textContent = "We couldn't send your code right now — try “Just start learning” below to begin immediately.";
   }
   $('requestLinkBtn').disabled = false;
 });
@@ -876,9 +921,12 @@ async function verifyCode() {
   $('verifyCodeBtn').disabled = true;
   $('authStatus').textContent = 'Logging you in...';
   try {
+    // If we're currently a guest, pass the anon token so the server attaches the
+    // email to THIS account and our on-device progress carries over.
+    const upgradeToken = (state.accountMode && state.account && state.account.anon) ? state.authToken : undefined;
     const res = await fetch('/api/wad/auth/verify-code', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ email, code })
+      body: JSON.stringify({ email, code, authToken: upgradeToken })
     });
     const data = await res.json();
     if (!res.ok || !data.authToken) { $('authStatus').textContent = data.error || 'Invalid or expired code.'; $('verifyCodeBtn').disabled = false; return; }

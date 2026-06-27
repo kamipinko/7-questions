@@ -202,6 +202,41 @@ function wadGetOrCreateUser(email) {
   }
   return user;
 }
+// Create an emailless ("anonymous" / device-local) account. Same shape as an email
+// account but with email:null + anon:true. Progress tracks via its authToken just
+// like a logged-in user; the user can attach an email later (see wadAttachEmail).
+function wadCreateAnonUser() {
+  const userId = crypto.randomBytes(16).toString('hex');
+  const user = {
+    userId, email: null, anon: true,
+    createdAt: new Date().toISOString(),
+    lastLogin: null,
+    authTokens: [],
+    languages: {},
+  };
+  wadWriteUser(user);
+  return user;
+}
+// Attach an email to an existing (anonymous) account, upgrading it in place so the
+// device's progress is preserved. Returns the upgraded user, or null if attach isn't
+// possible (no such session, already has an email, or email already taken by someone).
+function wadAttachEmail(attachFromToken, email) {
+  if (!attachFromToken) return null;
+  const idx = wadReadJson(WAD_AUTH_INDEX, {});
+  const uid = idx[attachFromToken];
+  if (!uid) return null;
+  const user = wadReadUser(uid);
+  if (!user || user.email) return null; // only emailless anon accounts can be upgraded
+  const e = wadNormEmail(email);
+  const emailIdx = wadReadJson(WAD_EMAIL_INDEX, {});
+  if (emailIdx[e]) return null; // email already owned — caller falls back to that account
+  user.email = e;
+  user.anon = false;
+  emailIdx[e] = user.userId;
+  wadWriteJson(WAD_EMAIL_INDEX, emailIdx);
+  wadWriteUser(user);
+  return user;
+}
 function wadUserByAuth(authToken) {
   if (!authToken) return null;
   const idx = wadReadJson(WAD_AUTH_INDEX, {});
@@ -262,7 +297,9 @@ function wadConsumeLoginToken(loginToken) {
   return wadMintAuthToken(user);
 }
 // Validate + consume by email + 6-digit code. Returns authToken or null.
-function wadConsumeLoginCode(email, code) {
+// If attachFromToken is an anonymous session, the email is attached to that account
+// (preserving its progress) instead of spinning up a fresh one.
+function wadConsumeLoginCode(email, code, attachFromToken) {
   const e = wadNormEmail(email);
   const c = String(code || '').trim();
   const tokens = wadReadJson(WAD_LOGIN_TOKENS, {});
@@ -275,7 +312,7 @@ function wadConsumeLoginCode(email, code) {
   if (!matchKey) return null;
   tokens[matchKey].used = true;
   wadWriteJson(WAD_LOGIN_TOKENS, tokens);
-  const user = wadGetOrCreateUser(e);
+  const user = wadAttachEmail(attachFromToken, e) || wadGetOrCreateUser(e);
   return wadMintAuthToken(user);
 }
 
@@ -284,6 +321,7 @@ function wadPublicAccount(user) {
   return {
     userId: user.userId,
     email: user.email,
+    anon: !user.email,
     createdAt: user.createdAt,
     lastLogin: user.lastLogin,
     languages: user.languages || {},
@@ -450,16 +488,28 @@ app.post('/api/wad/auth/request', async (req, res) => {
   }
 });
 
-// POST /api/wad/auth/verify-code {email, code} — same effect as clicking the link
+// POST /api/wad/auth/verify-code {email, code, authToken?} — same effect as clicking
+// the link. An optional authToken is an existing anonymous session to upgrade in place.
 app.post('/api/wad/auth/verify-code', (req, res) => {
   const email = wadNormEmail(req.body && req.body.email);
   const code = String((req.body && req.body.code) || '').trim();
+  const attachFromToken = (req.body && req.body.authToken) || null;
   if (!wadValidEmail(email) || !/^\d{6}$/.test(code)) {
     return res.status(400).json({ error: 'Email and 6-digit code required' });
   }
-  const authToken = wadConsumeLoginCode(email, code);
+  const authToken = wadConsumeLoginCode(email, code, attachFromToken);
   if (!authToken) return res.status(401).json({ error: 'Invalid or expired code' });
   const user = wadUserByAuth(authToken);
+  res.json({ ok: true, authToken, account: wadPublicAccount(user) });
+});
+
+// POST /api/wad/auth/anon — create an emailless, device-local account so the user can
+// start learning immediately. Progress is saved against the returned authToken (persist
+// it client-side in localStorage). The user can attach an email later via verify-code.
+app.post('/api/wad/auth/anon', (req, res) => {
+  const user = wadCreateAnonUser();
+  const authToken = wadMintAuthToken(user);
+  console.log(`[wad auth] anonymous account created ${user.userId}`);
   res.json({ ok: true, authToken, account: wadPublicAccount(user) });
 });
 
