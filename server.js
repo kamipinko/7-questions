@@ -384,6 +384,12 @@ function wadResolveStudy(body) {
   return { error: 400 };
 }
 
+// RFC 2047 encoded-word; only encode the Subject if it contains non-ASCII.
+function encodeSubject(s) {
+  if (/^[\x00-\x7F]*$/.test(s)) return s;
+  return '=?UTF-8?B?' + Buffer.from(s, 'utf8').toString('base64') + '?=';
+}
+
 // ── Email helper (reuses existing Gmail OAuth creds) ──
 async function wadSendMail(to, subject, body) {
   const oauth2Client = new google.auth.OAuth2(
@@ -394,7 +400,7 @@ async function wadSendMail(to, subject, body) {
   const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
   const message = [
     `To: ${to}`,
-    `Subject: ${subject}`,
+    `Subject: ${encodeSubject(subject)}`,
     `Content-Type: text/plain; charset=utf-8`,
     ``,
     body,
