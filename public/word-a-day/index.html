@@ -330,6 +330,8 @@
       </div>
       <div class="lang-grid" id="langGrid"></div>
       <button class="btn-primary" id="startLangBtn" disabled>Begin →</button>
+      <!-- ── Shared account widget (Log in / Log out) — shares the same wad_auth session ── -->
+      <div id="auth-widget-mount" style="margin-top:16px;"></div>
     </div>
 
     <!-- ── SCREEN: Auth (magic-link login) ── -->
@@ -618,6 +620,102 @@ function parseWordId(id) {
 // Map a progress object's (tier, localWeek 1-4) to a GLOBAL week number.
 function globalWeek(tier, localWeek) { return (tier - 1) * 4 + localWeek; }
 function progGlobalWeek(p) { return globalWeek(p.tier, p.week); }
+
+// ══════════════════════════════════════════════════════════
+// ADAPTIVE DAILY PACING — how many words/phrases to study today (1, 2, or 3)
+// ----------------------------------------------------------------------
+// Intent: ease beginners in with ONE word/day, then ramp up as the student
+// proves PROGRESS (streak + total words learned) and QUALITY (recent quiz/
+// exam accuracy). A fully ramped, engaged, high-quality student lands on the
+// long-run target distribution below; brand-new / low-quality students get
+// 1/day almost always.
+//
+//   Target distribution (fully ramped): ~50% one · ~20% two · ~30% three
+//
+// CRITICAL: the count is DETERMINISTIC per (user, calendar-day). It is seeded
+// from a hash of userId + today's date, so reloading the page can NOT reroll
+// a different (smaller/larger) count for the same day.
+// ══════════════════════════════════════════════════════════
+const PACE_TARGET = { one: 0.50, two: 0.20, three: 0.30 }; // fully-ramped long-run mix
+const PACE_STREAK_FULL   = 14;  // streak (days) at which the progress signal maxes out
+const PACE_WORDS_FULL    = 40;  // total words learned at which progress maxes out
+const PACE_QUALITY_FLOOR = 60;  // avg accuracy% treated as the bottom of the quality ramp
+const PACE_QUALITY_CEIL  = 90;  // avg accuracy% treated as the top of the quality ramp
+const PACE_QUALITY_DEFAULT = 70; // assumed accuracy when we have no quiz/exam data yet
+const PACE_MAX_WORDS     = 3;   // hard cap (every day-group has 3 slots in the data)
+
+function clamp01(x) { return Math.max(0, Math.min(1, x)); }
+
+// Small deterministic string hash → unsigned 32-bit (FNV-1a).
+function paceHash(str) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+  }
+  return h >>> 0;
+}
+
+// Average "quality" (0-100) from per-word best accuracy + exam scores. Returns
+// PACE_QUALITY_DEFAULT when the student has no measured accuracy yet (thin data).
+function paceQualityPct(p) {
+  const vals = [];
+  if (p && p.wordStats) {
+    for (const k in p.wordStats) {
+      const s = p.wordStats[k];
+      const a = s && (s.bestAccuracy != null ? s.bestAccuracy : s.accuracy);
+      if (typeof a === 'number' && !isNaN(a)) vals.push(a);
+    }
+  }
+  if (p && Array.isArray(p.exams)) {
+    for (const e of p.exams) if (typeof e.score === 'number' && !isNaN(e.score)) vals.push(e.score);
+  }
+  if (!vals.length) return PACE_QUALITY_DEFAULT;
+  return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+// 0..1 readiness ramp from progress + quality. Quality gates progress: a
+// high-progress but low-quality student stays low (don't pile on words they
+// aren't retaining).
+function paceRamp(p) {
+  if (!p) return 0;
+  const streak = Number(p.streak) || 0;
+  const words  = Array.isArray(p.completedWords) ? p.completedWords.length : 0;
+  const progressScore = clamp01(0.5 * Math.min(streak / PACE_STREAK_FULL, 1)
+                              + 0.5 * Math.min(words / PACE_WORDS_FULL, 1));
+  const qPct = paceQualityPct(p);
+  const qualityScore = clamp01((qPct - PACE_QUALITY_FLOOR) / (PACE_QUALITY_CEIL - PACE_QUALITY_FLOOR));
+  // 0.35 floor so progress still counts a little even at minimum quality.
+  return clamp01(progressScore * (0.35 + 0.65 * qualityScore));
+}
+
+// Decide today's word count (1..PACE_MAX_WORDS), deterministic per (user, day).
+// `userKey` should uniquely + stably identify the learner (account userId,
+// legacy token, or 'guest'). `available` caps to however many slots exist.
+function wadWordsPerDay(p, userKey, dateStr, available) {
+  const cap = Math.min(PACE_MAX_WORDS, available || PACE_MAX_WORDS);
+  if (cap <= 1) return cap;
+  const r = paceRamp(p);
+  // Interpolate from {1:100%} at r=0 to the target mix at r=1.
+  const p2 = r * PACE_TARGET.two;
+  const p3 = r * PACE_TARGET.three;
+  // const p1 = 1 - p2 - p3;  (remainder)
+  // Deterministic uniform in [0,1) seeded by user + date.
+  const u = paceHash(String(userKey || 'guest') + '|' + String(dateStr)) / 4294967296;
+  let n;
+  if (u < p3) n = 3;
+  else if (u < p3 + p2) n = 2;
+  else n = 1;
+  return Math.min(n, cap);
+}
+
+// Stable identifier for the current learner (for deterministic pacing seed).
+function paceUserKey() {
+  if (state.account && state.account.userId) return state.account.userId;
+  if (state.authToken) return state.authToken;
+  if (state.token) return state.token;
+  return 'guest';
+}
 
 function daysBetween(a, b) {
   // whole days between two YYYY-MM-DD strings (b - a)
@@ -997,10 +1095,16 @@ function gotoLesson() {
     return;
   }
 
-  // Get today's 3 words. word.week is GLOBAL; p.week is LOCAL → map it.
+  // Get today's words. word.week is GLOBAL; p.week is LOCAL → map it.
   const { tier, day } = p;
   const gWeek = progGlobalWeek(p);
-  state.words = state.langData.words.filter(w => w.tier===tier && w.week===gWeek && w.day===day);
+  const dayWords = state.langData.words
+    .filter(w => w.tier===tier && w.week===gWeek && w.day===day)
+    .sort((a, b) => (a.slot||0) - (b.slot||0));
+  // ADAPTIVE PACING: 1 word/day by default, ramping to 2–3 as progress + quality
+  // rise. Deterministic per (user, calendar-day) so a reload can't reroll.
+  const perDay = wadWordsPerDay(p, paceUserKey(), today(), dayWords.length);
+  state.words = dayWords.slice(0, perDay);
 
   if (!state.words.length) {
     // Advance to next day
@@ -2033,5 +2137,6 @@ showScreen('screen-lang');
   if (!restored) checkResume();
 })();
 </script>
+<script src="/shared/auth-widget.js"></script>
 </body>
 </html>
