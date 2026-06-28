@@ -1050,6 +1050,8 @@ function onLoggedIn(authToken, account) {
   state.token = null;
   localStorage.setItem('wad_auth', authToken);
   renderAccountChip();
+  // Keep the shared hub widget (bottom "Log in / Log out") in sync without a reload.
+  if (window.scAuthRefresh) window.scAuthRefresh(state.account);
 }
 
 // Logout
@@ -1059,6 +1061,8 @@ $('logoutBtn').addEventListener('click', async () => {
   state.email = null; state.token = null; state.lang = null; state.progress = null; state.langData = null;
   localStorage.removeItem('wad_auth');
   renderAccountChip();
+  // Flip the shared hub widget back to "Log in" without a reload.
+  if (window.scAuthRefresh) window.scAuthRefresh();
   $('navTitle').textContent = 'A Word a Day';
   showScreen('screen-lang');
   document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('active-lang'));

@@ -253,6 +253,36 @@
       .catch(function () { mountButton(); });
   }
 
+  // ── Live re-sync: let OTHER in-page login/logout flows (e.g. Word-a-Day's own
+  // in-page login, which sets `wad_auth` WITHOUT reloading) flip this button
+  // between "Log in" and "Log out" with no manual page reload. Callers can pass an
+  // account object to skip the round-trip; otherwise we re-validate via /me.
+  function refresh(accountHint) {
+    var t = token();
+    if (!t) { state.token = null; state.account = null; mountButton(); return; }
+    if (accountHint && typeof accountHint === 'object') {
+      state.token = t; state.account = accountHint; mountButton(); return;
+    }
+    if (t === state.token && state.account) { mountButton(); return; } // already in sync
+    state.token = t;
+    api('/api/wad/auth/me', { authToken: t })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (data && data.ok && data.account) { state.account = data.account; }
+        else { state.account = null; /* not authenticated for render; keep key */ }
+        mountButton();
+      })
+      .catch(function () { mountButton(); });
+  }
+  // Expose so any same-page flow can refresh us after it changes the session.
+  window.scAuthRefresh = refresh;
+  // Cross-tab: a login/logout in another tab fires a storage event here.
+  try {
+    window.addEventListener('storage', function (e) {
+      if (!e || e.key === null || e.key === AUTH_KEY) refresh();
+    });
+  } catch (e) {}
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
   } else {
