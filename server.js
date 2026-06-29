@@ -687,21 +687,26 @@ function pkLoadRefImages() {
   return out;
 }
 
-function pkSubjectScenePrompt(scene) {
+function pkSubjectScenePrompt(scene, styleGuide) {
   const s = (scene && scene.trim()) || 'seated in a dark, moody study, contemplative, cinematic key light';
-  return `Photorealistic image of the SAME man shown in the provided reference photos — match his exact face, skin tone, light beard, and especially his hair: distinct twisted locs / two-strand twists with reddish-brown tips (NOT a smooth round afro). ${s}. Integrated cinematic lighting and shadows — he is genuinely part of the scene, not a flat cutout. Proles Kitchen mood: dark background, gold (#ECAA27) accents. No text.`;
+  // When the client sends a 60:30:10 style guide (palette-driven), use it as the
+  // mood/color direction; otherwise fall back to the default Proles Kitchen mood.
+  const mood = (styleGuide && styleGuide.trim())
+    ? styleGuide.trim()
+    : 'Proles Kitchen mood: dark background, gold (#ECAA27) accents.';
+  return `Photorealistic image of the SAME man shown in the provided reference photos — match his exact face, skin tone, light beard, and especially his hair: distinct twisted locs / two-strand twists with reddish-brown tips (NOT a smooth round afro). ${s}. Integrated cinematic lighting and shadows — he is genuinely part of the scene, not a flat cutout. ${mood} No text.`;
 }
 
 // Calls gemini-3-pro-image-preview with the scene prompt + all 8 reference images.
 // The model can be slow (25-90s) and occasionally returns 503/UNAVAILABLE under load,
 // so each call uses a generous timeout and retries transient failures with backoff.
-async function pkRenderSubjectScene(scene, aspectRatio) {
+async function pkRenderSubjectScene(scene, aspectRatio, styleGuide) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY not set');
   const refs = pkLoadRefImages();
   if (!refs.length) throw new Error('No reference images found in assets/refs');
   const ar = (aspectRatio === '9:16') ? '9:16' : '16:9';
-  const parts = [{ text: pkSubjectScenePrompt(scene) }];
+  const parts = [{ text: pkSubjectScenePrompt(scene, styleGuide) }];
   for (const r of refs) parts.push({ inlineData: { mimeType: r.mimeType, data: r.data } });
   const body = JSON.stringify({
     contents: [{ parts }],
@@ -747,12 +752,12 @@ async function pkRenderSubjectScene(scene, aspectRatio) {
 }
 
 app.post('/api/generate-bg', express.json(), async (req, res) => {
-  const { prompt, provider = 'dalle', aspectRatio } = req.body;
+  const { prompt, provider = 'dalle', aspectRatio, styleGuide } = req.body;
   if (!prompt && provider !== 'subject-scene') return res.status(400).json({ error: 'Prompt is required' });
 
   try {
     if (provider === 'subject-scene') {
-      const dataUrl = await pkRenderSubjectScene(prompt, aspectRatio);
+      const dataUrl = await pkRenderSubjectScene(prompt, aspectRatio, styleGuide);
       return res.json({ dataUrl });
     }
 

@@ -1739,6 +1739,26 @@
       } catch (e) { return src; }
     }
 
+    /* ── Universal 60:30:10 styling guide for ALL generated imagery ──
+       Appended to every AI prompt so the OUTPUT itself obeys the rule, in the
+       currently-selected Aesthetic + Color Set. (forSubject softens it so the
+       "render me in" face stays recognizable while the scene grades to palette.) */
+    function pk6030Text(forSubject) {
+      const style = pkCurrentStyle();                                   // manga | flat
+      const palId = (document.getElementById('ctrl-palette') || {}).value || 'ink_gold';
+      const P = pkResolvePalette();
+      const look = style === 'manga'
+        ? 'High-contrast black-and-white manga ink aesthetic: heavy crushed blacks, bold confident linework, dramatic negative space, subtle halftone shading'
+        : 'Bold flat-color anime poster aesthetic: clean saturated color blocks, sharp angular shapes, crisp edges, minimal gradients';
+      const rule = (palId === 'auto')
+        ? 'Follow the 60:30:10 color rule strictly: ONE dominant color filling ~60% of the frame, ONE secondary color ~30%, and ONE small accent color ~10% as the only pop. Limit the whole image to those three colors.'
+        : `Follow the 60:30:10 color rule strictly with this exact palette: DOMINANT ${P.dom} ~60% of the frame, SECONDARY ${P.sec} ~30%, ACCENT ${P.acc} ~10% as the only pop of color. Use essentially only these three colors.`;
+      const frame = forSubject
+        ? "Keep the man's face recognizable and naturally lit, but color-grade the whole scene into this palette."
+        : 'Strong central silhouette / subject, one clear focal point.';
+      return ` STYLE GUIDE — ${look}. ${rule} ${frame} Leave clean negative space on one side for a headline. Cinematic, poster-grade composition. No text, no watermarks, no logos in the image.`;
+    }
+
     async function generateBg() {
       const provider = document.getElementById('ctrl-ai-provider').value;
       if (provider === 'subject-scene') return generateSubjectScene();
@@ -1760,7 +1780,7 @@
         const res  = await fetch('/api/generate-bg', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, provider })
+          body: JSON.stringify({ prompt: prompt + pk6030Text(false), provider })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Generation failed');
@@ -1806,7 +1826,7 @@
         const res = await fetch('/api/generate-bg', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: scene, provider: 'subject-scene', aspectRatio })
+          body: JSON.stringify({ prompt: scene, provider: 'subject-scene', aspectRatio, styleGuide: pk6030Text(true) })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Generation failed');
