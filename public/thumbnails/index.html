@@ -7,6 +7,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Caveat:wght@700&family=Inter:wght@400;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   <style>
+    /* Bundled display face — selectable as a Headline Font (also embedded for export). */
+    @font-face {
+      font-family: 'Manga';
+      src: url('/thumbnails/assets/fonts/Manga-Regular.ttf') format('truetype');
+      font-weight: normal; font-style: normal; font-display: swap;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: #111;
@@ -838,6 +844,13 @@
       </select>
     </div>
     <div class="control-group">
+      <label>Headline Font</label>
+      <select id="ctrl-font" onchange="applyControls()">
+        <option value="anton" selected>Anton (bold)</option>
+        <option value="manga">Manga</option>
+      </select>
+    </div>
+    <div class="control-group">
       <label>Visual Scene</label>
       <select id="ctrl-scene" onchange="applyControls()">
         <option value="none" selected>None</option>
@@ -1486,6 +1499,15 @@
         });
       });
 
+      // ── Headline font choice ──
+      const fontSel = (document.getElementById('ctrl-font') || {}).value || 'anton';
+      const headlineFont = fontSel === 'manga'
+        ? "'Manga', 'Anton', sans-serif"
+        : "'Anton', sans-serif";
+      document.querySelectorAll('.yt-headline, .ig-headline').forEach(el => {
+        el.style.fontFamily = headlineFont;
+      });
+
       // Skip the single-URL bg apply while subject-scene mode owns the per-aspect srcs.
       if (!pkSubjectSceneActive) {
         if (bgUrl) {
@@ -2013,9 +2035,9 @@
        "FUN IS OVERRATED" example. A blank first-ever boot starts fresh.
     ════════════════════════════════════════ */
     const PK_STATE_KEY = 'pk_thumb_state_v2';
-    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
+    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-font','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
     const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
-    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
 
     function pkCollectState() {
       const s = { v: {}, b: {} };
@@ -2417,6 +2439,10 @@
       const scale = cfg.w / dw;   // e.g. 1280/640 = 2×, 1080/300 = 3.6×
 
       if (statusEl) statusEl.textContent = 'Rendering full-resolution PNG…';
+
+      // Ensure custom @font-face faces (Manga) are loaded so the export doesn't
+      // fall back to a system font mid-render.
+      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (_) {}
 
       // html2canvas renders the ACTUAL composited DOM (bg image, scene SVG, colored
       // words, shadows, runtime style-guide tweaks) at `scale` — no fragile SVG/foreignObject,
