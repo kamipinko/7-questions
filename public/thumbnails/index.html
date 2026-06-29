@@ -863,8 +863,8 @@
       <input type="text" id="ctrl-eyebrow" value="Proles Kitchen" />
     </div>
     <div class="control-group q">
-      <label>Accent word (the word to highlight)</label>
-      <input type="text" id="ctrl-accent" value="" placeholder="word to highlight" oninput="applyControls()" />
+      <label>Punchy words (highlight — comma/space separated)</label>
+      <input type="text" id="ctrl-accent" value="" placeholder="OVERRATED, FUN" oninput="applyControls()" />
     </div>
     <div class="control-group q">
       <label>Highlight Color</label>
@@ -1532,7 +1532,11 @@
       const headline = document.getElementById('ctrl-headline').value;
       const subline  = document.getElementById('ctrl-subline').value;
       const eyebrow  = document.getElementById('ctrl-eyebrow').value;
-      const accent   = document.getElementById('ctrl-accent').value.toUpperCase();
+      // Accent field accepts MULTIPLE punchy words (comma / space separated) —
+      // every matching word in the headline lights up in the highlight color.
+      const accentSet = new Set(
+        document.getElementById('ctrl-accent').value.toUpperCase().split(/[\s,]+/).filter(Boolean)
+      );
       const bgUrl    = document.getElementById('ctrl-bg').value.trim();
       const scene    = document.getElementById('ctrl-scene').value;
       const boxed    = document.getElementById('ctrl-accent-box').checked;
@@ -1548,7 +1552,7 @@
         let lines = raw.split('|');
         return lines.map((line, i) => {
           let words = line.toUpperCase().split(' ').map(w =>
-            (accent && w === accent) ? emphasis(w) : w
+            (accentSet.size && accentSet.has(w)) ? emphasis(w) : w
           ).join(' ');
           return words + (i < lines.length - 1 ? '<br>' : '');
         }).join('');
