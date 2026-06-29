@@ -749,8 +749,9 @@
     .yt-brand { padding: 7px 12px 8px; background: rgba(6,6,8,0.46); }
     .ig-brand { padding: 6px 11px 7px; background: rgba(6,6,8,0.46); }
 
-    /* Accent (10%) follows the palette: word highlight, eyebrow, brand, bars. */
-    .yt-headline .accent-word, .ig-headline .accent-word { color: var(--pk-acc); }
+    /* Accent (10%) follows the palette: eyebrow, brand, bars.
+       The highlighted accent WORD uses its own --pk-hl (default Gurren red). */
+    .yt-headline .accent-word, .ig-headline .accent-word { color: var(--pk-hl, var(--pk-acc)); }
     .accent-box.gold-box { background: var(--pk-acc) !important; color:#000 !important; }
     .yt-eyebrow, .ig-eyebrow, .yt-brand-mark, .ig-brand-mark { color: var(--pk-acc); }
     .yt-brand-line, .ig-brand-line { background: var(--pk-acc); }
@@ -862,8 +863,17 @@
       <input type="text" id="ctrl-eyebrow" value="Proles Kitchen" />
     </div>
     <div class="control-group q">
-      <label>Accent word (highlights in accent color)</label>
+      <label>Accent word (the word to highlight)</label>
       <input type="text" id="ctrl-accent" value="" placeholder="word to highlight" oninput="applyControls()" />
+    </div>
+    <div class="control-group q">
+      <label>Highlight Color</label>
+      <select id="ctrl-hl" onchange="applyControls()">
+        <option value="gurren" selected>Gurren Red</option>
+        <option value="accent">Palette Accent</option>
+        <option value="gold">Gold</option>
+        <option value="white">White</option>
+      </select>
     </div>
     <div class="control-group">
       <label>Background image URL</label>
@@ -1486,11 +1496,17 @@
       const on     = !!level && level !== 'off';
       const P      = pkResolvePalette();
       const hasBg  = pkSubjectSceneActive || !!pkOriginalBg || !!pkOriginalBgYt;
+      // Highlight color for the accent word (independent of palette accent).
+      // Default = iconic Gurren Lagann red so the most impactful word always pops.
+      const hlSel  = (document.getElementById('ctrl-hl') || {}).value || 'gurren';
+      const HL     = { gurren:'#E60012', gold:'#ECAA27', white:'#ffffff' };
+      const hlColor = hlSel === 'accent' ? P.acc : (HL[hlSel] || '#E60012');
       document.querySelectorAll('.yt-thumb, .ig-thumb').forEach(tile => {
         // palette → CSS vars (accent word, bars, placeholder field all read these)
         tile.style.setProperty('--pk-dom', P.dom);
         tile.style.setProperty('--pk-sec', P.sec);
         tile.style.setProperty('--pk-acc', P.acc);
+        tile.style.setProperty('--pk-hl', hlColor);
         tile.style.backgroundColor = P.dom;                   // dominant 60% field (covered by a photo bg)
         tile.classList.toggle('pk-manga', style === 'manga');
         tile.classList.toggle('pk-flat',  style === 'flat');
@@ -2126,9 +2142,9 @@
        "FUN IS OVERRATED" example. A blank first-ever boot starts fresh.
     ════════════════════════════════════════ */
     const PK_STATE_KEY = 'pk_thumb_state_v2';
-    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-font','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
+    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-hl','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-font','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
     const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
-    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-hl':'gurren', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
 
     function pkCollectState() {
       const s = { v: {}, b: {} };
