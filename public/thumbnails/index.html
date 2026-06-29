@@ -714,6 +714,50 @@
     .session-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
     #pk-session-status { font-size: 0.78rem; min-height: 16px; color: #666; }
     #subj-status { font-size: 0.78rem; min-height: 16px; color: #666; }
+
+    /* ════════════════════════════════════════
+       60:30:10 REVAMP — VISUAL OVERRIDES
+       High-contrast manga / flat-color look driven by --pk-dom/sec/acc palette
+       vars (set per-tile by pkApplyStyle). Override block: keeps the cascade
+       simple and the engine room untouched.
+    ════════════════════════════════════════ */
+    .yt-thumb, .ig-thumb { --pk-dom:#08080a; --pk-sec:#f2eee2; --pk-acc:#ECAA27; }
+
+    /* Dominant 60% field = the palette dominant (was a fixed brand gradient). */
+    .yt-bg-placeholder, .ig-bg-placeholder { background: var(--pk-dom) !important; }
+
+    /* Style overlay: export-safe inline-SVG 30%/10% composition.
+       z-index 2 → ABOVE bg + scene, BELOW the subject cutout (z3) and text (z6),
+       so the hero subject always reads on top of the graphics. */
+    .pk-style-overlay { position:absolute; inset:0; pointer-events:none; z-index:2; }
+    .pk-style-overlay svg { width:100%; height:100%; display:block; }
+
+    /* The engine owns contrast now — retire the old soft split / double-darkening. */
+    .yt-split { display:none !important; }
+    .ig-gradient-bottom { background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.12) 55%, transparent 100%) !important; height:48% !important; }
+    .yt-vignette, .ig-vignette { opacity:0.5; }
+    .pk-flat .yt-vignette, .pk-flat .ig-vignette { opacity:0.3; }
+
+    /* Brand badge keeps a subtle dark backing so the gold mark always reads —
+       over the cream secondary slab, a flat color, or a photo background. */
+    .yt-brand { padding: 7px 12px 8px; background: rgba(6,6,8,0.46); }
+    .ig-brand { padding: 6px 11px 7px; background: rgba(6,6,8,0.46); }
+
+    /* Accent (10%) follows the palette: word highlight, eyebrow, brand, bars. */
+    .yt-headline .accent-word, .ig-headline .accent-word { color: var(--pk-acc); }
+    .accent-box.gold-box { background: var(--pk-acc) !important; color:#000 !important; }
+    .yt-eyebrow, .ig-eyebrow, .yt-brand-mark, .ig-brand-mark { color: var(--pk-acc); }
+    .yt-brand-line, .ig-brand-line { background: var(--pk-acc); }
+    .yt-accent-bar, .ig-accent-bar { background: linear-gradient(90deg, transparent 0%, var(--pk-acc) 50%, transparent 100%) !important; height:6px; }
+
+    /* Manga-stamp headline: heavier, thicker ink outline, punchier. */
+    .yt-headline { font-size: 3.5rem; line-height:0.92; letter-spacing:0; max-width:74%;
+      text-shadow: 4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 0 6px 26px rgba(0,0,0,0.95); }
+    .ig-headline { font-size: 2.1rem; line-height:0.96;
+      text-shadow: 3px 3px 0 #000, -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 0 5px 18px rgba(0,0,0,0.95); }
+    /* Slightly stronger stamp tilt in heavy mode reads as P5/manga aggression. */
+    .p5-heavy .yt-headline { transform: rotate(-3deg) skewX(-7deg); }
+    .p5-heavy .ig-headline { transform: rotate(-3deg) skewX(-7deg); }
   </style>
 </head>
 <body>
@@ -774,24 +818,45 @@
       </div>
     </div>
     <div class="control-group">
-      <label>Visual Scene</label>
-      <select id="ctrl-scene" onchange="applyControls()">
-        <option value="funvsgrowth" selected>Fun vs Growth</option>
-        <option value="thinker">Thinker</option>
-        <option value="none">None</option>
+      <label>Aesthetic</label>
+      <select id="ctrl-style" onchange="applyControls()">
+        <option value="manga" selected>Manga Ink</option>
+        <option value="flat">Flat Color</option>
       </select>
     </div>
     <div class="control-group">
-      <label>&nbsp;</label>
-      <button class="btn-export" onclick="applyControls()">Apply Changes</button>
+      <label>Color Set · 60:30:10</label>
+      <select id="ctrl-palette" onchange="applyControls()">
+        <option value="ink_gold" selected>Ink × Gold</option>
+        <option value="ink_red">Ink × Red</option>
+        <option value="ink_cyan">Ink × Cyan</option>
+        <option value="lagann_red">Lagann Red</option>
+        <option value="lagann_blue">Lagann Blue</option>
+        <option value="jack_amber">Samurai Amber</option>
+        <option value="brand">Proles Brand</option>
+        <option value="auto">Auto (from image)</option>
+      </select>
     </div>
     <div class="control-group">
-      <label>P5 Styling</label>
+      <label>Visual Scene</label>
+      <select id="ctrl-scene" onchange="applyControls()">
+        <option value="none" selected>None</option>
+        <option value="flare">Cross Flare</option>
+        <option value="silhouette">Ink Silhouette</option>
+        <option value="kanji">Kanji Slab</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Graphic Intensity</label>
       <select id="ctrl-p5" onchange="applyControls()">
         <option value="off">Off</option>
         <option value="standard" selected>Standard</option>
         <option value="heavy">Heavy</option>
       </select>
+    </div>
+    <div class="control-group">
+      <label>&nbsp;</label>
+      <button class="btn-export" onclick="applyControls()">Apply Changes</button>
     </div>
     <div class="control-group">
       <label>&nbsp;</label>
@@ -1004,72 +1069,7 @@
         <img class="yt-bg" id="yt-bg-img-1" src="" style="display:none;" alt="" />
         <div class="yt-split"></div>
         <div class="yt-vignette"></div>
-        <div class="scene-layer">
-          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-            <g transform="translate(0,34)">
-            <!-- Standing figure (right side, head at 512,240) -->
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="512" cy="240" r="22" stroke="none"/>
-              <path d="M507,261 Q512,264 517,261 L516,272 Q512,275 508,272Z" stroke="none"/>
-              <path d="M492,272 Q512,267 532,272 L528,330 Q512,336 496,330Z" stroke="none"/>
-              <path d="M494,278 Q478,305 474,335" stroke-width="13" fill="none"/>
-              <path d="M530,278 Q546,305 550,335" stroke-width="13" fill="none"/>
-              <path d="M499,328 Q494,344 492,360" stroke-width="17" fill="none"/>
-              <path d="M525,328 Q530,344 532,360" stroke-width="17" fill="none"/>
-            </g>
-            <!-- Connector circles (head → bubble) -->
-            <circle cx="510" cy="218" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
-            <circle cx="490" cy="196" r="5.5" fill="rgba(8,3,0,0.70)" stroke="none"/>
-            <circle cx="472" cy="174" r="4" fill="rgba(8,3,0,0.65)" stroke="none"/>
-            <!-- Thought bubble ellipse -->
-            <ellipse cx="398" cy="92" rx="178" ry="70" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
-            <!-- Centre divider -->
-            <line x1="398" y1="24" x2="398" y2="160" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
-            <!-- FUN label -->
-            <text x="309" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="15" fill="rgba(236,170,39,0.92)" letter-spacing="3">FUN</text>
-            <!-- 4-point sparkle stars (FUN side) -->
-            <path d="M285,80 L287,87 L294,89 L287,91 L285,98 L283,91 L276,89 L283,87Z" fill="rgba(255,255,255,0.85)"/>
-            <path d="M338,102 L340,107 L345,109 L340,111 L338,116 L336,111 L331,109 L336,107Z" fill="rgba(255,255,255,0.70)"/>
-            <path d="M360,68 L361.5,73 L367,74.5 L361.5,76 L360,81 L358.5,76 L353,74.5 L358.5,73Z" fill="rgba(255,255,255,0.72)"/>
-            <!-- Sparkle crosses (FUN side) -->
-            <line x1="296" y1="116" x2="296" y2="124" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="292" y1="120" x2="300" y2="120" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="352" y1="98" x2="352" y2="104" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <line x1="349" y1="101" x2="355" y2="101" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <!-- Scattered dots (FUN side) -->
-            <circle cx="268" cy="102" r="2" fill="rgba(255,255,255,0.55)"/>
-            <circle cx="318" cy="128" r="1.5" fill="rgba(255,255,255,0.50)"/>
-            <circle cx="375" cy="120" r="2" fill="rgba(255,255,255,0.48)"/>
-            <circle cx="248" cy="82" r="1.5" fill="rgba(255,255,255,0.45)"/>
-            <!-- GROWTH label -->
-            <text x="487" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="12" fill="rgba(236,170,39,0.92)" letter-spacing="2">GROWTH</text>
-            <!-- Bold upward arrow (GROWTH side) -->
-            <line x1="422" y1="128" x2="422" y2="78" stroke="rgba(255,255,255,0.88)" stroke-width="4"/>
-            <path d="M413,87 L422,68 L431,87Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
-            <!-- Mountain peak + snow cap (GROWTH side) -->
-            <path d="M455,132 L478,88 L501,132Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M478,88 L484,100 L472,100Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
-            <!-- Rising dots (GROWTH side) -->
-            <circle cx="540" cy="128" r="2" fill="rgba(255,255,255,0.52)"/>
-            <circle cx="543" cy="115" r="2" fill="rgba(255,255,255,0.58)"/>
-            <circle cx="546" cy="102" r="2.5" fill="rgba(255,255,255,0.64)"/>
-            <circle cx="549" cy="90" r="1.5" fill="rgba(255,255,255,0.70)"/>
-            </g>
-          </svg>
-          <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="462" cy="108" r="27" stroke="none"/>
-              <path d="M440,148 Q480,142 492,148 Q510,178 520,220 Q526,258 528,295" stroke-width="36" fill="none"/>
-              <path d="M512,295 Q485,280 455,258" stroke-width="28" fill="none"/>
-              <path d="M455,258 Q450,300 448,345" stroke-width="24" fill="none"/>
-              <path d="M525,295 Q558,320 588,342" stroke-width="28" fill="none"/>
-              <path d="M442,155 Q446,205 455,258" stroke-width="20" fill="none"/>
-              <path d="M455,258 Q456,195 458,120" stroke-width="18" fill="none"/>
-              <circle cx="458" cy="114" r="13" stroke="none"/>
-              <path d="M480,152 Q518,215 535,268" stroke-width="20" fill="none"/>
-            </g>
-          </svg>
-        </div>
+        <div class="scene-layer"></div>
         <div class="subject-glow"></div>
         <img class="subject-img" src="" alt="" style="display:none;" />
         <div class="motif-symbol"></div>
@@ -1096,72 +1096,7 @@
         <img class="yt-bg" id="yt-bg-img-2" src="" style="display:none;" alt="" />
         <div class="yt-split"></div>
         <div class="yt-vignette"></div>
-        <div class="scene-layer">
-          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-            <g transform="translate(0,34)">
-            <!-- Standing figure (right side, head at 512,240) -->
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="512" cy="240" r="22" stroke="none"/>
-              <path d="M507,261 Q512,264 517,261 L516,272 Q512,275 508,272Z" stroke="none"/>
-              <path d="M492,272 Q512,267 532,272 L528,330 Q512,336 496,330Z" stroke="none"/>
-              <path d="M494,278 Q478,305 474,335" stroke-width="13" fill="none"/>
-              <path d="M530,278 Q546,305 550,335" stroke-width="13" fill="none"/>
-              <path d="M499,328 Q494,344 492,360" stroke-width="17" fill="none"/>
-              <path d="M525,328 Q530,344 532,360" stroke-width="17" fill="none"/>
-            </g>
-            <!-- Connector circles (head → bubble) -->
-            <circle cx="510" cy="218" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
-            <circle cx="490" cy="196" r="5.5" fill="rgba(8,3,0,0.70)" stroke="none"/>
-            <circle cx="472" cy="174" r="4" fill="rgba(8,3,0,0.65)" stroke="none"/>
-            <!-- Thought bubble ellipse -->
-            <ellipse cx="398" cy="92" rx="178" ry="70" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
-            <!-- Centre divider -->
-            <line x1="398" y1="24" x2="398" y2="160" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
-            <!-- FUN label -->
-            <text x="309" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="15" fill="rgba(236,170,39,0.92)" letter-spacing="3">FUN</text>
-            <!-- 4-point sparkle stars (FUN side) -->
-            <path d="M285,80 L287,87 L294,89 L287,91 L285,98 L283,91 L276,89 L283,87Z" fill="rgba(255,255,255,0.85)"/>
-            <path d="M338,102 L340,107 L345,109 L340,111 L338,116 L336,111 L331,109 L336,107Z" fill="rgba(255,255,255,0.70)"/>
-            <path d="M360,68 L361.5,73 L367,74.5 L361.5,76 L360,81 L358.5,76 L353,74.5 L358.5,73Z" fill="rgba(255,255,255,0.72)"/>
-            <!-- Sparkle crosses (FUN side) -->
-            <line x1="296" y1="116" x2="296" y2="124" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="292" y1="120" x2="300" y2="120" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="352" y1="98" x2="352" y2="104" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <line x1="349" y1="101" x2="355" y2="101" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <!-- Scattered dots (FUN side) -->
-            <circle cx="268" cy="102" r="2" fill="rgba(255,255,255,0.55)"/>
-            <circle cx="318" cy="128" r="1.5" fill="rgba(255,255,255,0.50)"/>
-            <circle cx="375" cy="120" r="2" fill="rgba(255,255,255,0.48)"/>
-            <circle cx="248" cy="82" r="1.5" fill="rgba(255,255,255,0.45)"/>
-            <!-- GROWTH label -->
-            <text x="487" y="50" text-anchor="middle" font-family="Anton,sans-serif" font-size="12" fill="rgba(236,170,39,0.92)" letter-spacing="2">GROWTH</text>
-            <!-- Bold upward arrow (GROWTH side) -->
-            <line x1="422" y1="128" x2="422" y2="78" stroke="rgba(255,255,255,0.88)" stroke-width="4"/>
-            <path d="M413,87 L422,68 L431,87Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
-            <!-- Mountain peak + snow cap (GROWTH side) -->
-            <path d="M455,132 L478,88 L501,132Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M478,88 L484,100 L472,100Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
-            <!-- Rising dots (GROWTH side) -->
-            <circle cx="540" cy="128" r="2" fill="rgba(255,255,255,0.52)"/>
-            <circle cx="543" cy="115" r="2" fill="rgba(255,255,255,0.58)"/>
-            <circle cx="546" cy="102" r="2.5" fill="rgba(255,255,255,0.64)"/>
-            <circle cx="549" cy="90" r="1.5" fill="rgba(255,255,255,0.70)"/>
-            </g>
-          </svg>
-          <svg class="scene-svg thinker-svg" viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="462" cy="108" r="27" stroke="none"/>
-              <path d="M440,148 Q480,142 492,148 Q510,178 520,220 Q526,258 528,295" stroke-width="36" fill="none"/>
-              <path d="M512,295 Q485,280 455,258" stroke-width="28" fill="none"/>
-              <path d="M455,258 Q450,300 448,345" stroke-width="24" fill="none"/>
-              <path d="M525,295 Q558,320 588,342" stroke-width="28" fill="none"/>
-              <path d="M442,155 Q446,205 455,258" stroke-width="20" fill="none"/>
-              <path d="M455,258 Q456,195 458,120" stroke-width="18" fill="none"/>
-              <circle cx="458" cy="114" r="13" stroke="none"/>
-              <path d="M480,152 Q518,215 535,268" stroke-width="20" fill="none"/>
-            </g>
-          </svg>
-        </div>
+        <div class="scene-layer"></div>
         <div class="yt-brand">
           <div class="yt-brand-mark">Proles Kitchen</div>
           <div class="yt-brand-line"></div>
@@ -1198,70 +1133,7 @@
         <img class="ig-bg" id="ig-bg-img-1" src="" style="display:none;" alt="" />
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
-        <div class="scene-layer">
-          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
-            <!-- Standing figure (right side, head at 175,352) -->
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="175" cy="352" r="20" stroke="none"/>
-              <path d="M170,371 Q175,374 180,371 L179,382 Q175,385 171,382Z" stroke="none"/>
-              <path d="M157,382 Q175,377 193,382 L190,430 Q175,436 160,430Z" stroke="none"/>
-              <path d="M159,388 Q145,410 142,438" stroke-width="12" fill="none"/>
-              <path d="M191,388 Q205,410 208,438" stroke-width="12" fill="none"/>
-              <path d="M163,428 Q159,450 157,480" stroke-width="15" fill="none"/>
-              <path d="M187,428 Q191,450 193,480" stroke-width="15" fill="none"/>
-            </g>
-            <!-- Connector circles (head → bubble) -->
-            <circle cx="174" cy="328" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
-            <circle cx="166" cy="295" r="5" fill="rgba(8,3,0,0.70)" stroke="none"/>
-            <circle cx="158" cy="218" r="3.5" fill="rgba(8,3,0,0.65)" stroke="none"/>
-            <!-- Thought bubble ellipse -->
-            <ellipse cx="148" cy="148" rx="118" ry="62" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
-            <!-- Centre divider -->
-            <line x1="148" y1="88" x2="148" y2="208" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
-            <!-- FUN label -->
-            <text x="89" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="14" fill="rgba(236,170,39,0.92)" letter-spacing="2">FUN</text>
-            <!-- 4-point sparkle stars (FUN side) -->
-            <path d="M68,132 L70,138 L76,140 L70,142 L68,148 L66,142 L60,140 L66,138Z" fill="rgba(255,255,255,0.85)"/>
-            <path d="M108,148 L110,153 L115,155 L110,157 L108,162 L106,157 L101,155 L106,153Z" fill="rgba(255,255,255,0.70)"/>
-            <path d="M86,168 L87.5,172 L92,173.5 L87.5,175 L86,179 L84.5,175 L80,173.5 L84.5,172Z" fill="rgba(255,255,255,0.65)"/>
-            <!-- Sparkle crosses (FUN side) -->
-            <line x1="50" y1="150" x2="50" y2="158" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="46" y1="154" x2="54" y2="154" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="120" y1="122" x2="120" y2="128" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <line x1="117" y1="125" x2="123" y2="125" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <!-- Scattered dots (FUN side) -->
-            <circle cx="40" cy="132" r="1.5" fill="rgba(255,255,255,0.50)"/>
-            <circle cx="95" cy="178" r="1.5" fill="rgba(255,255,255,0.48)"/>
-            <circle cx="58" cy="178" r="2" fill="rgba(255,255,255,0.50)"/>
-            <circle cx="128" cy="165" r="1.5" fill="rgba(255,255,255,0.45)"/>
-            <!-- GROWTH label -->
-            <text x="207" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="11" fill="rgba(236,170,39,0.92)" letter-spacing="1">GROWTH</text>
-            <!-- Bold upward arrow (GROWTH side) -->
-            <line x1="172" y1="192" x2="172" y2="145" stroke="rgba(255,255,255,0.88)" stroke-width="3.5"/>
-            <path d="M164,154 L172,136 L180,154Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
-            <!-- Mountain peak + snow cap (GROWTH side) -->
-            <path d="M186,192 L206,152 L226,192Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M206,152 L211,163 L201,163Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
-            <!-- Rising dots (GROWTH side) -->
-            <circle cx="244" cy="190" r="1.5" fill="rgba(255,255,255,0.52)"/>
-            <circle cx="247" cy="179" r="2" fill="rgba(255,255,255,0.58)"/>
-            <circle cx="250" cy="168" r="1.5" fill="rgba(255,255,255,0.64)"/>
-            <circle cx="253" cy="158" r="1" fill="rgba(255,255,255,0.70)"/>
-          </svg>
-          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="148" cy="112" r="30" stroke="none"/>
-              <path d="M128,150 Q166,144 178,150 Q195,185 204,228 Q210,264 213,305" stroke-width="42" fill="none"/>
-              <path d="M200,305 Q172,288 142,262" stroke-width="32" fill="none"/>
-              <path d="M142,262 Q137,308 135,368" stroke-width="28" fill="none"/>
-              <path d="M215,305 Q248,332 275,352" stroke-width="32" fill="none"/>
-              <path d="M128,162 Q132,212 142,262" stroke-width="24" fill="none"/>
-              <path d="M142,262 Q144,198 148,124" stroke-width="21" fill="none"/>
-              <circle cx="148" cy="118" r="16" stroke="none"/>
-              <path d="M166,158 Q206,225 220,280" stroke-width="24" fill="none"/>
-            </g>
-          </svg>
-        </div>
+        <div class="scene-layer"></div>
         <div class="subject-glow"></div>
         <img class="subject-img" src="" alt="" style="display:none;" />
         <div class="motif-symbol"></div>
@@ -1287,70 +1159,7 @@
         <img class="ig-bg" id="ig-bg-img-2" src="" style="display:none;" alt="" />
         <div class="ig-vignette"></div>
         <div class="ig-gradient-bottom"></div>
-        <div class="scene-layer">
-          <svg class="scene-svg funvsgrowth-svg active" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
-            <!-- Standing figure (right side, head at 175,352) -->
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="175" cy="352" r="20" stroke="none"/>
-              <path d="M170,371 Q175,374 180,371 L179,382 Q175,385 171,382Z" stroke="none"/>
-              <path d="M157,382 Q175,377 193,382 L190,430 Q175,436 160,430Z" stroke="none"/>
-              <path d="M159,388 Q145,410 142,438" stroke-width="12" fill="none"/>
-              <path d="M191,388 Q205,410 208,438" stroke-width="12" fill="none"/>
-              <path d="M163,428 Q159,450 157,480" stroke-width="15" fill="none"/>
-              <path d="M187,428 Q191,450 193,480" stroke-width="15" fill="none"/>
-            </g>
-            <!-- Connector circles (head → bubble) -->
-            <circle cx="174" cy="328" r="7" fill="rgba(8,3,0,0.75)" stroke="none"/>
-            <circle cx="166" cy="295" r="5" fill="rgba(8,3,0,0.70)" stroke="none"/>
-            <circle cx="158" cy="218" r="3.5" fill="rgba(8,3,0,0.65)" stroke="none"/>
-            <!-- Thought bubble ellipse -->
-            <ellipse cx="148" cy="148" rx="118" ry="62" fill="rgba(0,0,0,0.58)" stroke="rgba(236,170,39,0.42)" stroke-width="2"/>
-            <!-- Centre divider -->
-            <line x1="148" y1="88" x2="148" y2="208" stroke="rgba(236,170,39,0.40)" stroke-width="1.5"/>
-            <!-- FUN label -->
-            <text x="89" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="14" fill="rgba(236,170,39,0.92)" letter-spacing="2">FUN</text>
-            <!-- 4-point sparkle stars (FUN side) -->
-            <path d="M68,132 L70,138 L76,140 L70,142 L68,148 L66,142 L60,140 L66,138Z" fill="rgba(255,255,255,0.85)"/>
-            <path d="M108,148 L110,153 L115,155 L110,157 L108,162 L106,157 L101,155 L106,153Z" fill="rgba(255,255,255,0.70)"/>
-            <path d="M86,168 L87.5,172 L92,173.5 L87.5,175 L86,179 L84.5,175 L80,173.5 L84.5,172Z" fill="rgba(255,255,255,0.65)"/>
-            <!-- Sparkle crosses (FUN side) -->
-            <line x1="50" y1="150" x2="50" y2="158" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="46" y1="154" x2="54" y2="154" stroke="rgba(255,255,255,0.65)" stroke-width="1.5"/>
-            <line x1="120" y1="122" x2="120" y2="128" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <line x1="117" y1="125" x2="123" y2="125" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
-            <!-- Scattered dots (FUN side) -->
-            <circle cx="40" cy="132" r="1.5" fill="rgba(255,255,255,0.50)"/>
-            <circle cx="95" cy="178" r="1.5" fill="rgba(255,255,255,0.48)"/>
-            <circle cx="58" cy="178" r="2" fill="rgba(255,255,255,0.50)"/>
-            <circle cx="128" cy="165" r="1.5" fill="rgba(255,255,255,0.45)"/>
-            <!-- GROWTH label -->
-            <text x="207" y="113" text-anchor="middle" font-family="Anton,sans-serif" font-size="11" fill="rgba(236,170,39,0.92)" letter-spacing="1">GROWTH</text>
-            <!-- Bold upward arrow (GROWTH side) -->
-            <line x1="172" y1="192" x2="172" y2="145" stroke="rgba(255,255,255,0.88)" stroke-width="3.5"/>
-            <path d="M164,154 L172,136 L180,154Z" fill="rgba(255,255,255,0.88)" stroke="none"/>
-            <!-- Mountain peak + snow cap (GROWTH side) -->
-            <path d="M186,192 L206,152 L226,192Z" fill="none" stroke="rgba(255,255,255,0.68)" stroke-width="1.5" stroke-linejoin="round"/>
-            <path d="M206,152 L211,163 L201,163Z" fill="rgba(255,255,255,0.65)" stroke="none"/>
-            <!-- Rising dots (GROWTH side) -->
-            <circle cx="244" cy="190" r="1.5" fill="rgba(255,255,255,0.52)"/>
-            <circle cx="247" cy="179" r="2" fill="rgba(255,255,255,0.58)"/>
-            <circle cx="250" cy="168" r="1.5" fill="rgba(255,255,255,0.64)"/>
-            <circle cx="253" cy="158" r="1" fill="rgba(255,255,255,0.70)"/>
-          </svg>
-          <svg class="scene-svg thinker-svg" viewBox="0 0 300 533.333" xmlns="http://www.w3.org/2000/svg">
-            <g fill="rgba(8,3,0,0.82)" stroke="rgba(8,3,0,0.82)" stroke-linecap="round">
-              <circle cx="148" cy="112" r="30" stroke="none"/>
-              <path d="M128,150 Q166,144 178,150 Q195,185 204,228 Q210,264 213,305" stroke-width="42" fill="none"/>
-              <path d="M200,305 Q172,288 142,262" stroke-width="32" fill="none"/>
-              <path d="M142,262 Q137,308 135,368" stroke-width="28" fill="none"/>
-              <path d="M215,305 Q248,332 275,352" stroke-width="32" fill="none"/>
-              <path d="M128,162 Q132,212 142,262" stroke-width="24" fill="none"/>
-              <path d="M142,262 Q144,198 148,124" stroke-width="21" fill="none"/>
-              <circle cx="148" cy="118" r="16" stroke="none"/>
-              <path d="M166,158 Q206,225 220,280" stroke-width="24" fill="none"/>
-            </g>
-          </svg>
-        </div>
+        <div class="scene-layer"></div>
         <div class="ig-brand">
           <div class="ig-brand-mark">✦ Proles Kitchen</div>
           <div class="ig-brand-line"></div>
@@ -1433,6 +1242,11 @@
         const u = (factor === 1) ? pkOriginalBg : await pkBrightenDataURL(pkOriginalBg, factor, sat);
         pkSetBgSrc(['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'], u);
       }
+      // "Auto" color set: re-derive the 60:30:10 triad from whatever bg is now showing.
+      if (((document.getElementById('ctrl-palette') || {}).value) === 'auto') {
+        const src = pkSubjectSceneActive ? (pkOriginalBgYt || pkOriginalBgIg) : pkOriginalBg;
+        if (src) { await pkExtractPalette(src); pkApplyStyle(); }
+      }
       pkSaveState();
     }
     // Slider drag handler — debounced so we don't re-encode the full image on every tick.
@@ -1460,85 +1274,176 @@
       return `<path d="M${cx},${cy - r} L${cx + i},${cy - i} L${cx + r},${cy} L${cx + i},${cy + i} L${cx},${cy + r} L${cx - i},${cy + i} L${cx - r},${cy} L${cx - i},${cy - i} Z" fill="${fill}"/>`;
     }
 
-    function pkBuildP5(kind, level) {
+    /* ════════════════════════════════════════
+       60:30:10 STYLE ENGINE  (the CinemaHow "Samurai-Jack color rule")
+       Every tile is composed as DOMINANT 60% / SECONDARY 30% / ACCENT 10%,
+       in one of two aesthetics — Manga Ink or Flat Color — both export-safe
+       (inline SVG only, never clip-path/filter).
+         • dominant  = the tile field (solid color when no photo; the photo when present)
+         • secondary = the big angular slab / ink shard (30%)
+         • accent    = thin slashes, shards, star, the accent word + bars (10%)
+    ════════════════════════════════════════ */
+    const PK_PALETTES = {
+      // Manga sets keep an inky dominant + cream "ink" secondary; only the accent hue swaps.
+      ink_gold:    { dom:'#08080a', sec:'#f2eee2', acc:'#ECAA27' },
+      ink_red:     { dom:'#08080a', sec:'#f2eee2', acc:'#e0322f' },
+      ink_cyan:    { dom:'#07090c', sec:'#eef3f4', acc:'#36c6d6' },
+      // Flat sets are full saturated triads (Gurren / Samurai Jack).
+      lagann_red:  { dom:'#bf2420', sec:'#16243f', acc:'#f0b32a' },
+      lagann_blue: { dom:'#1d3c6e', sec:'#d8482f', acc:'#f2c33a' },
+      jack_amber:  { dom:'#c2a049', sec:'#15140f', acc:'#d8463a' },
+      brand:       { dom:'#0a0a0a', sec:'#680707', acc:'#ECAA27' },
+    };
+    let pkAutoPalette = null;   // {dom,sec,acc} extracted from the current bg image (palette = "auto")
+    let pkStyleUid = 0;         // unique gradient ids so 4 injected overlays never collide
+
+    function pkResolvePalette() {
+      const id = (document.getElementById('ctrl-palette') || {}).value || 'ink_gold';
+      if (id === 'auto' && pkAutoPalette) return pkAutoPalette;
+      return PK_PALETTES[id] || PK_PALETTES.ink_gold;
+    }
+    function pkCurrentStyle() {
+      const s = (document.getElementById('ctrl-style') || {}).value;
+      return s === 'flat' ? 'flat' : 'manga';
+    }
+    function pkSlashes(set, color) {   // colored diagonal accent slashes
+      return set.map(s => `<line x1="${s[0]}" y1="${s[1]}" x2="${s[2]}" y2="${s[3]}" stroke="${color}" stroke-width="${s[4]}" opacity="${s[5]}"/>`).join('');
+    }
+
+    // "Auto" palette: derive a 60:30:10 triad from the current background image.
+    //   dominant = average tone (darkened), secondary = the contrasting extreme,
+    //   accent   = the most saturated pixel. Sets pkAutoPalette; safe no-op on failure.
+    async function pkExtractPalette(src) {
+      try {
+        const img = new Image(); img.crossOrigin = 'anonymous';
+        await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = src; });
+        const w = 48, h = Math.max(1, Math.round(48 * ((img.naturalHeight || img.height) / (img.naturalWidth || img.width)) || 27));
+        const c = document.createElement('canvas'); c.width = w; c.height = h;
+        const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+        const d = ctx.getImageData(0, 0, w, h).data;
+        let rs = 0, gs = 0, bs = 0, n = 0, best = null, bestSat = -1, dark = null, darkL = 1e9, light = null, lightL = -1;
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          rs += r; gs += g; bs += b; n++;
+          const sat = Math.max(r, g, b) - Math.min(r, g, b);
+          const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+          if (sat > bestSat) { bestSat = sat; best = [r, g, b]; }
+          if (lum < darkL) { darkL = lum; dark = [r, g, b]; }
+          if (lum > lightL) { lightL = lum; light = [r, g, b]; }
+        }
+        const hex = a => '#' + a.map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+        const avg = [rs / n, gs / n, bs / n];
+        const avgLum = 0.299 * avg[0] + 0.587 * avg[1] + 0.114 * avg[2];
+        pkAutoPalette = {
+          dom: hex(avg.map(v => v * 0.62)),
+          sec: hex(avgLum < 128 ? light : dark),
+          acc: bestSat > 40 ? hex(best) : '#ECAA27',
+        };
+      } catch (e) { /* keep previous pkAutoPalette */ }
+    }
+
+    function pkBuildStyleSVG(kind, style, P, level, hasBg, uid) {
       const heavy = level === 'heavy';
+      const manga = style === 'manga';
+      const D = P.dom, S = P.sec, A = P.acc;
+      const gid = 'pkg_' + uid;
+      // When a photo is present the overlay is lighter (photo reads through); when not,
+      // the slabs are solid so the dominant field never looks empty.
+      const slabOp  = hasBg ? (manga ? 0.5 : 0.46) : 1;
+      const cornOp  = hasBg ? (manga ? 0.85 : 0.78) : (manga ? 0.94 : 0.9);
+      const markOp  = manga ? 0.055 : 0.075;
+      const markCol = manga ? S : A;
+
       if (kind === 'ig') {
-        // Portrait: angular contrast panel anchored to the BOTTOM (where text sits).
+        const top = heavy ? 0.97 : 0.9, mid = heavy ? 0.6 : 0.5;
         return `<svg viewBox="0 0 300 533" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="p5pIg" x1="0" y1="1" x2="0" y2="0">
-            <stop offset="0" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.96' : '0.9'}"/>
-            <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.62' : '0.55'}"/>
-            <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
+          <defs><linearGradient id="${gid}" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stop-color="${D}" stop-opacity="${top}"/>
+            <stop offset="0.45" stop-color="${D}" stop-opacity="${mid}"/>
+            <stop offset="1" stop-color="${D}" stop-opacity="0"/>
           </linearGradient></defs>
-          <text x="14" y="430" font-family="Anton,sans-serif" font-size="240" fill="#ffffff" opacity="0.05" transform="rotate(-8 14 430)">5</text>
-          <polygon points="0,533 0,300 300,360 300,533" fill="url(#p5pIg)"/>
-          <polygon points="0,300 0,322 300,382 300,360" fill="#c41a1f"/>
-          <polygon points="0,322 0,330 300,390 300,382" fill="#ECAA27"/>
-          <polygon points="0,0 138,0 0,150" fill="#0a0a0a"/>
-          <polygon points="0,0 116,0 0,126" fill="#c41a1f"/>
-          <polygon points="300,0 300,108 196,0" fill="#0a0a0a" opacity="0.9"/>
-          <polygon points="300,108 300,120 214,0 196,0" fill="#ECAA27"/>
-          ${pkHalftone(20, 470, 9, 4, 12, 2.4, '#ECAA27')}
+          <text x="6" y="310" font-family="Anton,sans-serif" font-size="270" fill="${markCol}" opacity="${markOp}" transform="rotate(-8 6 310)">道</text>
+          <!-- secondary 30% shard — top-left -->
+          <polygon points="0,0 150,0 0,182" fill="${S}" opacity="${slabOp}"/>
+          <polygon points="150,0 170,0 0,206 0,182" fill="${A}" opacity="0.95"/>
+          <!-- top-right corner shard -->
+          <polygon points="300,0 300,122 200,0" fill="${manga ? D : S}" opacity="${cornOp}"/>
+          <polygon points="300,122 300,137 222,0 200,0" fill="${A}"/>
+          <!-- bottom text contrast panel -->
+          <polygon points="0,533 0,300 300,360 300,533" fill="url(#${gid})"/>
+          <!-- accent slant stripe above the text -->
+          <polygon points="0,300 0,320 300,380 300,360" fill="${A}" opacity="0.92"/>
+          ${pkHalftone(20, 472, 9, 4, 12, 2.4, manga ? A : S)}
           ${heavy ? `
-            <polygon points="0,256 0,272 300,332 300,316" fill="#c41a1f" opacity="0.85"/>
-            <polygon points="0,533 104,533 0,414" fill="#c41a1f"/>
-            <polygon points="0,0 300,0 300,24 0,50" fill="#c41a1f"/>
-            <polygon points="0,0 300,0 300,12 0,25" fill="#0a0a0a" opacity="0.55"/>
-            ${pkP5Slashes([[214,30,172,150,5,0.5],[238,42,198,158,3.5,0.4],[258,56,222,166,2.5,0.3]])}
-            ${pkP5Star(250,250,17,'#c41a1f')}
-            <text x="120" y="190" font-family="Anton,sans-serif" font-size="120" fill="#c41a1f" opacity="0.12" transform="rotate(-8 120 190)">!</text>
+            <polygon points="0,533 110,533 0,412" fill="${A}" opacity="0.9"/>
+            <polygon points="0,0 300,0 300,14 0,28" fill="${A}" opacity="0.9"/>
+            ${pkSlashes([[214,28,170,152,5,0.5],[238,40,196,160,3.5,0.4],[258,54,220,168,2.5,0.3]], '#ffffff')}
+            ${pkP5Star(250,248,17,A)}
           ` : ''}
         </svg>`;
       }
-      // Landscape (YouTube): angular contrast panel on the LEFT (text side).
+      // Landscape (YouTube) — text on the LEFT.
+      const lft = heavy ? 0.97 : 0.9, mid = heavy ? 0.58 : 0.48;
       return `<svg viewBox="0 0 640 360" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <defs><linearGradient id="p5pYt" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.96' : '0.9'}"/>
-          <stop offset="0.5" stop-color="#0a0a0a" stop-opacity="${heavy ? '0.58' : '0.5'}"/>
-          <stop offset="1" stop-color="#0a0a0a" stop-opacity="0"/>
+        <defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="${D}" stop-opacity="${lft}"/>
+          <stop offset="0.5" stop-color="${D}" stop-opacity="${mid}"/>
+          <stop offset="1" stop-color="${D}" stop-opacity="0"/>
         </linearGradient></defs>
-        <text x="120" y="318" font-family="Anton,sans-serif" font-size="360" fill="#ffffff" opacity="0.05" transform="rotate(-6 120 318)">5</text>
-        <polygon points="0,0 372,0 262,360 0,360" fill="url(#p5pYt)"/>
-        <polygon points="368,0 392,0 282,360 258,360" fill="#c41a1f"/>
-        <polygon points="392,0 400,0 290,360 282,360" fill="#ECAA27"/>
-        <polygon points="0,0 182,0 0,116" fill="#0a0a0a"/>
-        <polygon points="0,0 158,0 0,98" fill="#c41a1f"/>
-        <polygon points="640,360 640,228 484,360" fill="#0a0a0a" opacity="0.92"/>
-        <polygon points="640,228 640,242 506,360 484,360" fill="#ECAA27"/>
-        ${pkHalftone(34, 250, 8, 5, 13, 2.6, '#ECAA27')}
+        <text x="150" y="320" font-family="Anton,sans-serif" font-size="370" fill="${markCol}" opacity="${markOp}" transform="rotate(-6 150 320)">道</text>
+        <!-- secondary 30% slab — top-right -->
+        <polygon points="640,0 640,206 408,0" fill="${S}" opacity="${slabOp}"/>
+        <polygon points="640,206 640,221 430,0 408,0" fill="${A}"/>
+        <!-- text-side contrast panel — left -->
+        <polygon points="0,0 372,0 262,360 0,360" fill="url(#${gid})"/>
+        <polygon points="368,0 392,0 282,360 258,360" fill="${A}" opacity="0.92"/>
+        <!-- corner shards -->
+        <polygon points="0,0 170,0 0,110" fill="${manga ? D : S}" opacity="${cornOp}"/>
+        <polygon points="0,0 148,0 0,92" fill="${A}"/>
+        <polygon points="640,360 640,232 486,360" fill="${manga ? D : S}" opacity="${cornOp}"/>
+        <polygon points="640,232 640,247 508,360 486,360" fill="${A}"/>
+        ${pkHalftone(30, 250, 8, 5, 13, 2.6, manga ? A : S)}
         ${heavy ? `
-          <polygon points="404,0 422,0 312,360 294,360" fill="#c41a1f" opacity="0.8"/>
-          <polygon points="0,0 640,0 640,16 0,32" fill="#c41a1f"/>
-          <polygon points="0,360 640,360 640,344 0,328" fill="#c41a1f" opacity="0.85"/>
-          <polygon points="640,0 470,0 640,104" fill="#0a0a0a" opacity="0.85"/>
-          <polygon points="640,0 508,0 640,86" fill="#c41a1f"/>
-          ${pkP5Slashes([[472,40,402,182,6,0.45],[502,30,432,182,4,0.35],[527,50,462,188,3,0.28]])}
-          ${pkP5Star(560,300,20,'#c41a1f')}
-          <text x="430" y="132" font-family="Anton,sans-serif" font-size="150" fill="#c41a1f" opacity="0.11" transform="rotate(8 430 132)">!</text>
+          <polygon points="0,0 640,0 640,15 0,30" fill="${A}"/>
+          <polygon points="0,360 640,360 640,345 0,330" fill="${A}" opacity="0.85"/>
+          ${pkSlashes([[472,38,400,184,6,0.45],[502,28,430,184,4,0.35],[527,48,460,190,3,0.28]], '#ffffff')}
+          ${pkP5Star(560,300,20,A)}
         ` : ''}
       </svg>`;
     }
 
-    function pkApplyP5() {
-      const sel = document.getElementById('ctrl-p5');
-      const level = sel ? sel.value : 'standard';   // off | standard | heavy
-      const on = !!level && level !== 'off';
+    function pkApplyStyle() {
+      const style = pkCurrentStyle();                         // manga | flat
+      const lvlSel = document.getElementById('ctrl-p5');
+      const level  = lvlSel ? lvlSel.value : 'standard';      // off | standard | heavy
+      const on     = !!level && level !== 'off';
+      const P      = pkResolvePalette();
+      const hasBg  = pkSubjectSceneActive || !!pkOriginalBg || !!pkOriginalBgYt;
       document.querySelectorAll('.yt-thumb, .ig-thumb').forEach(tile => {
-        tile.classList.toggle('p5-on', on);
+        // palette → CSS vars (accent word, bars, placeholder field all read these)
+        tile.style.setProperty('--pk-dom', P.dom);
+        tile.style.setProperty('--pk-sec', P.sec);
+        tile.style.setProperty('--pk-acc', P.acc);
+        tile.style.backgroundColor = P.dom;                   // dominant 60% field (covered by a photo bg)
+        tile.classList.toggle('pk-manga', style === 'manga');
+        tile.classList.toggle('pk-flat',  style === 'flat');
+        tile.classList.toggle('p5-on', on);                   // reuse existing headline-stamp CSS
         tile.classList.toggle('p5-heavy', level === 'heavy');
-        let ov = tile.querySelector('.p5-overlay');
+        let ov = tile.querySelector('.pk-style-overlay');
         if (on) {
           if (!ov) {
             ov = document.createElement('div');
-            ov.className = 'p5-overlay';
+            ov.className = 'pk-style-overlay';
             tile.insertBefore(ov, tile.querySelector('.yt-text, .ig-text'));  // sits behind the text
           }
-          ov.innerHTML = pkBuildP5(tile.classList.contains('ig-thumb') ? 'ig' : 'yt', level);
+          ov.innerHTML = pkBuildStyleSVG(tile.classList.contains('ig-thumb') ? 'ig' : 'yt', style, P, level, hasBg, ++pkStyleUid);
         } else if (ov) {
           ov.remove();
         }
       });
     }
+    // Back-compat alias: older call sites + the boot path call pkApplyP5().
+    function pkApplyP5() { pkApplyStyle(); }
 
     function applyControls() {
       const headline = document.getElementById('ctrl-headline').value;
@@ -1671,11 +1576,59 @@
       });
     }
 
+    /* ── Scenes: single-source, palette-aware, injected into every .scene-layer ──
+       (no more 4× hand-duplicated SVG; one generator drives all tiles). Scenes are
+       decorative graphic motifs that read on the dominant field; the subject photo,
+       when present, sits above them and applyControls hides the layer entirely. */
+    function pkBuildScene(kind, scene, P) {
+      if (!scene || scene === 'none') return '';
+      const ig = kind === 'ig';
+      const W = ig ? 300 : 640, H = ig ? 533 : 360;
+      const cx = ig ? 150 : 430, cy = ig ? 230 : 168;   // motif anchor (offset toward non-text side)
+      const A = P.acc, S = P.sec;
+
+      if (scene === 'flare') {
+        // Bleach-style cross-star flare + bokeh (C2aafAR).
+        const R = ig ? 150 : 168, t = R * 0.06;
+        const star = `<polygon points="${cx},${cy-R} ${cx+t},${cy-t} ${cx+R},${cy} ${cx+t},${cy+t} ${cx},${cy+R} ${cx-t},${cy+t} ${cx-R},${cy} ${cx-t},${cy-t}" fill="#ffffff"/>`;
+        const star2 = `<polygon points="${cx},${cy-R*0.6} ${cx+t*0.6},${cy-t*0.6} ${cx+R*0.6},${cy} ${cx+t*0.6},${cy+t*0.6} ${cx},${cy+R*0.6} ${cx-t*0.6},${cy+t*0.6} ${cx-R*0.6},${cy} ${cx-t*0.6},${cy-t*0.6}" fill="${A}" opacity="0.9"/>`;
+        return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="${cx-R*0.35}" cy="${cy+R*0.1}" r="${R*0.5}" fill="#ffffff" opacity="0.06"/>
+          <circle cx="${cx+R*0.3}" cy="${cy-R*0.2}" r="${R*0.28}" fill="${A}" opacity="0.10"/>
+          <circle cx="${cx}" cy="${cy}" r="${R*0.34}" fill="#ffffff" opacity="0.05"/>
+          ${star}${star2}
+          <circle cx="${cx}" cy="${cy}" r="${ig?7:9}" fill="#ffffff"/>
+        </svg>`;
+      }
+      if (scene === 'silhouette') {
+        // Dramatic angular ink bust on the non-text side, in the secondary color.
+        const ox = ig ? 150 : 360, base = H;
+        return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M${ox},${base} L${ox-(ig?90:120)},${base} L${ox-(ig?70:96)},${base-(ig?150:120)} Q${ox-(ig?54:74)},${base-(ig?210:170)} ${ox},${base-(ig?230:188)} Q${ox+(ig?60:80)},${base-(ig?212:172)} ${ox+(ig?78:104)},${base-(ig?150:120)} L${ox+(ig?96:128)},${base} Z" fill="${S}" opacity="0.92"/>
+          <circle cx="${ox}" cy="${base-(ig?262:214)}" r="${ig?40:34}" fill="${S}" opacity="0.92"/>
+          <polygon points="${ox+(ig?20:18)},${base-(ig?270:222)} ${ox+(ig?46:40)},${base-(ig?258:212)} ${ox+(ig?30:26)},${base-(ig?244:200)}" fill="${A}"/>
+        </svg>`;
+      }
+      if (scene === 'kanji') {
+        // Gurren-style vertical kanji slab on the non-text side.
+        const sx = ig ? 232 : 540, fs = ig ? 56 : 64;
+        const chars = ['覚','醒'];   // "awakening"
+        const slab = `<polygon points="${sx-fs*0.62},20 ${sx+fs*0.7},14 ${sx+fs*0.6},${20+fs*chars.length+24} ${sx-fs*0.72},${26+fs*chars.length+24}" fill="${S}" opacity="0.9"/>`;
+        const txt = chars.map((c,i)=>`<text x="${sx}" y="${64 + i*fs}" text-anchor="middle" font-family="Anton,'Noto Sans JP',sans-serif" font-size="${fs}" fill="${A}" font-weight="900">${c}</text>`).join('');
+        return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          ${slab}<polygon points="${sx-fs*0.62},20 ${sx-fs*0.5},20 ${sx-fs*0.6},${30+fs*chars.length+18} ${sx-fs*0.72},${26+fs*chars.length+24}" fill="${A}"/>${txt}
+        </svg>`;
+      }
+      return '';
+    }
+
     function setScene(scene) {
-      document.querySelectorAll('.funvsgrowth-svg').forEach(el =>
-        el.classList.toggle('active', scene === 'funvsgrowth'));
-      document.querySelectorAll('.thinker-svg').forEach(el =>
-        el.classList.toggle('active', scene === 'thinker'));
+      const P = pkResolvePalette();
+      document.querySelectorAll('.scene-layer').forEach(layer => {
+        const tile = layer.closest('.yt-thumb, .ig-thumb');
+        const kind = tile && tile.classList.contains('ig-thumb') ? 'ig' : 'yt';
+        layer.innerHTML = pkBuildScene(kind, scene, P);
+      });
     }
 
     setScene(document.getElementById('ctrl-scene').value);
@@ -2060,9 +2013,9 @@
        "FUN IS OVERRATED" example. A blank first-ever boot starts fresh.
     ════════════════════════════════════════ */
     const PK_STATE_KEY = 'pk_thumb_state_v2';
-    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-bg-brightness','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
+    const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
     const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
-    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
 
     function pkCollectState() {
       const s = { v: {}, b: {} };
