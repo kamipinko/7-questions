@@ -328,6 +328,12 @@
         <h1 class="screen-title">Choose your language</h1>
         <p class="screen-sub">A word a day. Six months to survival fluency.</p>
       </div>
+      <!-- Native-language picker: sets the default learning direction (learn-from / learn-to). -->
+      <div class="native-lang-row" style="display:flex;flex-direction:column;gap:6px;max-width:420px;margin:0 auto 18px;">
+        <label class="form-label" for="nativeLangSelect" style="text-align:center;">I speak…</label>
+        <select class="form-input" id="nativeLangSelect" style="text-align:center;"></select>
+        <p class="screen-sub" id="nativeLangHint" style="font-size:.72rem;margin:0;opacity:.75;text-align:center;"></p>
+      </div>
       <div class="lang-grid" id="langGrid"></div>
       <button class="btn-primary" id="startLangBtn" disabled>Begin →</button>
       <!-- ── Shared account widget (Log in / Log out) — shares the same wad_auth session ── -->
@@ -376,6 +382,7 @@
         <div class="lesson-meta">
           <span class="lesson-badge" id="lessonBadge">Tier 1 · Week 1 · Day 1</span>
           <span class="streak-badge" id="streakBadge">🔥 0</span>
+          <button class="btn-sm-ghost" id="swapDirBtn" style="display:none;border-radius:2px;font-size:.66rem;padding:5px 10px;color:var(--gold);border:1px solid var(--gold);background:transparent;cursor:pointer;">⇄ Learning</button>
         </div>
         <div class="progress-wrap">
           <div class="progress-meta">
@@ -898,6 +905,65 @@ const LANGS = [
   {code:'ki', name:'Kikuyu',    flag:'🇰🇪', sub:'Gĩkũyũ · East African'},
 ];
 
+// Languages a learner can declare as their OWN (drives the default learning direction).
+// English is included here (native English speakers) plus every course language, so a
+// speaker of that language can instead learn English from the same bilingual dataset.
+const NATIVE_LANGS = [
+  {code:'en', flag:'🇬🇧', label:'English'},
+  {code:'es', flag:'🇪🇸', label:'Español (Spanish)'},
+  {code:'zh', flag:'🇨🇳', label:'中文 (Chinese)'},
+  {code:'ja', flag:'🇯🇵', label:'日本語 (Japanese)'},
+  {code:'vi', flag:'🇻🇳', label:'Tiếng Việt (Vietnamese)'},
+  {code:'sw', flag:'🇰🇪', label:'Kiswahili (Swahili)'},
+  {code:'ki', flag:'🇰🇪', label:'Gĩkũyũ (Kikuyu)'},
+];
+function langName(code) { return code === 'en' ? 'English' : (LANGS.find(l => l.code === code)?.name || code); }
+
+// The language the learner SPEAKS (from the signup dropdown). Falls back to the account
+// value, then localStorage, then English.
+function nativeLang() {
+  return state.nativeLanguage
+    || (state.account && state.account.nativeLanguage)
+    || localStorage.getItem('wad_native')
+    || 'en';
+}
+
+// Which language is being LEARNED (the answer/graded side) for the active course:
+// an explicit per-course preference (set by the swap toggle) or a default derived from
+// the native language — you learn the side you don't already speak.
+function getFocus() {
+  if (state.progress && state.progress.focus) return state.progress.focus;
+  return (nativeLang() === state.lang) ? 'en' : state.lang;
+}
+
+// Resolve a word into direction-aware sides. Every dataset is an English<->X pair, so
+// "learn English" simply swaps which side is the prompt vs. the graded answer.
+function wordView(w) {
+  const learnEnglish = getFocus() === 'en';
+  const ld = state.langData || {};
+  if (learnEnglish) {
+    return {
+      learnEnglish: true,
+      topText: w.target,          // shown small = the meaning, in the learner's own language
+      bigText: w.english,         // shown big  = the English word being learned
+      learnText: w.english,       // the text that is spoken & graded
+      phonetic: '',               // datasets carry no English phonetic
+      exTop: w.example_target, exBig: w.example_en,
+      ttsLang: 'en-US', recogLang: 'en-US',
+    };
+  }
+  return {
+    learnEnglish: false,
+    topText: w.english,
+    bigText: w.target,
+    learnText: w.target,
+    phonetic: w.phonetic || '',
+    exTop: w.example_en, exBig: w.example_target,
+    ttsLang: ld.tts_lang || 'en-US',
+    recogLang: ld.recognition_lang || 'en-US',
+  };
+}
+
 // Exam question type config
 const EXAM_SECTIONS = [
   {type:'listen',  label:'Listen & Identify', weight:2,   count:5},
@@ -1012,6 +1078,7 @@ $('continueNoLoginBtn').addEventListener('click', async () => {
     const data = await res.json();
     if (!res.ok || !data.authToken) throw new Error('anon failed');
     onLoggedIn(data.authToken, data.account);
+    await syncNativeLanguage();      // record which language the guest speaks
     decorateLangGrid();
     if (state.lang) { await startLanguageForAccount(state.lang); }
     else { showScreen('screen-lang'); }
@@ -1078,6 +1145,7 @@ async function verifyCode() {
     const data = await res.json();
     if (!res.ok || !data.authToken) { $('authStatus').textContent = data.error || 'Invalid or expired code.'; $('verifyCodeBtn').disabled = false; return; }
     onLoggedIn(data.authToken, data.account);
+    await syncNativeLanguage();      // record which language the learner speaks
     // Continue into the language the user was trying to start (or the picker).
     if (state.lang) { await startLanguageForAccount(state.lang); }
     else { showScreen('screen-lang'); }
@@ -1097,7 +1165,13 @@ function onLoggedIn(authToken, account) {
   state.email = state.account.email;
   state.accountMode = true;
   state.token = null;
+  // Adopt the account's declared native language (if any) so direction is consistent.
+  if (account && account.nativeLanguage) {
+    state.nativeLanguage = account.nativeLanguage;
+    localStorage.setItem('wad_native', account.nativeLanguage);
+  }
   localStorage.setItem('wad_auth', authToken);
+  populateNativeSelect();
   renderAccountChip();
   // Keep the shared hub widget (bottom "Log in / Log out") in sync without a reload.
   if (window.scAuthRefresh) window.scAuthRefresh(state.account);
@@ -1212,18 +1286,25 @@ function renderLesson() {
     dots.appendChild(d);
   }
 
-  // Word card
-  $('wEnglish').textContent = w.english.toUpperCase();
-  $('wTarget').textContent = w.target;
-  if (w.romanization) {
+  // Word card (direction-aware: which side is the prompt vs. the word being learned)
+  const view = wordView(w);
+  $('wEnglish').textContent = String(view.topText).toUpperCase();
+  $('wTarget').textContent = view.bigText;
+  if (w.romanization && !view.learnEnglish) {
     $('wRomanization').style.display = '';
     $('wRomanization').textContent = w.romanization;
   } else {
     $('wRomanization').style.display = 'none';
   }
-  $('wPhonetic').textContent = `/ ${w.phonetic} /`;
-  $('wExEn').textContent = w.example_en;
-  $('wExTarget').textContent = w.example_target;
+  if (view.phonetic) {
+    $('wPhonetic').style.display = '';
+    $('wPhonetic').textContent = `/ ${view.phonetic} /`;
+  } else {
+    $('wPhonetic').style.display = 'none';
+  }
+  $('wExEn').textContent = view.exTop;
+  $('wExTarget').textContent = view.exBig;
+  updateSwapToggle();
 
   // Reset audio/pronunciation state
   state.listenedOnce = false;
@@ -1249,7 +1330,7 @@ function renderLesson() {
 
   // Honest TTS disclosure: Kikuyu has no native voice, so it uses a Swahili (sw-KE) voice.
   const regionNote = $('regionVoiceNote');
-  if (state.lang === 'ki') {
+  if (state.lang === 'ki' && getFocus() !== 'en') {
     regionNote.style.display = '';
     regionNote.innerHTML = '🔊 <strong>Audio uses a close regional voice.</strong> No native Gĩkũyũ voice exists, so playback uses Swahili pronunciation — lean on the written form and phonetic guide.';
   } else {
@@ -1287,10 +1368,10 @@ $('manualSayBtn').addEventListener('click', () => {
   $('nextWordBtn').textContent = isLast ? (state.reviewMode ? 'Finish Review →' : 'Finish Day →') : 'Next Word →';
 });
 
-// Replay the correct word from the accuracy panel.
+// Replay the correct word from the accuracy panel (the side being learned).
 $('replayTargetBtn').addEventListener('click', () => {
   const w = state.words[state.wordIdx];
-  if (w) speak(w.target);
+  if (w) { const v = wordView(w); speak(v.learnText, { lang: v.ttsLang }); }
 });
 
 // Play the learner's own recorded attempt.
@@ -1299,9 +1380,10 @@ $('playAttemptBtn').addEventListener('click', () => playAttempt());
 // Compare: play the learner's attempt, then the correct pronunciation right after.
 $('compareBtn').addEventListener('click', () => {
   const w = state.words[state.wordIdx];
+  const v = w ? wordView(w) : null;
   const a = playAttempt();
-  if (a) { a.onended = () => setTimeout(() => { if (w) speak(w.target); }, 300); }
-  else if (w) speak(w.target);
+  if (a) { a.onended = () => setTimeout(() => { if (v) speak(v.learnText, { lang: v.ttsLang }); }, 300); }
+  else if (v) speak(v.learnText, { lang: v.ttsLang });
 });
 
 // ══════════════════════════════════════════════════════════
@@ -1341,7 +1423,7 @@ function pickVoice(langTag) {
 function speak(text, opts) {
   opts = opts || {};
   if (!synth) { if (opts.onerror) opts.onerror(); return null; }
-  const langTag = (state.langData && state.langData.tts_lang) || 'en-US';
+  const langTag = opts.lang || (state.langData && state.langData.tts_lang) || 'en-US';
   const u = new SpeechSynthesisUtterance(text);
   u.lang = langTag;
   const v = pickVoice(langTag);
@@ -1359,8 +1441,10 @@ function speak(text, opts) {
 // ── Listen button ──
 $('listenBtn').addEventListener('click', () => {
   const w = state.words[state.wordIdx];
+  const view = wordView(w);
   $('listenBtn').classList.add('playing');
-  speak(w.target, {
+  speak(view.learnText, {
+    lang: view.ttsLang,
     onend: () => {
       $('listenBtn').classList.remove('playing');
       if (!state.listenedOnce) {
@@ -1418,7 +1502,7 @@ function setupRecognition() {
   const r = new SpeechRec();
   r.continuous = false;
   r.interimResults = false;
-  r.lang = state.langData.recognition_lang;
+  r.lang = wordView(state.words[state.wordIdx]).recogLang;
 
   r.onstart = () => {
     recognizing = true;
@@ -1429,7 +1513,8 @@ function setupRecognition() {
   r.onresult = (e) => {
     const spoken = e.results[0][0].transcript;
     const w = state.words[state.wordIdx];
-    const score = similarity(spoken, w.target);
+    const view = wordView(w);
+    const score = similarity(spoken, view.learnText);
     showAccuracy(score, spoken, w);
   };
 
@@ -1459,7 +1544,7 @@ function startRecording() {
   if (recognizing) return;
   recognition = setupRecognition();
   if (!recognition) return;
-  recognition.lang = state.langData.recognition_lang;
+  recognition.lang = wordView(state.words[state.wordIdx]).recogLang;
   startAttemptCapture();           // capture audio in parallel for "Your attempt" playback
   try { recognition.start(); } catch(e){}
 }
@@ -1488,7 +1573,7 @@ function showAccuracy(score, spoken, word) {
   // sees exactly which part of the pronunciation missed.
   const diffEl = $('pronDiff'), legEl = $('pronDiffLegend');
   if (diffEl) {
-    diffEl.innerHTML = pronDiffHTML(spoken, word.target);
+    diffEl.innerHTML = pronDiffHTML(spoken, wordView(word).learnText);
     diffEl.style.display = '';
     if (legEl) legEl.style.display = '';
   }
@@ -1816,22 +1901,35 @@ function buildQuestion(type, label, weight, word, allWords) {
   const distractors = allWords.filter(w => w.id !== word.id).sort(() => Math.random()-.5).slice(0, 3);
   const q = { type, label, weight, word, distractors, answered: false, correct: false, score: 0 };
 
+  // Direction-aware: "known" = the side the learner already speaks, "learn" = the side
+  // being tested. Flips when the learner is studying English instead of the dataset lang.
+  const learnEnglish = getFocus() === 'en';
+  const learnName = learnEnglish ? 'English' : langName(state.lang);
+  const knownOf = w => learnEnglish ? w.target  : w.english;
+  const learnOf = w => learnEnglish ? w.english : w.target;
+  const learnLang = learnEnglish ? 'en-US' : state.langData.tts_lang;
+  const learnPhon = learnEnglish ? '' : (word.phonetic || '');
+
   if (type === 'listen') {
-    q.prompt = `You'll hear a word. Which English meaning is it?`;
-    q.audioTarget = word.target;
-    q.choices = shuffle([word.english, ...distractors.map(d=>d.english)]);
-    q.answer = word.english;
+    q.prompt = `You'll hear a word. Which meaning is it?`;
+    q.audioTarget = learnOf(word);
+    q.audioLang = learnLang;
+    q.choices = shuffle([knownOf(word), ...distractors.map(knownOf)]);
+    q.answer = knownOf(word);
   } else if (type === 'choose') {
-    q.prompt = `How do you say "${word.english}" in ${LANGS.find(l=>l.code===state.lang)?.name || ''}?`;
-    q.choices = shuffle([word.target, ...distractors.map(d=>d.target)]);
-    q.answer = word.target;
+    q.prompt = `How do you say "${knownOf(word)}" in ${learnName}?`;
+    q.choices = shuffle([learnOf(word), ...distractors.map(learnOf)]);
+    q.answer = learnOf(word);
   } else if (type === 'type') {
-    q.prompt = `Type "${word.english}" in ${LANGS.find(l=>l.code===state.lang)?.name || ''}:`;
-    q.answer = word.target;
+    q.prompt = `Type "${knownOf(word)}" in ${learnName}:`;
+    q.answer = learnOf(word);
+    q.phonetic = learnPhon;
   } else if (type === 'speak') {
-    q.prompt = `Say this in ${LANGS.find(l=>l.code===state.lang)?.name || ''}:`;
-    q.speakWord = word.english;
-    q.answer = word.target;
+    q.prompt = `Say this in ${learnName}:`;
+    q.speakWord = learnOf(word);
+    q.answer = learnOf(word);
+    q.speakLang = learnLang;
+    q.phonetic = learnPhon;
   }
   return q;
 }
@@ -1858,7 +1956,7 @@ function renderExamQuestion() {
     listenQ.className = 'btn-listen';
     listenQ.style.marginBottom = '12px';
     listenQ.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Play Word`;
-    listenQ.addEventListener('click', () => { speak(q.audioTarget); });
+    listenQ.addEventListener('click', () => { speak(q.audioTarget, { lang: q.audioLang }); });
     wrap.appendChild(listenQ);
     renderMultipleChoice(q, wrap);
     // Auto-play once
@@ -1870,7 +1968,7 @@ function renderExamQuestion() {
   } else if (q.type === 'type') {
     const hint = document.createElement('p');
     hint.style.cssText = 'font-size:.78rem;color:var(--text-sub);margin-bottom:8px;';
-    if (state.langData.has_romanization) hint.textContent = `Phonetic hint: / ${q.word.phonetic} /`;
+    if (q.phonetic) hint.textContent = `Phonetic hint: / ${q.phonetic} /`;
     wrap.appendChild(hint);
     const inp = document.createElement('input');
     inp.className = 'exam-input';
@@ -1891,10 +1989,10 @@ function renderExamQuestion() {
     target.style.cssText = 'font-family:var(--font-serif);font-size:1.6rem;color:var(--gold);text-align:center;margin:8px 0;';
     target.textContent = q.speakWord;
     wrap.appendChild(target);
-    if (q.word.phonetic) {
+    if (q.phonetic) {
       const ph = document.createElement('p');
       ph.style.cssText = 'font-size:.8rem;color:var(--text-sub);text-align:center;margin-bottom:10px;';
-      ph.textContent = `/ ${q.word.phonetic} /`;
+      ph.textContent = `/ ${q.phonetic} /`;
       wrap.appendChild(ph);
     }
     const recBtn = document.createElement('button');
@@ -1906,7 +2004,7 @@ function renderExamQuestion() {
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SR) return;
       examRec = new SR();
-      examRec.lang = state.langData.recognition_lang;
+      examRec.lang = q.speakLang === 'en-US' ? 'en-US' : state.langData.recognition_lang;
       examRec.onstart = () => { examRecognizing=true; recBtn.classList.add('recording'); };
       examRec.onresult = (e) => {
         const spoken = e.results[0][0].transcript;
@@ -2086,8 +2184,18 @@ $('switchLangBtn').addEventListener('click', () => {
 // Mark language cards that already have progress under the logged-in account.
 function decorateLangGrid() {
   const langs = (state.accountMode && state.account && state.account.languages) || {};
+  const nl = nativeLang();
   document.querySelectorAll('.lang-card').forEach(card => {
     const code = card.dataset.code;
+    // Direction label: for the learner's own language the card means "learn English".
+    let dir = card.querySelector('.lang-dir');
+    if (!dir) {
+      dir = document.createElement('div');
+      dir.className = 'lang-dir';
+      dir.style.cssText = 'font-size:.6rem;color:var(--gold);font-family:var(--font-mono);margin-top:3px;opacity:.85;letter-spacing:.05em;';
+      card.appendChild(dir);
+    }
+    dir.textContent = (nl === code) ? '→ Learn English' : `→ Learn ${langName(code)}`;
     let badge = card.querySelector('.lang-progress-badge');
     const p = langs[code];
     if (p && (p.completedWords||[]).length > 0) {
@@ -2102,6 +2210,80 @@ function decorateLangGrid() {
       badge.remove();
     }
   });
+}
+
+// ── Native-language dropdown (sets the default learning direction) ──
+function populateNativeSelect() {
+  const sel = $('nativeLangSelect');
+  if (!sel) return;
+  const cur = nativeLang();
+  sel.innerHTML = NATIVE_LANGS.map(l => `<option value="${l.code}">${l.flag} ${l.label}</option>`).join('');
+  sel.value = cur;
+  updateNativeHint();
+}
+function updateNativeHint() {
+  const hint = $('nativeLangHint');
+  if (!hint) return;
+  const nl = nativeLang();
+  hint.textContent = nl === 'en'
+    ? 'Choose a language below to start learning it.'
+    : `Tap “${langName(nl)}” below to learn English — or any other card to learn that language.`;
+}
+// Persist the native language to the account (once logged in).
+async function syncNativeLanguage() {
+  if (!state.accountMode || !state.authToken) return;
+  const nl = nativeLang();
+  if (state.account && state.account.nativeLanguage === nl) return;
+  try {
+    const res = await fetch('/api/wad/auth/native', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ authToken: state.authToken, nativeLanguage: nl })
+    });
+    const data = await res.json().catch(() => null);
+    if (data && data.account) state.account = data.account;
+  } catch(e){}
+}
+{
+  const sel = $('nativeLangSelect');
+  if (sel) sel.addEventListener('change', async (e) => {
+    state.nativeLanguage = e.target.value;
+    localStorage.setItem('wad_native', e.target.value);
+    updateNativeHint();
+    decorateLangGrid();
+    await syncNativeLanguage();
+  });
+}
+
+// ── Swap toggle (flip the learning direction for the active course) ──
+function updateSwapToggle() {
+  const btn = $('swapDirBtn');
+  if (!btn) return;
+  // Only meaningful for the dataset's own English pair; always available since every
+  // dataset is an English<->X pair.
+  const learning = getFocus() === 'en' ? 'English' : langName(state.lang);
+  btn.innerHTML = `⇄ Learning: <strong>${learning}</strong>`;
+  btn.title = 'Switch direction (learn the other language of this pair)';
+  btn.style.display = '';
+}
+async function toggleDirection() {
+  if (!state.progress || !state.lang) return;
+  const next = getFocus() === 'en' ? state.lang : 'en';
+  state.progress.focus = next;
+  if (state.accountMode && state.account && state.account.languages) {
+    state.account.languages[state.lang] = state.progress;
+  }
+  try {
+    await fetch('/api/wad/set-focus', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(studyBody({ focus: next }))
+    });
+  } catch(e){}
+  renderLesson();
+  showToast(next === 'en' ? 'Now learning English 🇬🇧' : `Now learning ${langName(state.lang)}`);
+}
+{
+  const btn = $('swapDirBtn');
+  if (btn) btn.addEventListener('click', toggleDirection);
 }
 
 function showProgressScreen() {
@@ -2247,6 +2429,7 @@ async function restoreSession() {
     // a logged-in state off a bad 200; keep the token for a future valid response.
     if (!data || data.ok !== true || !data.account) return false;
     onLoggedIn(authToken, data.account);
+    populateNativeSelect();
     decorateLangGrid();
     if (urlAuth) showToast('Logged in! 👋');
     return true;
@@ -2263,6 +2446,8 @@ function cleanUrl() {
 // INIT
 // ══════════════════════════════════════════════════════════
 buildLangGrid();
+populateNativeSelect();
+decorateLangGrid();
 showScreen('screen-lang');
 (async () => {
   const restored = await restoreSession();

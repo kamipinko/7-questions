@@ -324,6 +324,7 @@ function wadPublicAccount(user) {
     anon: !user.email,
     createdAt: user.createdAt,
     lastLogin: user.lastLogin,
+    nativeLanguage: user.nativeLanguage || null,
     languages: user.languages || {},
   };
 }
@@ -531,6 +532,32 @@ app.post('/api/wad/auth/logout', (req, res) => {
   const authToken = req.body && req.body.authToken;
   if (authToken) wadRevokeAuthToken(authToken);
   res.json({ ok: true });
+});
+
+// POST /api/wad/auth/native {authToken, nativeLanguage} — set the language the user SPEAKS.
+// Chosen from the signup dropdown; drives the default learning direction per course.
+app.post('/api/wad/auth/native', (req, res) => {
+  const user = wadUserByAuth(req.body && req.body.authToken);
+  if (!user) return res.status(401).json({ error: 'Not authenticated' });
+  const nl = String((req.body && req.body.nativeLanguage) || '').trim();
+  const allowed = ['en', ...Object.keys(WAD_LANGS_MAP)];
+  if (!allowed.includes(nl)) return res.status(400).json({ error: 'Unsupported language' });
+  user.nativeLanguage = nl;
+  wadWriteUser(user);
+  res.json({ ok: true, account: wadPublicAccount(user) });
+});
+
+// POST /api/wad/set-focus {authToken+language | token, focus} — set the learning DIRECTION
+// for a course. focus = the language being LEARNED (answer side): 'en' or the dataset code.
+app.post('/api/wad/set-focus', (req, res) => {
+  const focus = String((req.body && req.body.focus) || '').trim();
+  const r = wadResolveStudy(req.body);
+  if (r.error) return wadStudyError(res, r.error);
+  const datasetCode = r.lang || (r.p && r.p.language);
+  if (focus !== 'en' && focus !== datasetCode) return res.status(400).json({ error: 'Invalid focus' });
+  r.p.focus = focus;
+  r.save();
+  res.json({ ok: true, focus });
 });
 
 // GET /api/wad/words/:lang — serve word list
