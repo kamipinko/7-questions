@@ -436,11 +436,24 @@
               <div class="accuracy-num" id="accuracyNum">0%</div>
             </div>
             <p class="accuracy-heard">Heard: "<span id="heardText"></span>"</p>
+            <!-- Per-part pronunciation diff: green = heard clearly, red = mispronounced/missing -->
+            <div class="pron-diff" id="pronDiff" style="display:none;font-size:1.15rem;letter-spacing:.02em;text-align:center;margin:2px 0;"></div>
+            <p class="pron-diff-legend" id="pronDiffLegend" style="display:none;font-size:.62rem;color:var(--text-sub);text-transform:uppercase;letter-spacing:.12em;margin:0 0 2px;">
+              <span style="color:#4ade80;">■</span> heard &nbsp; <span style="color:#f87171;">■</span> off
+            </p>
             <p class="accuracy-feedback" id="accuracyFeedback"></p>
             <div class="accuracy-actions">
+              <button class="btn-replay" id="playAttemptBtn" style="display:none;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                Your attempt
+              </button>
               <button class="btn-replay" id="replayTargetBtn">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-                Hear it
+                Correct
+              </button>
+              <button class="btn-replay" id="compareBtn" style="display:none;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8l-4 4 4 4"/><path d="M17 8l4 4-4 4"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                Compare
               </button>
               <button class="btn-sm" id="retryBtn" style="display:none;">Try Again</button>
             </div>
@@ -581,13 +594,49 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
+// Normalize for comparison. CRITICAL: keep letters of EVERY script (\p{L}) \u2014 the old
+// version stripped everything outside [a-z0-9], which zeroed out Chinese/Japanese/Korean
+// (e.g. "\u6211\u60f3\u8981" -> "") so those learners always scored 0. We now drop only Latin combining
+// accents (lenient for vi/es), punctuation, and symbols, and keep all scripts + digits.
+function normSpeech(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')   // strip Latin diacritics (lenient)
+    .replace(/[^\p{L}\p{N}\s]/gu, '')                    // keep letters (any script) + digits + space
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 function similarity(spoken, target) {
-  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim();
-  const a = norm(spoken), b = norm(target);
+  const a = normSpeech(spoken), b = normSpeech(target);
   if (!a || !b) return 0;
-  if (a.includes(b) || b.includes(a)) return 100;
+  if (a === b || a.includes(b) || b.includes(a)) return 100;
   const maxLen = Math.max(a.length, b.length);
   return Math.max(0, Math.round((1 - levenshtein(a, b) / maxLen) * 100));
+}
+
+// Per-token pronunciation diff. Returns HTML with each part of the TARGET colored green
+// (heard) or red (missing/off), so the learner sees WHICH syllable/word was wrong.
+// CJK is compared per-character (no word spaces); Latin scripts per word.
+function pronDiffHTML(spoken, target) {
+  const sp = normSpeech(spoken);
+  const isCJK = /[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af\uf900-\ufaff]/.test(target || '');
+  let tokens;
+  if (isCJK) {
+    const heard = new Set(Array.from(sp).filter(ch => ch.trim()));
+    tokens = Array.from(String(target)).filter(ch => ch.trim()).map(ch => {
+      const key = normSpeech(ch);
+      return { disp: ch, ok: !!key && heard.has(key) };
+    });
+    return tokens.map(t => `<span style="color:${t.ok ? '#4ade80' : '#f87171'}">${t.disp}</span>`).join('');
+  }
+  const heardWords = sp.split(/\s+/).filter(Boolean);
+  tokens = String(target).split(/\s+/).filter(Boolean).map(word => {
+    const key = normSpeech(word);
+    const ok = !!key && heardWords.some(w => w === key || w.includes(key) || key.includes(w) || similarity(w, key) >= 70);
+    return { disp: word, ok };
+  });
+  return tokens.map(t => `<span style="color:${t.ok ? '#4ade80' : '#f87171'};font-weight:600">${t.disp}</span>`).join(' ');
 }
 
 function today() {
@@ -1185,6 +1234,12 @@ function renderLesson() {
   $('recordBtnLabel').textContent = 'Hold to Speak';
   $('accuracyDisplay').style.display = 'none';
   $('nextWordBtn').style.display = 'none';
+  // Reset the pronunciation diff + attempt playback for the new word.
+  if ($('pronDiff')) { $('pronDiff').style.display = 'none'; $('pronDiff').innerHTML = ''; }
+  if ($('pronDiffLegend')) $('pronDiffLegend').style.display = 'none';
+  if ($('playAttemptBtn')) $('playAttemptBtn').style.display = 'none';
+  if ($('compareBtn')) $('compareBtn').style.display = 'none';
+  if (state.attemptURL) { URL.revokeObjectURL(state.attemptURL); state.attemptURL = null; }
   $('pronHint').textContent = 'Listen first, then try saying the word aloud.';
   $('retryBtn').style.display = 'none';
   // Reset manual-confirm fallback button
@@ -1232,10 +1287,21 @@ $('manualSayBtn').addEventListener('click', () => {
   $('nextWordBtn').textContent = isLast ? (state.reviewMode ? 'Finish Review →' : 'Finish Day →') : 'Next Word →';
 });
 
-// Replay the target word from the accuracy panel.
+// Replay the correct word from the accuracy panel.
 $('replayTargetBtn').addEventListener('click', () => {
   const w = state.words[state.wordIdx];
   if (w) speak(w.target);
+});
+
+// Play the learner's own recorded attempt.
+$('playAttemptBtn').addEventListener('click', () => playAttempt());
+
+// Compare: play the learner's attempt, then the correct pronunciation right after.
+$('compareBtn').addEventListener('click', () => {
+  const w = state.words[state.wordIdx];
+  const a = playAttempt();
+  if (a) { a.onended = () => setTimeout(() => { if (w) speak(w.target); }, 300); }
+  else if (w) speak(w.target);
 });
 
 // ══════════════════════════════════════════════════════════
@@ -1311,6 +1377,41 @@ $('listenBtn').addEventListener('click', () => {
 let recognition = null;
 let recognizing = false;
 
+// ── Attempt audio capture (so the learner can hear themselves & compare) ──
+// SpeechRecognition only returns text, not audio, so we capture the mic separately with
+// MediaRecorder and stash a playable blob. Capture is best-effort: if the mic/API isn't
+// available the lesson still works, we just don't offer "Your attempt" playback.
+let _attemptStream = null, _attemptRecorder = null, _attemptChunks = [];
+async function startAttemptCapture() {
+  try {
+    if (!navigator.mediaDevices || !window.MediaRecorder) return;
+    if (!_attemptStream) _attemptStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    _attemptChunks = [];
+    _attemptRecorder = new MediaRecorder(_attemptStream);
+    _attemptRecorder.ondataavailable = e => { if (e.data && e.data.size) _attemptChunks.push(e.data); };
+    _attemptRecorder.onstop = () => {
+      if (!_attemptChunks.length) return;
+      const blob = new Blob(_attemptChunks, { type: _attemptRecorder.mimeType || 'audio/webm' });
+      if (state.attemptURL) URL.revokeObjectURL(state.attemptURL);
+      state.attemptURL = URL.createObjectURL(blob);
+      const btn = $('playAttemptBtn'), cmp = $('compareBtn');
+      if (btn) btn.style.display = '';
+      if (cmp) cmp.style.display = '';
+    };
+    _attemptRecorder.start();
+  } catch (e) { /* capture is optional */ }
+}
+function stopAttemptCapture() {
+  try { if (_attemptRecorder && _attemptRecorder.state !== 'inactive') _attemptRecorder.stop(); } catch (e) {}
+}
+// Play the learner's own recording.
+function playAttempt() {
+  if (!state.attemptURL) return;
+  const a = new Audio(state.attemptURL);
+  a.play().catch(() => {});
+  return a;
+}
+
 function setupRecognition() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRec) return null;
@@ -1359,9 +1460,11 @@ function startRecording() {
   recognition = setupRecognition();
   if (!recognition) return;
   recognition.lang = state.langData.recognition_lang;
+  startAttemptCapture();           // capture audio in parallel for "Your attempt" playback
   try { recognition.start(); } catch(e){}
 }
 function stopRecording() {
+  stopAttemptCapture();
   if (recognition && recognizing) { try { recognition.stop(); } catch(e){} }
 }
 
@@ -1380,6 +1483,18 @@ function showAccuracy(score, spoken, word) {
   circle.style.stroke = score >= PASS ? '#4ade80' : score >= 40 ? '#ECAA27' : '#f87171';
   $('accuracyNum').textContent = score + '%';
   $('heardText').textContent = spoken || '—';
+
+  // Per-part diff: colour each syllable/word green (heard) or red (off) so the learner
+  // sees exactly which part of the pronunciation missed.
+  const diffEl = $('pronDiff'), legEl = $('pronDiffLegend');
+  if (diffEl) {
+    diffEl.innerHTML = pronDiffHTML(spoken, word.target);
+    diffEl.style.display = '';
+    if (legEl) legEl.style.display = '';
+  }
+  // Offer attempt playback + compare if we captured audio.
+  $('playAttemptBtn').style.display = state.attemptURL ? '' : 'none';
+  $('compareBtn').style.display = state.attemptURL ? '' : 'none';
 
   const feedback = $('accuracyFeedback');
   if (score >= 90) {
