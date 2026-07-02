@@ -927,8 +927,8 @@
       <label>Graphic Intensity</label>
       <select id="ctrl-p5" onchange="applyControls()">
         <option value="off">Off</option>
-        <option value="standard" selected>Standard</option>
-        <option value="heavy">Heavy</option>
+        <option value="standard">Standard</option>
+        <option value="heavy" selected>Heavy</option>
       </select>
     </div>
     <div class="control-group q">
@@ -1761,22 +1761,26 @@
 
     /* ── Universal 60:30:10 styling guide for ALL generated imagery ──
        Appended to every AI prompt so the OUTPUT itself obeys the rule, in the
-       currently-selected Aesthetic + Color Set. (forSubject softens it so the
-       "render me in" face stays recognizable while the scene grades to palette.) */
+       currently-selected Aesthetic + Color Set. Built from the Samurai Jack
+       60:30:10 breakdown + Gurren Lagann promo frames + Kubo manga panels:
+       dominant floods the field, secondary carries the subject mass, the accent
+       is the ONLY pop and it sits ON the focal point. Heavy contrast is the
+       default — crushed darks, hard shadow edges, silhouette-first. */
     function pk6030Text(forSubject) {
       const style = pkCurrentStyle();                                   // manga | flat
       const palId = (document.getElementById('ctrl-palette') || {}).value || 'ink_gold';
       const P = pkResolvePalette();
       const look = style === 'manga'
-        ? 'High-contrast black-and-white manga ink aesthetic: heavy crushed blacks, bold confident linework, dramatic negative space, subtle halftone shading'
-        : 'Bold flat-color anime poster aesthetic: clean saturated color blocks, sharp angular shapes, crisp edges, minimal gradients';
+        ? 'Black-and-white manga ink poster (Bleach manga-panel style): vast fields of PURE ink black and paper white, hard-edged shadow shapes that swallow whole regions of the frame, bold confident linework, sparse hatching or halftone only near the focal point, dramatic negative space'
+        : 'Flat-color anime poster (Gurren Lagann promo / Samurai Jack style): everything rendered as bold FLAT cel-shaded silhouettes with crisp angular edges, zero gradients, zero photo texture, graphic shapes layered like paper cutouts on a flat field';
       const rule = (palId === 'auto')
-        ? 'Follow the 60:30:10 color rule strictly: ONE dominant color filling ~60% of the frame, ONE secondary color ~30%, and ONE small accent color ~10% as the only pop. Limit the whole image to those three colors.'
-        : `Follow the 60:30:10 color rule strictly with this exact palette: DOMINANT ${P.dom} ~60% of the frame, SECONDARY ${P.sec} ~30%, ACCENT ${P.acc} ~10% as the only pop of color. Use essentially only these three colors.`;
+        ? 'COLOR — obey the 60:30:10 rule exactly like a Samurai Jack frame: ONE dominant color floods ~60% of the frame (the background field and largest masses), ONE secondary color carries ~30% (the subject mass and mid shapes), and ONE accent color is ~10% — the ONLY pop, marking the focal point. Nothing outside these three colors.'
+        : `COLOR — obey the 60:30:10 rule exactly like a Samurai Jack frame, using THIS palette and nothing else: DOMINANT ${P.dom} floods ~60% of the frame (background field + largest masses), SECONDARY ${P.sec} carries ~30% (subject mass + mid shapes), ACCENT ${P.acc} is ~10% — the ONLY pop, placed ON the focal point. No other hues anywhere in the image.`;
+      const contrast = 'CONTRAST — HEAVY contrast by default: crushed darks, blazing lights, hard-edged shadow shapes, no soft ambient wash, no murky midtones, no haze. The composition must read instantly as a silhouette at 200px wide.';
       const frame = forSubject
-        ? "Keep the man's face recognizable and naturally lit, but color-grade the whole scene into this palette."
-        : 'Strong central silhouette / subject, one clear focal point.';
-      return ` STYLE GUIDE — ${look}. ${rule} ${frame} Leave clean negative space on one side for a headline. Cinematic, poster-grade composition. No text, no watermarks, no logos in the image.`;
+        ? "SUBJECT — render the man as the graphic HERO of this poster, fully translated into the aesthetic above: stylize him boldly — hard chiaroscuro may swallow half his face or body into the dominant field, manga-cover style — rim-light his silhouette, and place the ACCENT color on or immediately around him (eyes, rim light, one garment or prop) so the eye lands on him first. His face must stay unmistakably recognizable."
+        : 'One strong central silhouette / subject; the accent marks that focal point.';
+      return ` STYLE GUIDE — ${look}. ${rule} ${contrast} ${frame} Leave clean negative space on one side for a headline. Poster-grade composition. No text, no watermarks, no logos in the image.`;
     }
 
     async function generateBg() {
@@ -2148,7 +2152,7 @@
     const PK_STATE_KEY = 'pk_thumb_state_v2';
     const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-hl','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-font','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
     const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
-    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-hl':'gurren', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'standard' };
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-hl':'gurren', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'heavy' };
 
     function pkCollectState() {
       const s = { v: {}, b: {} };

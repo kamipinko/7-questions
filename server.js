@@ -715,13 +715,14 @@ function pkLoadRefImages() {
 }
 
 function pkSubjectScenePrompt(scene, styleGuide) {
-  const s = (scene && scene.trim()) || 'seated in a dark, moody study, contemplative, cinematic key light';
-  // When the client sends a 60:30:10 style guide (palette-driven), use it as the
-  // mood/color direction; otherwise fall back to the default Proles Kitchen mood.
+  const s = (scene && scene.trim()) || 'standing in a dark, moody space, contemplative, one hard key light';
+  // The client's 60:30:10 style guide (palette + aesthetic + heavy contrast) drives
+  // the whole look. The fallback mood is the same language in brand colors — a
+  // heavy-contrast graphic poster, never a soft naturalistic photo.
   const mood = (styleGuide && styleGuide.trim())
     ? styleGuide.trim()
-    : 'Proles Kitchen mood: dark background, gold (#ECAA27) accents.';
-  return `Photorealistic image of the SAME man shown in the provided reference photos — match his exact face, skin tone, light beard, and especially his hair: distinct twisted locs / two-strand twists with reddish-brown tips (NOT a smooth round afro). ${s}. Integrated cinematic lighting and shadows — he is genuinely part of the scene, not a flat cutout. ${mood} No text.`;
+    : 'STYLE GUIDE — high-contrast graphic poster. COLOR — 60:30:10 rule: near-black #0a0a0a floods ~60% of the frame, deep red #680707 carries ~30%, gold #ECAA27 is ~10% — the only accent, placed on the focal point. CONTRAST — crushed blacks, hard-edged shadow shapes, heavy chiaroscuro, no soft ambient wash.';
+  return `Dramatic high-contrast poster of the SAME man shown in the provided reference photos — his identity must be unmistakable: exact face, skin tone, light beard, and especially his hair — distinct twisted locs / two-strand twists with reddish-brown tips (NOT a smooth round afro). Scene: ${s}. He is fully integrated into the scene — shared lighting, shadows, and palette, never a pasted cutout — composed like the hero of a movie poster. ${mood} No text.`;
 }
 
 // Calls gemini-3-pro-image-preview with the scene prompt + all 8 reference images.
