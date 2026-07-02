@@ -869,8 +869,8 @@
     <div class="control-group q">
       <label>Highlight Color</label>
       <select id="ctrl-hl" onchange="applyControls()">
-        <option value="gurren" selected>Gurren Red</option>
-        <option value="accent">Palette Accent</option>
+        <option value="gurren">Gurren Red</option>
+        <option value="accent" selected>Palette Accent</option>
         <option value="gold">Gold</option>
         <option value="white">White</option>
       </select>
@@ -2152,7 +2152,7 @@
     const PK_STATE_KEY = 'pk_thumb_state_v2';
     const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-hl','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-font','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
     const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
-    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-hl':'gurren', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'heavy' };
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-hl':'accent', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'heavy' };
 
     function pkCollectState() {
       const s = { v: {}, b: {} };
