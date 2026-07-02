@@ -1534,8 +1534,10 @@
       const eyebrow  = document.getElementById('ctrl-eyebrow').value;
       // Accent field accepts MULTIPLE punchy words (comma / space separated) —
       // every matching word in the headline lights up in the highlight color.
+      // Matching ignores punctuation so "EXCUSE?" still lights up for "EXCUSE".
+      const pkNormWord = w => w.replace(/[^A-Z0-9'-]/g, '');
       const accentSet = new Set(
-        document.getElementById('ctrl-accent').value.toUpperCase().split(/[\s,]+/).filter(Boolean)
+        document.getElementById('ctrl-accent').value.toUpperCase().split(/[\s,]+/).map(pkNormWord).filter(Boolean)
       );
       const bgUrl    = document.getElementById('ctrl-bg').value.trim();
       const scene    = document.getElementById('ctrl-scene').value;
@@ -1552,7 +1554,7 @@
         let lines = raw.split('|');
         return lines.map((line, i) => {
           let words = line.toUpperCase().split(' ').map(w =>
-            (accentSet.size && accentSet.has(w)) ? emphasis(w) : w
+            (accentSet.size && accentSet.has(pkNormWord(w))) ? emphasis(w) : w
           ).join(' ');
           return words + (i < lines.length - 1 ? '<br>' : '');
         }).join('');
