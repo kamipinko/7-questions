@@ -239,15 +239,27 @@
     "The President is impeached. Congress has convicted them of high crimes and misdemeanors — self-dealing, violation of the Emoluments Clause, and war-making without the advice and consent of Congress. The President declares martial law and arrests the congressional leaders who led the vote. . . .",
     "By a two-thirds majority the Senate votes to convict. Within the hour the President appears on live television to announce that the vote is 'null, illegitimate, and an act of insurrection' — and that the Republic is now under emergency executive authority. . . .",
     "The gavel falls: convicted, removed, barred from future office. The President does not concede. The Secret Service detail at the residence is doubled. The Vice President cannot be reached. Outside, the crowd has not gone home. . . .",
-    "The impeachment holds. But when the Sergeant-at-Arms arrives to escort the former President from the building, the soldiers at the door will not say whose orders they are following. . . ."
+    "The impeachment holds. But when the Sergeant-at-Arms arrives to escort the former President from the building, the soldiers at the door will not say whose orders they are following. . . .",
+    "Convicted, 67 to 33. Before the Chief Justice can finish reading the verdict the chamber lights go dark. When they come back the President's motorcade is already moving — not toward the exit, but toward the Pentagon. . . .",
+    "The Articles are sustained on every count. The President signs an executive order titled 'Continuity of Government,' declares the impeachment itself a foreign-backed coup, and federal agents appear outside three network newsrooms before midnight. . . .",
+    "Removed. Within minutes, two people claim the office: the Vice President, sworn in at an undisclosed location, and the President, who has not risen from the Resolute Desk. Both are scheduled to address the nation at 9 p.m., on the same channels. . . .",
+    "The verdict lands at 4:12 a.m. By sunrise the National Guard in two states has been federalized, every airport is closed 'for security,' and no one in the Cabinet will confirm who is giving the orders. . . .",
+    "Guilty on all counts. The President accepts the verdict — then announces that, as their 'final lawful act,' they have pardoned themselves, dissolved the special counsel, and ordered the Treasury sealed. The Speaker calls it treason. . . .",
+    "The Senate convicts. The President's approval, somehow, climbs ten points overnight. Millions call the trial a stitch-up. By noon, rival rallies fill the same square in the capital, and the police have quietly gone home. . . ."
   ];
+  function randomOpening(prev){
+    var o=OPENINGS[Math.floor(Math.random()*OPENINGS.length)];
+    if(OPENINGS.length>1){ while(o===prev){ o=OPENINGS[Math.floor(Math.random()*OPENINGS.length)]; } }
+    return o;
+  }
 
   var state={seed:OPENINGS[0], events:[], filter:null, drawn:null};
 
   // ── persistence ──
   function save(){ try{localStorage.setItem(LS,JSON.stringify({seed:state.seed,events:state.events}));}catch(e){} }
   function load(){
-    try{var r=JSON.parse(localStorage.getItem(LS)); if(r&&r.events){state.seed=r.seed||state.seed; state.events=r.events;}}catch(e){}
+    try{var r=JSON.parse(localStorage.getItem(LS)); if(r&&(r.seed||r.events)){state.seed=r.seed||state.seed; state.events=r.events||[]; return true;}}catch(e){}
+    return false;
   }
 
   // ── tension ──
@@ -386,12 +398,10 @@
   document.getElementById('cancelBtn').onclick=function(){ document.getElementById('composer').classList.remove('show'); state.drawn=null; };
   document.getElementById('copyBtn').onclick=copyRecord;
   document.getElementById('clearBtn').onclick=function(){
-    if(confirm('Clear the entire record and start over?')){ state.events=[]; state.seed=OPENINGS[0]; renderAll(); save(); }
+    if(confirm('Clear the entire record and start over?')){ state.events=[]; state.seed=randomOpening(state.seed); renderAll(); save(); toast('New crisis drawn'); }
   };
   document.getElementById('shuffleSeed').onclick=function(){
-    var cur=state.seed, next=cur;
-    while(next===cur){ next=OPENINGS[Math.floor(Math.random()*OPENINGS.length)]; }
-    state.seed=next; document.getElementById('seed').value=next; save(); toast('New opening drawn');
+    state.seed=randomOpening(state.seed); document.getElementById('seed').value=state.seed; save(); toast('New opening drawn');
   };
   document.getElementById('seed').addEventListener('input',function(e){ state.seed=e.target.value; save(); });
   document.getElementById('composerText').addEventListener('keydown',function(e){
@@ -399,7 +409,9 @@
   });
 
   // ── boot ──
-  load(); renderChips(); renderAll();
+  var hadSave=load();
+  if(!hadSave){ state.seed=randomOpening(); }   // fresh game → random starting point
+  renderChips(); renderAll();
 })();
 </script>
 </body>
