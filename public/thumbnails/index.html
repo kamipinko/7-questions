@@ -910,8 +910,8 @@
     <div class="control-group q">
       <label>Headline Font</label>
       <select id="ctrl-font" onchange="applyControls()">
-        <option value="anton" selected>Anton (bold)</option>
-        <option value="manga">Manga</option>
+        <option value="anton">Anton (bold)</option>
+        <option value="manga" selected>Manga</option>
       </select>
     </div>
     <div class="control-group">
@@ -954,6 +954,7 @@
             <option value="dalle">DALL-E 3</option>
             <option value="gemini">Gemini Imagen</option>
             <option value="subject-scene">Render me into the scene</option>
+            <option value="scene-only">Scene only — take me out</option>
           </select>
         </div>
         <div class="control-group">
@@ -1731,10 +1732,10 @@
 
     setScene(document.getElementById('ctrl-scene').value);
 
-    // Switching away from subject-scene restores the normal cutout + faded-bg behavior.
+    // Switching away from the AI-scene providers restores the normal cutout + faded-bg behavior.
     function onProviderChange() {
       const p = document.getElementById('ctrl-ai-provider').value;
-      if (p !== 'subject-scene' && pkSubjectSceneActive) {
+      if (p !== 'subject-scene' && p !== 'scene-only' && pkSubjectSceneActive) {
         pkSubjectSceneActive = false;
         ['yt-bg-img-1','yt-bg-img-2','ig-bg-img-1','ig-bg-img-2'].forEach(id => {
           document.getElementById(id).style.opacity = '';   // back to CSS default (0.72 / 0.65)
@@ -1780,14 +1781,14 @@
         : `COLOR — obey the 60:30:10 rule exactly like a Samurai Jack frame, using THIS palette and nothing else: DOMINANT ${P.dom} floods ~60% of the frame (background field + largest masses), SECONDARY ${P.sec} carries ~30% (subject mass + mid shapes), ACCENT ${P.acc} is ~10% — the ONLY pop, placed ON the focal point. No other hues anywhere in the image.`;
       const contrast = 'CONTRAST — HEAVY contrast by default: crushed darks, blazing lights, hard-edged shadow shapes, no soft ambient wash, no murky midtones, no haze. The composition must read instantly as a silhouette at 200px wide.';
       const frame = forSubject
-        ? "SUBJECT — render the man as the graphic HERO of this poster, fully translated into the aesthetic above: stylize him boldly — hard chiaroscuro may swallow half his face or body into the dominant field, manga-cover style — rim-light his silhouette, and place the ACCENT color on or immediately around him (eyes, rim light, one garment or prop) so the eye lands on him first. His face must stay unmistakably recognizable."
+        ? "SUBJECT — RE-DRAW the man ENTIRELY as hand-drawn artwork in the aesthetic above — confident pen linework, cross-hatching, screentone, hard-edged ink shadow shapes that may swallow half his face or body into the dominant field, like a Bleach manga panel or seinen manga cover. NOT cel-shaded anime, NOT a photo filter, NOT photorealistic — a genuine redrawn illustration. Rim-light his silhouette and place the ACCENT color on or immediately around him (eyes, rim light, one garment or prop) so the eye lands on him first. His identity must stay unmistakable: facial structure, light beard, twisted locs with reddish-brown tips."
         : 'One strong central silhouette / subject; the accent marks that focal point.';
       return ` STYLE GUIDE — ${look}. ${rule} ${contrast} ${frame} Leave clean negative space on one side for a headline. Poster-grade composition. No text, no watermarks, no logos in the image.`;
     }
 
     async function generateBg() {
       const provider = document.getElementById('ctrl-ai-provider').value;
-      if (provider === 'subject-scene') return generateSubjectScene();
+      if (provider === 'subject-scene' || provider === 'scene-only') return generateSubjectScene(provider);
 
       const prompt   = document.getElementById('ctrl-ai-prompt').value.trim();
       const statusEl = document.getElementById('ai-status');
@@ -1835,24 +1836,27 @@
       }
     }
 
-    // "Render me into the scene" — two Nano Banana Pro passes (16:9 for YT, 9:16 for IG),
-    // Pinko's real face baked in. Cutout + scene SVG auto-off, bg at full opacity.
-    async function generateSubjectScene() {
+    // "Render me into the scene" / "Scene only — take me out" — two Nano Banana Pro
+    // passes (16:9 for YT, 9:16 for IG). subject-scene bakes Pinko's manga re-draw in;
+    // scene-only renders the same poster with NO people. Cutout + scene SVG auto-off,
+    // bg at full opacity in both modes (the render IS the art).
+    async function generateSubjectScene(provider = 'subject-scene') {
+      const withMe   = provider === 'subject-scene';
       const scene    = document.getElementById('ctrl-ai-prompt').value.trim();
       const statusEl = document.getElementById('ai-status');
       const btn      = document.getElementById('btn-generate');
       const origLabel = btn.textContent;
 
       btn.disabled = true;
-      btn.textContent = 'Rendering you into the scene… (~1 min)';
+      btn.textContent = withMe ? 'Rendering you into the scene… (~1 min)' : 'Rendering the scene (no you)… (~1 min)';
       statusEl.style.color = '#ECAA27';
-      statusEl.textContent = 'Rendering you into the scene — two passes (16:9 + 9:16), can take 1–2 min…';
+      statusEl.textContent = (withMe ? 'Rendering you into the scene' : 'Rendering the scene without you') + ' — two passes (16:9 + 9:16), can take 1–2 min…';
 
       const call = async (aspectRatio) => {
         const res = await fetch('/api/generate-bg', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt: scene, provider: 'subject-scene', aspectRatio, styleGuide: pk6030Text(true) })
+          body: JSON.stringify({ prompt: scene, provider, aspectRatio, styleGuide: pk6030Text(withMe) })
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Generation failed');
@@ -1878,7 +1882,9 @@
         applyControls();   // hides .subject-img cutout + scene SVG via the active flag
 
         statusEl.style.color = '#4caf50';
-        statusEl.textContent = '✓ You are rendered into the scene on all 4 tiles (16:9 YT · 9:16 IG).';
+        statusEl.textContent = withMe
+          ? '✓ You are rendered into the scene on all 4 tiles (16:9 YT · 9:16 IG).'
+          : '✓ Scene rendered without you on all 4 tiles (16:9 YT · 9:16 IG).';
       } catch (err) {
         statusEl.style.color = '#e05252';
         statusEl.textContent = 'Error: ' + err.message;
@@ -2154,7 +2160,7 @@
     const PK_STATE_KEY = 'pk_thumb_state_v2';
     const PK_TEXT_IDS = ['ctrl-headline','ctrl-subline','ctrl-eyebrow','ctrl-accent','ctrl-hl','ctrl-bg','ctrl-bg-brightness','ctrl-style','ctrl-palette','ctrl-font','ctrl-scene','ctrl-box-color','ctrl-script','ctrl-symbol-char','ctrl-subj-side','ctrl-subj-scale','ctrl-ai-provider','ctrl-ai-prompt','ctrl-p5'];
     const PK_BOOL_IDS = ['ctrl-accent-box','ctrl-arrow','ctrl-symbol','ctrl-daysplit','ctrl-yt-arrow'];
-    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'anton', 'ctrl-hl':'accent', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'heavy' };
+    const PK_FRESH_DEFAULTS = { 'ctrl-eyebrow':'Proles Kitchen', 'ctrl-bg-brightness':'1', 'ctrl-style':'manga', 'ctrl-palette':'ink_gold', 'ctrl-font':'manga', 'ctrl-hl':'accent', 'ctrl-scene':'none', 'ctrl-box-color':'gold', 'ctrl-subj-side':'right', 'ctrl-subj-scale':'1', 'ctrl-ai-provider':'dalle', 'ctrl-symbol-char':'✝', 'ctrl-p5':'heavy' };
 
     function pkCollectState() {
       const s = { v: {}, b: {} };

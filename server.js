@@ -725,17 +725,30 @@ function pkSubjectScenePrompt(scene, styleGuide) {
   return `Dramatic high-contrast poster of the SAME man shown in the provided reference photos — his identity must be unmistakable: exact face, skin tone, light beard, and especially his hair — distinct twisted locs / two-strand twists with reddish-brown tips (NOT a smooth round afro). Scene: ${s}. He is fully integrated into the scene — shared lighting, shadows, and palette, never a pasted cutout — composed like the hero of a movie poster. ${mood} No text.`;
 }
 
+// "Scene only — take me out": the same poster language with NO subject at all.
+function pkSceneOnlyPrompt(scene, styleGuide) {
+  const s = (scene && scene.trim()) || 'a dark, moody space, one hard key light';
+  const mood = (styleGuide && styleGuide.trim())
+    ? styleGuide.trim()
+    : 'STYLE GUIDE — high-contrast graphic poster. COLOR — 60:30:10 rule: near-black #0a0a0a floods ~60% of the frame, deep red #680707 carries ~30%, gold #ECAA27 is ~10% — the only accent, placed on the focal point. CONTRAST — crushed blacks, hard-edged shadow shapes, heavy chiaroscuro, no soft ambient wash.';
+  return `Dramatic high-contrast poster scene: ${s}. ABSOLUTELY NO people, no human figures, no faces, no silhouettes of people anywhere in the image — the scenery and its shapes carry the whole composition. ${mood} No text.`;
+}
+
 // Calls gemini-3-pro-image-preview with the scene prompt + all 8 reference images.
 // The model can be slow (25-90s) and occasionally returns 503/UNAVAILABLE under load,
 // so each call uses a generous timeout and retries transient failures with backoff.
-async function pkRenderSubjectScene(scene, aspectRatio, styleGuide) {
+async function pkRenderSubjectScene(scene, aspectRatio, styleGuide, noSubject = false) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY not set');
-  const refs = pkLoadRefImages();
-  if (!refs.length) throw new Error('No reference images found in assets/refs');
   const ar = (aspectRatio === '9:16') ? '9:16' : '16:9';
-  const parts = [{ text: pkSubjectScenePrompt(scene, styleGuide) }];
-  for (const r of refs) parts.push({ inlineData: { mimeType: r.mimeType, data: r.data } });
+  const parts = noSubject
+    ? [{ text: pkSceneOnlyPrompt(scene, styleGuide) }]
+    : [{ text: pkSubjectScenePrompt(scene, styleGuide) }];
+  if (!noSubject) {
+    const refs = pkLoadRefImages();
+    if (!refs.length) throw new Error('No reference images found in assets/refs');
+    for (const r of refs) parts.push({ inlineData: { mimeType: r.mimeType, data: r.data } });
+  }
   const body = JSON.stringify({
     contents: [{ parts }],
     generationConfig: { responseModalities: ['TEXT', 'IMAGE'], imageConfig: { aspectRatio: ar, imageSize: '2K' } }
@@ -781,11 +794,11 @@ async function pkRenderSubjectScene(scene, aspectRatio, styleGuide) {
 
 app.post('/api/generate-bg', express.json(), async (req, res) => {
   const { prompt, provider = 'dalle', aspectRatio, styleGuide } = req.body;
-  if (!prompt && provider !== 'subject-scene') return res.status(400).json({ error: 'Prompt is required' });
+  if (!prompt && provider !== 'subject-scene' && provider !== 'scene-only') return res.status(400).json({ error: 'Prompt is required' });
 
   try {
-    if (provider === 'subject-scene') {
-      const dataUrl = await pkRenderSubjectScene(prompt, aspectRatio, styleGuide);
+    if (provider === 'subject-scene' || provider === 'scene-only') {
+      const dataUrl = await pkRenderSubjectScene(prompt, aspectRatio, styleGuide, provider === 'scene-only');
       return res.json({ dataUrl });
     }
 
