@@ -180,7 +180,7 @@
 <script>
 (function(){
   "use strict";
-  var LS='pip_record_v1';
+  var LS='pip_record_v1', LS_SEEN='pip_seen_v1', LS_LAST='pip_last_v1';
 
   var ACTORS=[
     {id:'pres',   name:'The President'},
@@ -252,13 +252,20 @@
     if(OPENINGS.length>1){ while(o===prev){ o=OPENINGS[Math.floor(Math.random()*OPENINGS.length)]; } }
     return o;
   }
+  function repeatOpening(){ // for return visits: a random scenario other than the canonical first setup, and not the last one shown
+    var avoid=''; try{avoid=localStorage.getItem(LS_LAST)||'';}catch(e){}
+    var pool=OPENINGS.slice(1);
+    var o=pool[Math.floor(Math.random()*pool.length)], g=0;
+    while(pool.length>1 && o===avoid && g<25){ o=pool[Math.floor(Math.random()*pool.length)]; g++; }
+    return o;
+  }
 
   var state={seed:OPENINGS[0], events:[], filter:null, drawn:null};
 
   // ── persistence ──
-  function save(){ try{localStorage.setItem(LS,JSON.stringify({seed:state.seed,events:state.events}));}catch(e){} }
-  function load(){
-    try{var r=JSON.parse(localStorage.getItem(LS)); if(r&&(r.seed||r.events)){state.seed=r.seed||state.seed; state.events=r.events||[]; return true;}}catch(e){}
+  function save(){ try{localStorage.setItem(LS,JSON.stringify({seed:state.seed,events:state.events}));localStorage.setItem(LS_LAST,state.seed);}catch(e){} }
+  function load(){ // resume only a genuine in-progress game (has developments on the record)
+    try{var r=JSON.parse(localStorage.getItem(LS)); if(r&&r.events&&r.events.length){state.seed=r.seed||state.seed; state.events=r.events; return true;}}catch(e){}
     return false;
   }
 
@@ -409,8 +416,12 @@
   });
 
   // ── boot ──
-  var hadSave=load();
-  if(!hadSave){ state.seed=randomOpening(); }   // fresh game → random starting point
+  var resumed=load();                              // resume an in-progress game if one exists
+  if(!resumed){
+    var seen; try{seen=localStorage.getItem(LS_SEEN);}catch(e){}
+    state.seed = seen ? repeatOpening() : OPENINGS[0];  // 1st visit ever = canonical setup; every visit after = a different random scenario
+  }
+  try{ localStorage.setItem(LS_SEEN,'1'); localStorage.setItem(LS_LAST,state.seed); }catch(e){}
   renderChips(); renderAll();
 })();
 </script>
