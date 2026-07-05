@@ -113,7 +113,7 @@
   <div class="seal">🏛️</div>
   <div class="eyebrow">A Game of Political Fiction</div>
   <h1>A President <span class="u">Is Impeached</span></h1>
-  <p class="sub">Congress has convicted. Now the republic bends. Draw a development, elaborate it, and build the crisis one move at a time — until it holds, or breaks.</p>
+  <p class="sub">The House has impeached. The Senate has convicted. Now the republic bends. Draw a development, elaborate it, and build the crisis one move at a time — until it holds, or breaks.</p>
 </header>
 
 <main>
@@ -171,7 +171,7 @@
 
 <div class="footer">
   <button class="btn ghost" id="copyBtn">📋 Copy the Record</button>
-  <button class="btn ghost" id="shuffleSeed">🔀 New Opening</button>
+  <button class="btn ghost" id="shuffleSeed">🎲 Generate an Opening</button>
   <button class="btn red" id="clearBtn">🗑 Start Over</button>
 </div>
 
@@ -180,7 +180,7 @@
 <script>
 (function(){
   "use strict";
-  var LS='pip_record_v1', LS_SEEN='pip_seen_v1', LS_LAST='pip_last_v1';
+  var LS='pip_record_v1';
 
   var ACTORS=[
     {id:'pres',   name:'The President'},
@@ -203,7 +203,7 @@
     {a:'pres',w:13,t:"The President suspends habeas corpus and refuses to vacate the White House."},
     {a:'pres',w:10,t:"The President orders the Treasury to freeze the accounts of every state that defies the order."},
 
-    {a:'congress',w:11,t:"Congress reconvenes in a secret location and votes to certify the conviction and remove the President."},
+    {a:'congress',w:11,t:"Congress reconvenes in a secret location and declares the Senate's conviction stands: the President is removed, and the line of succession is invoked."},
     {a:'congress',w:10,t:"The Speaker of the House declares themselves Acting President and is sworn in over the phone."},
     {a:'congress',w:9,t:"Congress issues federal warrants for the President's arrest and cuts off all executive funding."},
     {a:'congress',w:8,t:"A bloc of senators defects to the President's side, splitting the legislature into two rival bodies."},
@@ -236,7 +236,7 @@
   ];
 
   var OPENINGS=[
-    "The President is impeached. Congress has convicted them of high crimes and misdemeanors — self-dealing, violation of the Emoluments Clause, and war-making without the advice and consent of Congress. The President declares martial law and arrests the congressional leaders who led the vote. . . .",
+    "The President is impeached by the House and convicted by the Senate — high crimes and misdemeanors: self-dealing, violation of the Emoluments Clause, and war-making without the advice and consent of Congress. The President declares martial law and arrests the congressional leaders who led the vote. . . .",
     "By a two-thirds majority the Senate votes to convict. Within the hour the President appears on live television to announce that the vote is 'null, illegitimate, and an act of insurrection' — and that the Republic is now under emergency executive authority. . . .",
     "The gavel falls: convicted, removed, barred from future office. The President does not concede. The Secret Service detail at the residence is doubled. The Vice President cannot be reached. Outside, the crowd has not gone home. . . .",
     "The impeachment holds. But when the Sergeant-at-Arms arrives to escort the former President from the building, the soldiers at the door will not say whose orders they are following. . . .",
@@ -252,18 +252,11 @@
     if(OPENINGS.length>1){ while(o===prev){ o=OPENINGS[Math.floor(Math.random()*OPENINGS.length)]; } }
     return o;
   }
-  function repeatOpening(){ // for return visits: a random scenario other than the canonical first setup, and not the last one shown
-    var avoid=''; try{avoid=localStorage.getItem(LS_LAST)||'';}catch(e){}
-    var pool=OPENINGS.slice(1);
-    var o=pool[Math.floor(Math.random()*pool.length)], g=0;
-    while(pool.length>1 && o===avoid && g<25){ o=pool[Math.floor(Math.random()*pool.length)]; g++; }
-    return o;
-  }
 
   var state={seed:OPENINGS[0], events:[], filter:null, drawn:null};
 
   // ── persistence ──
-  function save(){ try{localStorage.setItem(LS,JSON.stringify({seed:state.seed,events:state.events}));localStorage.setItem(LS_LAST,state.seed);}catch(e){} }
+  function save(){ try{localStorage.setItem(LS,JSON.stringify({seed:state.seed,events:state.events}));}catch(e){} }
   function load(){ // resume only a genuine in-progress game (has developments on the record)
     try{var r=JSON.parse(localStorage.getItem(LS)); if(r&&r.events&&r.events.length){state.seed=r.seed||state.seed; state.events=r.events; return true;}}catch(e){}
     return false;
@@ -405,10 +398,10 @@
   document.getElementById('cancelBtn').onclick=function(){ document.getElementById('composer').classList.remove('show'); state.drawn=null; };
   document.getElementById('copyBtn').onclick=copyRecord;
   document.getElementById('clearBtn').onclick=function(){
-    if(confirm('Clear the entire record and start over?')){ state.events=[]; state.seed=randomOpening(state.seed); renderAll(); save(); toast('New crisis drawn'); }
+    if(confirm('Clear the entire record and start over?')){ state.events=[]; state.seed=OPENINGS[0]; renderAll(); save(); toast('Back to the original opening'); }
   };
   document.getElementById('shuffleSeed').onclick=function(){
-    state.seed=randomOpening(state.seed); document.getElementById('seed').value=state.seed; save(); toast('New opening drawn');
+    state.seed=randomOpening(state.seed); document.getElementById('seed').value=state.seed; save(); toast('New opening generated');
   };
   document.getElementById('seed').addEventListener('input',function(e){ state.seed=e.target.value; save(); });
   document.getElementById('composerText').addEventListener('keydown',function(e){
@@ -417,11 +410,7 @@
 
   // ── boot ──
   var resumed=load();                              // resume an in-progress game if one exists
-  if(!resumed){
-    var seen; try{seen=localStorage.getItem(LS_SEEN);}catch(e){}
-    state.seed = seen ? repeatOpening() : OPENINGS[0];  // 1st visit ever = canonical setup; every visit after = a different random scenario
-  }
-  try{ localStorage.setItem(LS_SEEN,'1'); localStorage.setItem(LS_LAST,state.seed); }catch(e){}
+  if(!resumed){ state.seed=OPENINGS[0]; }          // the canonical original opening is the default on every load
   renderChips(); renderAll();
 })();
 </script>
