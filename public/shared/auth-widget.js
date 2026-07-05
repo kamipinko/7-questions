@@ -175,6 +175,12 @@
   function openModal() {
     buildModal();
     showStep('email');
+    // Prefill the email remembered on this device — one tap back into the account.
+    try {
+      var saved = localStorage.getItem('wad_email');
+      var input = document.getElementById('sc-auth-email-in');
+      if (saved && input && !input.value) input.value = saved;
+    } catch (e) {}
     document.getElementById('sc-auth-modal').classList.add('open');
     setTimeout(function () { var i = document.getElementById('sc-auth-email-in'); if (i) i.focus(); }, 30);
   }
@@ -188,9 +194,31 @@
     var email = (input.value || '').trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus('Please enter a valid email.'); return; }
     state.pendingEmail = email;
-    setStatus('Sending…');
+    setStatus('Logging in…');
     var btn = document.querySelector('#sc-auth-modal [data-act="send"]');
     if (btn) btn.disabled = true;
+    // Email IS the login: a known email routes straight back into its account.
+    // The emailed-code step only runs against servers without the endpoint.
+    var existing = token();
+    api('/api/wad/auth/email-login', { email: email, authToken: existing || undefined })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, status: r.status, data: d }; }); })
+      .then(function (res) {
+        if (res.ok && res.data && res.data.authToken) {
+          try { localStorage.setItem(AUTH_KEY, res.data.authToken); } catch (e) {}
+          try { localStorage.setItem('wad_email', email); } catch (e) {}
+          setStatus('Logged in! Reloading…');
+          location.reload();
+          return;
+        }
+        if (res.status === 404) { legacySendCode(email, btn); return; }
+        if (btn) btn.disabled = false;
+        setStatus((res.data && res.data.error) || 'Could not log in. Try again.');
+      })
+      .catch(function () { if (btn) btn.disabled = false; setStatus('Network error. Try again.'); });
+  }
+
+  function legacySendCode(email, btn) {
+    setStatus('Sending…');
     api('/api/wad/auth/request', { email: email })
       .then(function (r) { return r.json(); })
       .then(function (data) {

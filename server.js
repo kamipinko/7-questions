@@ -20,8 +20,46 @@ const SHEETS_WEBHOOK_URL = process.env.SHEETS_WEBHOOK_URL || null;
 const questions = require('./data/questions.json');
 const promptsData = require('./data/prompts.json');
 
-const ANALYTICS_PATH = path.join(__dirname, 'data', 'analytics.json');
-const SESSIONS_DIR = path.join(__dirname, 'data', 'sessions');
+// ── Durable runtime-data root ──
+// User-generated data (accounts, progress, sessions, analytics) must survive deploys.
+// On Railway the repo directory is rebuilt from git on every push, so anything written
+// under __dirname/data was wiped each deploy — silently logging every Word-a-Day user
+// out and resetting server-side progress on every release. A Railway volume mounted at
+// /data (or a WAD_DATA_DIR env override) gives runtime data a permanent home.
+const RUNTIME_DATA_ROOT = (() => {
+  if (process.env.WAD_DATA_DIR) {
+    fs.mkdirSync(process.env.WAD_DATA_DIR, { recursive: true });
+    return process.env.WAD_DATA_DIR;
+  }
+  try { if (fs.statSync('/data').isDirectory()) return '/data'; } catch {}
+  return path.join(__dirname, 'data'); // local dev: keep everything in the repo dir
+})();
+const IS_DURABLE_DATA = RUNTIME_DATA_ROOT !== path.join(__dirname, 'data');
+// One-time seed: when a durable root first appears, carry over any runtime data the
+// repo-local dir still holds so nothing is lost in the switch.
+(function seedRuntimeData() {
+  if (!IS_DURABLE_DATA) return;
+  const legacyRoot = path.join(__dirname, 'data');
+  for (const rel of ['word-a-day/users', 'word-a-day/progress', 'sessions']) {
+    const src = path.join(legacyRoot, rel), dst = path.join(RUNTIME_DATA_ROOT, rel);
+    try {
+      if (!fs.existsSync(src)) continue;
+      fs.mkdirSync(dst, { recursive: true });
+      for (const f of fs.readdirSync(src)) {
+        const to = path.join(dst, f);
+        if (!fs.existsSync(to)) fs.copyFileSync(path.join(src, f), to);
+      }
+    } catch (e) { console.error('[data seed]', rel, e.message); }
+  }
+  try {
+    const src = path.join(legacyRoot, 'analytics.json'), dst = path.join(RUNTIME_DATA_ROOT, 'analytics.json');
+    if (fs.existsSync(src) && !fs.existsSync(dst)) fs.copyFileSync(src, dst);
+  } catch (e) { console.error('[data seed] analytics', e.message); }
+})();
+console.log(`[data] runtime data root: ${RUNTIME_DATA_ROOT}${IS_DURABLE_DATA ? ' (durable volume)' : ' (EPHEMERAL on Railway — mount a volume at /data)'}`);
+
+const ANALYTICS_PATH = path.join(RUNTIME_DATA_ROOT, 'analytics.json');
+const SESSIONS_DIR = path.join(RUNTIME_DATA_ROOT, 'sessions');
 if (!fs.existsSync(SESSIONS_DIR)) fs.mkdirSync(SESSIONS_DIR, { recursive: true });
 
 function readAnalytics() {
@@ -66,7 +104,7 @@ app.get('/word-a-day/login', (req, res) => {
 // WORD-A-DAY API
 // ════════════════════════════════════════
 
-const WAD_PROGRESS_DIR = path.join(__dirname, 'data/word-a-day/progress');
+const WAD_PROGRESS_DIR = path.join(RUNTIME_DATA_ROOT, 'word-a-day/progress');
 const WAD_WORDS_DIR    = path.join(__dirname, 'data/word-a-day/words');
 if (!fs.existsSync(WAD_PROGRESS_DIR)) fs.mkdirSync(WAD_PROGRESS_DIR, { recursive: true });
 
@@ -129,7 +167,7 @@ function advanceProgressDay(p) {
 // WORD-A-DAY ACCOUNT SYSTEM (magic-link, multi-language per user)
 // ════════════════════════════════════════
 const crypto = require('crypto');
-const WAD_USERS_DIR     = path.join(__dirname, 'data/word-a-day/users');
+const WAD_USERS_DIR     = path.join(RUNTIME_DATA_ROOT, 'word-a-day/users');
 const WAD_EMAIL_INDEX   = path.join(WAD_USERS_DIR, '_emailIndex.json');   // { emailLower: userId }
 const WAD_AUTH_INDEX    = path.join(WAD_USERS_DIR, '_authIndex.json');    // { authToken: userId }
 const WAD_LOGIN_TOKENS  = path.join(WAD_USERS_DIR, '_loginTokens.json');  // { loginToken: {email, code, expires, used} }
@@ -138,6 +176,41 @@ if (!fs.existsSync(WAD_USERS_DIR)) fs.mkdirSync(WAD_USERS_DIR, { recursive: true
 
 const WAD_LANGS_MAP = { es:'Spanish', zh:'Chinese', ja:'Japanese', vi:'Vietnamese', sw:'Swahili', ki:'Kikuyu' };
 const WAD_LOGIN_TTL_MS = 15 * 60 * 1000; // 15 minutes
+
+// ── Signed (stateless) auth tokens ──
+// authTokens used to be random strings valid only while _authIndex.json existed — a
+// deploy wiped the index and logged every device out. Tokens are now HMAC-signed and
+// self-contained (`w2.<payload>.<sig>`), so a device stays logged in across deploys
+// and restarts even if the on-disk store is lost; email accounts self-heal from the
+// email embedded in the token. Set WAD_SECRET in the environment so the signature
+// stays valid across deploys regardless of disk state.
+const WAD_SECRET = (() => {
+  if (process.env.WAD_SECRET) return process.env.WAD_SECRET;
+  // No dedicated secret set: derive a stable one from existing long-lived server
+  // secrets, so signatures stay valid across deploys with zero new infrastructure.
+  // (Rotating the underlying secret just means devices log in once more.)
+  const seed = process.env.GOOGLE_CLIENT_SECRET || process.env.OPENAI_API_KEY;
+  if (seed) return crypto.createHmac('sha256', 'wad-token-secret-v1').update(seed).digest('hex');
+  // Last resort: persist a random secret (durable only if a /data volume exists).
+  const f = path.join(WAD_USERS_DIR, '_secret');
+  try { const s = fs.readFileSync(f, 'utf8').trim(); if (s) return s; } catch {}
+  const s = crypto.randomBytes(32).toString('hex');
+  try { fs.writeFileSync(f, s); } catch (e) { console.error('[wad] could not persist secret:', e.message); }
+  return s;
+})();
+function wadSignPayload(payloadB64) {
+  return crypto.createHmac('sha256', WAD_SECRET).update(payloadB64).digest('base64url');
+}
+function wadVerifySignedToken(token) {
+  const parts = String(token || '').split('.');
+  if (parts.length !== 3 || parts[0] !== 'w2') return null;
+  const a = Buffer.from(parts[2]), b = Buffer.from(wadSignPayload(parts[1]));
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
+  try { return JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')); } catch { return null; }
+}
+function wadTokenHash(token) {
+  return crypto.createHash('sha256').update(String(token)).digest('hex').slice(0, 32);
+}
 
 function wadReadJson(file, fallback) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; }
@@ -239,6 +312,24 @@ function wadAttachEmail(attachFromToken, email) {
 }
 function wadUserByAuth(authToken) {
   if (!authToken) return null;
+  // Signed stateless tokens (current format)
+  if (String(authToken).startsWith('w2.')) {
+    const payload = wadVerifySignedToken(authToken);
+    if (!payload || !payload.u) return null;
+    let user = wadReadUser(payload.u);
+    if (!user) {
+      // Store was lost (deploy without the volume / disk reset). The signature proves
+      // the session, so self-heal instead of 401-ing the device.
+      if (payload.e) user = wadGetOrCreateUser(payload.e);
+      else {
+        user = { userId: payload.u, email: null, anon: true, createdAt: new Date().toISOString(), lastLogin: null, authTokens: [], languages: {} };
+        wadWriteUser(user);
+      }
+    }
+    if ((user.revokedTokens || []).includes(wadTokenHash(authToken))) return null;
+    return user;
+  }
+  // Legacy random tokens (pre-signed era) still honored via the on-disk index.
   const idx = wadReadJson(WAD_AUTH_INDEX, {});
   const userId = idx[authToken];
   if (!userId) return null;
@@ -247,17 +338,27 @@ function wadUserByAuth(authToken) {
   return user;
 }
 function wadMintAuthToken(user) {
-  const authToken = crypto.randomBytes(32).toString('hex');
-  if (!Array.isArray(user.authTokens)) user.authTokens = [];
-  user.authTokens.push(authToken);
+  const payloadB64 = Buffer.from(JSON.stringify({ u: user.userId, e: user.email || null, t: Date.now() })).toString('base64url');
+  const authToken = `w2.${payloadB64}.${wadSignPayload(payloadB64)}`;
   user.lastLogin = new Date().toISOString();
   wadWriteUser(user);
-  const idx = wadReadJson(WAD_AUTH_INDEX, {});
-  idx[authToken] = user.userId;
-  wadWriteJson(WAD_AUTH_INDEX, idx);
   return authToken;
 }
 function wadRevokeAuthToken(authToken) {
+  if (String(authToken || '').startsWith('w2.')) {
+    const payload = wadVerifySignedToken(authToken);
+    if (!payload) return;
+    const user = wadReadUser(payload.u) || (payload.e ? wadGetOrCreateUser(payload.e) : null);
+    if (!user) return;
+    user.revokedTokens = user.revokedTokens || [];
+    const h = wadTokenHash(authToken);
+    if (!user.revokedTokens.includes(h)) {
+      user.revokedTokens.push(h);
+      if (user.revokedTokens.length > 50) user.revokedTokens = user.revokedTokens.slice(-50);
+      wadWriteUser(user);
+    }
+    return;
+  }
   const idx = wadReadJson(WAD_AUTH_INDEX, {});
   const userId = idx[authToken];
   if (userId) {
@@ -510,6 +611,25 @@ app.post('/api/wad/auth/verify-code', (req, res) => {
   res.json({ ok: true, authToken, account: wadPublicAccount(user) });
 });
 
+// POST /api/wad/auth/email-login {email, authToken?} — frictionless email login.
+// Typing an email routes straight into that email's account (all previous progress)
+// with no code step — Pinko's explicit call for this app: the data is low-stakes
+// vocab progress and re-entering emailed codes on every device was killing usage.
+// The magic-link/code endpoints above stay for backward compatibility. If a current
+// anonymous session is passed and the email is new, the guest progress carries over.
+app.post('/api/wad/auth/email-login', (req, res) => {
+  const email = wadNormEmail(req.body && req.body.email);
+  if (!wadValidEmail(email)) return res.status(400).json({ error: 'A valid email is required' });
+  const attachFromToken = (req.body && req.body.authToken) || null;
+  const existingId = wadUserIdForEmail(email, false);
+  const user = existingId
+    ? wadGetOrCreateUser(email)                                   // known email → their account
+    : (wadAttachEmail(attachFromToken, email) || wadGetOrCreateUser(email)); // new email → upgrade guest or create
+  const authToken = wadMintAuthToken(user);
+  console.log(`[wad auth] email-login ${email} (${existingId ? 'returning' : 'new'})`);
+  res.json({ ok: true, authToken, account: wadPublicAccount(user), returning: !!existingId });
+});
+
 // POST /api/wad/auth/anon — create an emailless, device-local account so the user can
 // start learning immediately. Progress is saved against the returned authToken (persist
 // it client-side in localStorage). The user can attach an email later via verify-code.
@@ -572,6 +692,44 @@ app.get('/api/wad/progress/:token', (req, res) => {
   const p = wadReadProgress(req.params.token);
   if (!p) return res.status(404).json({ error: 'Session not found' });
   res.json(p);
+});
+
+// ── Pronunciation transcription (server-side Whisper) ──
+// Browser SpeechRecognition was unreliable: it can't run alongside the attempt
+// MediaRecorder on many devices (the recognizer hears silence — why the mic "stopped
+// picking up" every language), and it has no Swahili/Kikuyu support at all. The app
+// now records ONE audio blob and scores that via Whisper, so the playback the learner
+// hears is exactly the audio that was graded — on every browser, in every language.
+const WAD_WHISPER_LANG = { es:'es', vi:'vi', sw:'sw', zh:'zh', ja:'ja', ki:'sw', en:'en' };
+app.post('/api/wad/transcribe', upload.single('audio'), async (req, res) => {
+  if (!process.env.OPENAI_API_KEY) return res.status(503).json({ error: 'Transcription not configured' });
+  if (!req.file || !req.file.buffer || req.file.buffer.length < 200) {
+    return res.status(400).json({ error: 'No audio captured' });
+  }
+  const mt = String(req.file.mimetype || '');
+  const ext = mt.includes('mp4') ? '.mp4' : mt.includes('ogg') ? '.ogg' : mt.includes('wav') ? '.wav' : '.webm';
+  const tempPath = path.join(os.tmpdir(), `wad-rec-${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`);
+  try {
+    fs.writeFileSync(tempPath, req.file.buffer);
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const language = WAD_WHISPER_LANG[String(req.body.lang || '')] || undefined;
+    // Biasing the decoder toward the target phrase is the intended "give": a close
+    // attempt resolves to the target, genuinely wrong audio still comes back different.
+    const hint = String(req.body.hint || '').slice(0, 200) || undefined;
+    const t = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(tempPath),
+      model: 'whisper-1',
+      language,
+      prompt: hint,
+      temperature: 0,
+    });
+    res.json({ ok: true, text: t.text || '' });
+  } catch (err) {
+    console.error('[wad transcribe]', err.message);
+    res.status(502).json({ error: 'Transcription failed' });
+  } finally {
+    try { fs.unlinkSync(tempPath); } catch {}
+  }
 });
 
 // POST /api/wad/session — create or resume session

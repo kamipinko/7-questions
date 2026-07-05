@@ -345,7 +345,7 @@
       <div class="screen-header">
         <p class="screen-eyebrow" id="authLangLabel">Spanish</p>
         <h1 class="screen-title">Save your progress</h1>
-        <p class="screen-sub">Log in with just your email — no password. Your streak, words, and exams sync to every device.</p>
+        <p class="screen-sub">Just your email — no password, no code. Your streak, words, and exams sync to every device.</p>
       </div>
       <div class="auth-card">
         <!-- Step 1: email -->
@@ -354,7 +354,7 @@
             <label class="form-label" for="emailInput">Email address</label>
             <input class="form-input" type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" />
           </div>
-          <button class="btn-primary" id="requestLinkBtn">Email me a login link →</button>
+          <button class="btn-primary" id="requestLinkBtn">Continue with email →</button>
           <div class="auth-or" style="display:flex;align-items:center;gap:10px;color:var(--text-sub);font-size:.7rem;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.15em;">
             <span style="flex:1;height:1px;background:var(--border,rgba(255,255,255,.15));"></span>or<span style="flex:1;height:1px;background:var(--border,rgba(255,255,255,.15));"></span>
           </div>
@@ -419,7 +419,7 @@
           <p class="pronunciation-hint" id="pronHint">Listen first, then try saying the word aloud.</p>
 
           <div id="noSpeechNote" class="no-speech-note" style="display:none;">
-            Speech recognition isn't available in this browser. Try Chrome or Edge for the full experience.
+            Microphone recording isn't available in this browser, so pronunciation can't be scored here.
           </div>
 
           <button class="btn-record" id="recordBtn" disabled>
@@ -618,8 +618,12 @@ function similarity(spoken, target) {
   const a = normSpeech(spoken), b = normSpeech(target);
   if (!a || !b) return 0;
   if (a === b || a.includes(b) || b.includes(a)) return 100;
-  const maxLen = Math.max(a.length, b.length);
-  return Math.max(0, Math.round((1 - levenshtein(a, b) / maxLen) * 100));
+  // Space-insensitive pass: transcribers split/join words unpredictably
+  // ("buenosdias" vs "buenos dias", CJK spacing) — that's not a pronunciation miss.
+  const as = a.replace(/\s+/g, ''), bs = b.replace(/\s+/g, '');
+  if (as === bs || as.includes(bs) || bs.includes(as)) return 100;
+  const lev = (x, y) => Math.max(0, Math.round((1 - levenshtein(x, y) / Math.max(x.length, y.length)) * 100));
+  return Math.max(lev(a, b), lev(as, bs));
 }
 
 // Per-token pronunciation diff. Returns HTML with each part of the TARGET colored green
@@ -1096,11 +1100,42 @@ $('addEmailBtn').addEventListener('click', () => {
   showScreen('screen-auth');
 });
 
-// Step 1 — request a magic link + code
+// Step 1 — email IS the login. A known email routes straight back into its account
+// (no code, no link) per Pinko's call: codes on every device were killing usage and
+// the data is low-stakes vocab progress. The emailed-code flow stays as a fallback
+// for servers that don't have the endpoint yet.
 $('requestLinkBtn').addEventListener('click', async () => {
   const email = $('emailInput').value.trim();
   if (!email || !email.includes('@') || !email.includes('.')) { $('authStatus').textContent = 'Please enter a valid email.'; return; }
   $('requestLinkBtn').disabled = true;
+  $('authStatus').textContent = 'Finding your progress...';
+  try {
+    // Pass a current guest session so its progress carries into a new email account.
+    const upgradeToken = (state.accountMode && state.account && state.account.anon) ? state.authToken : undefined;
+    const res = await fetch('/api/wad/auth/email-login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email, authToken: upgradeToken })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.authToken) {
+      onLoggedIn(data.authToken, data.account);
+      await syncNativeLanguage();
+      showToast(data.returning ? 'Welcome back! 👋' : "Account created — you're in! 🎉");
+      if (state.lang) { await startLanguageForAccount(state.lang); }
+      else { showScreen('screen-lang'); }
+    } else if (res.status === 404) {
+      await requestLoginCode(email); // old server — fall back to the emailed code
+    } else {
+      $('authStatus').textContent = data.error || 'Could not log in. Try again.';
+    }
+  } catch(e) {
+    $('authStatus').textContent = 'Could not log in. Check your connection and try again.';
+  }
+  $('requestLinkBtn').disabled = false;
+});
+
+// Legacy fallback: email a magic link + 6-digit code, then show the code step.
+async function requestLoginCode(email) {
   $('authStatus').textContent = 'Sending your login link...';
   try {
     const res = await fetch('/api/wad/auth/request', {
@@ -1109,9 +1144,6 @@ $('requestLinkBtn').addEventListener('click', async () => {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error('request failed');
-    // The server stores the code even if delivery fails; only advance to the
-    // code step when the email actually went out. Otherwise be honest and
-    // steer the user to the no-login fallback.
     if (data.sent === false) {
       $('authStatus').textContent = "We couldn't send your code right now — try “Just start learning” below to begin immediately.";
     } else {
@@ -1121,8 +1153,7 @@ $('requestLinkBtn').addEventListener('click', async () => {
   } catch(e) {
     $('authStatus').textContent = "We couldn't send your code right now — try “Just start learning” below to begin immediately.";
   }
-  $('requestLinkBtn').disabled = false;
-});
+}
 
 // Step 2 — verify the 6-digit code
 $('verifyCodeBtn').addEventListener('click', verifyCode);
@@ -1171,6 +1202,8 @@ function onLoggedIn(authToken, account) {
     localStorage.setItem('wad_native', account.nativeLanguage);
   }
   localStorage.setItem('wad_auth', authToken);
+  // Remember the email on this device so the login form is one tap next time.
+  if (state.email) { try { localStorage.setItem('wad_email', state.email); } catch(e){} }
   populateNativeSelect();
   renderAccountChip();
   // Keep the shared hub widget (bottom "Log in / Log out") in sync without a reload.
@@ -1343,19 +1376,9 @@ function renderLesson() {
     $('pronHint').textContent = '💪 This one was tricky last time — take it slow, you\'ve got it.';
   }
 
-  // Check speech API. When SpeechRecognition is unsupported (Safari/Firefox),
-  // hide scoring and offer a manual "I said it aloud" confirm so the lesson
-  // stays completable instead of dead-ending.
-  const hasSpeech = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
-  $('noSpeechNote').style.display = hasSpeech ? 'none' : '';
-  if (!hasSpeech) {
-    $('recordBtn').style.display = 'none';
-    $('manualSayBtn').style.display = '';
-    $('pronHint').textContent = 'Listen, then say the word aloud. Tap below when you have practiced it.';
-  } else {
-    $('recordBtn').style.display = '';
-    $('manualSayBtn').style.display = 'none';
-  }
+  // Scoring capability: primary = record + server scorer (works in any browser with
+  // a mic); fallback = live SpeechRecognition; last resort = manual "I said it".
+  applyRecordAvailability();
 }
 
 // Manual confirm path (no SpeechRecognition) — count as practiced, no score.
@@ -1458,36 +1481,98 @@ $('listenBtn').addEventListener('click', () => {
 });
 
 // ── Record button (hold to speak) ──
+// Pipeline: ONE MediaRecorder capture → server Whisper transcription → similarity
+// score. The old design ran SpeechRecognition and a parallel getUserMedia capture at
+// the same time; on many devices (most phones) the recognizer heard only silence, so
+// the mic "picked up nothing" in every language. A single recorded blob means the
+// "Your attempt" playback is exactly the audio that was graded, and scoring works in
+// every browser and every language — including Swahili and Kikuyu, which browser
+// speech recognition never supported at all.
+// Fallback chain: server scorer → live SpeechRecognition → manual "I said it".
 let recognition = null;
 let recognizing = false;
+let _scoring = false;
 
-// ── Attempt audio capture (so the learner can hear themselves & compare) ──
-// SpeechRecognition only returns text, not audio, so we capture the mic separately with
-// MediaRecorder and stash a playable blob. Capture is best-effort: if the mic/API isn't
-// available the lesson still works, we just don't offer "Your attempt" playback.
-let _attemptStream = null, _attemptRecorder = null, _attemptChunks = [];
-async function startAttemptCapture() {
+const canRecordAudio = () => !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+const hasWebSpeech = () => ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
+state.scoreFallback = canRecordAudio() ? null : (hasWebSpeech() ? 'webspeech' : 'manual');
+
+let _cap = { stream: null, recorder: null, chunks: [], active: false, startedAt: 0 };
+function pickAudioMime() {
+  if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+  const mimes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus'];
+  for (const m of mimes) { if (MediaRecorder.isTypeSupported(m)) return m; }
+  return '';
+}
+async function captureStart() {
+  if (_cap.active) return false;
+  _cap.active = true; _cap.chunks = [];
   try {
-    if (!navigator.mediaDevices || !window.MediaRecorder) return;
-    if (!_attemptStream) _attemptStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    _attemptChunks = [];
-    _attemptRecorder = new MediaRecorder(_attemptStream);
-    _attemptRecorder.ondataavailable = e => { if (e.data && e.data.size) _attemptChunks.push(e.data); };
-    _attemptRecorder.onstop = () => {
-      if (!_attemptChunks.length) return;
-      const blob = new Blob(_attemptChunks, { type: _attemptRecorder.mimeType || 'audio/webm' });
-      if (state.attemptURL) URL.revokeObjectURL(state.attemptURL);
-      state.attemptURL = URL.createObjectURL(blob);
-      const btn = $('playAttemptBtn'), cmp = $('compareBtn');
-      if (btn) btn.style.display = '';
-      if (cmp) cmp.style.display = '';
+    if (!_cap.stream || !_cap.stream.active) _cap.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    _cap.active = false;
+    showToast('Microphone blocked — allow mic access in your browser settings.');
+    return false;
+  }
+  const mime = pickAudioMime();
+  try {
+    _cap.recorder = new MediaRecorder(_cap.stream, mime ? { mimeType: mime } : undefined);
+    _cap.recorder.ondataavailable = e => { if (e.data && e.data.size) _cap.chunks.push(e.data); };
+    _cap.recorder.start();
+  } catch (e) { _cap.active = false; return false; }
+  _cap.startedAt = Date.now();
+  return true;
+}
+function captureStop() {
+  return new Promise(resolve => {
+    if (!_cap.active || !_cap.recorder) return resolve(null);
+    const rec = _cap.recorder;
+    const held = Date.now() - _cap.startedAt;
+    const finish = () => {
+      rec.onstop = () => {
+        _cap.active = false;
+        if (!_cap.chunks.length) return resolve(null);
+        resolve(new Blob(_cap.chunks, { type: rec.mimeType || 'audio/webm' }));
+      };
+      try { rec.stop(); } catch (e) { _cap.active = false; resolve(null); }
     };
-    _attemptRecorder.start();
-  } catch (e) { /* capture is optional */ }
+    // Fingers leave the button a beat before the word ends — keep the mic open
+    // briefly so the tail of the word isn't clipped.
+    setTimeout(finish, held < 700 ? 500 : 250);
+  });
 }
-function stopAttemptCapture() {
-  try { if (_attemptRecorder && _attemptRecorder.state !== 'inactive') _attemptRecorder.stop(); } catch (e) {}
+// Send an attempt to the server scorer; resolves to the transcript text.
+async function transcribeBlob(blob, langCode, hint) {
+  const fd = new FormData();
+  fd.append('audio', blob, 'attempt' + (String(blob.type).includes('mp4') ? '.mp4' : '.webm'));
+  fd.append('lang', langCode);
+  if (hint) fd.append('hint', hint);
+  const res = await fetch('/api/wad/transcribe', { method: 'POST', body: fd });
+  if (!res.ok) throw new Error('transcribe ' + res.status);
+  const data = await res.json();
+  if (!data || data.ok !== true) throw new Error('bad transcribe payload');
+  return data.text || '';
 }
+// Language code for the side currently being LEARNED (what the mic should hear).
+function learnLangCode() { return getFocus() === 'en' ? 'en' : state.lang; }
+// Pass bar. Kikuyu is transcribed through a Swahili model (no Gĩkũyũ ASR exists
+// anywhere), so give it extra room; everything else keeps the honest 65% bar.
+function passThreshold(langCode) { return langCode === 'ki' ? 50 : 65; }
+
+// Show/hide record vs manual-confirm based on the current scoring capability.
+function applyRecordAvailability() {
+  const canScore = state.scoreFallback !== 'manual';
+  $('noSpeechNote').style.display = canScore ? 'none' : '';
+  if (!canScore) {
+    $('recordBtn').style.display = 'none';
+    $('manualSayBtn').style.display = '';
+    $('pronHint').textContent = 'Listen, then say the word aloud. Tap below when you have practiced it.';
+  } else {
+    $('recordBtn').style.display = '';
+    $('manualSayBtn').style.display = 'none';
+  }
+}
+
 // Play the learner's own recording.
 function playAttempt() {
   if (!state.attemptURL) return;
@@ -1496,6 +1581,7 @@ function playAttempt() {
   return a;
 }
 
+// ── Live SpeechRecognition fallback (used only when the server scorer is out) ──
 function setupRecognition() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRec) return null;
@@ -1503,58 +1589,86 @@ function setupRecognition() {
   r.continuous = false;
   r.interimResults = false;
   r.lang = wordView(state.words[state.wordIdx]).recogLang;
-
-  r.onstart = () => {
-    recognizing = true;
-    $('recordBtn').classList.add('recording');
-    $('recordBtnLabel').textContent = 'Listening...';
-  };
-
+  r.onstart = () => { recognizing = true; setRecordUI('listening'); };
   r.onresult = (e) => {
     const spoken = e.results[0][0].transcript;
     const w = state.words[state.wordIdx];
-    const view = wordView(w);
-    const score = similarity(spoken, view.learnText);
-    showAccuracy(score, spoken, w);
+    showAccuracy(similarity(spoken, wordView(w).learnText), spoken, w);
   };
-
   r.onerror = (e) => {
-    recognizing = false;
-    $('recordBtn').classList.remove('recording');
-    $('recordBtnLabel').textContent = 'Hold to Speak';
+    recognizing = false; setRecordUI('idle');
     if (e.error !== 'no-speech') showToast('Could not hear you. Try again.');
   };
-
-  r.onend = () => {
-    recognizing = false;
-    $('recordBtn').classList.remove('recording');
-    $('recordBtnLabel').textContent = 'Hold to Speak';
-  };
-
+  r.onend = () => { recognizing = false; setRecordUI('idle'); };
   return r;
+}
+
+function setRecordUI(mode) { // 'idle' | 'listening' | 'scoring'
+  const btn = $('recordBtn');
+  btn.classList.toggle('recording', mode === 'listening');
+  btn.disabled = (mode === 'scoring');
+  $('recordBtnLabel').textContent = mode === 'listening' ? 'Listening...' : mode === 'scoring' ? 'Scoring...' : 'Hold to Speak';
 }
 
 $('recordBtn').addEventListener('mousedown', startRecording);
 $('recordBtn').addEventListener('touchstart', (e) => { e.preventDefault(); startRecording(); }, {passive:false});
 $('recordBtn').addEventListener('mouseup', stopRecording);
 $('recordBtn').addEventListener('touchend', (e) => { e.preventDefault(); stopRecording(); }, {passive:false});
+$('recordBtn').addEventListener('touchcancel', (e) => { e.preventDefault(); stopRecording(); }, {passive:false});
 $('recordBtn').addEventListener('mouseleave', stopRecording);
 
-function startRecording() {
-  if (recognizing) return;
-  recognition = setupRecognition();
-  if (!recognition) return;
-  recognition.lang = wordView(state.words[state.wordIdx]).recogLang;
-  startAttemptCapture();           // capture audio in parallel for "Your attempt" playback
-  try { recognition.start(); } catch(e){}
+async function startRecording() {
+  if (_scoring) return;
+  if (state.scoreFallback === 'webspeech') {
+    // Live recognition only — deliberately NO parallel capture (they conflict).
+    if (recognizing) return;
+    recognition = setupRecognition();
+    if (!recognition) { state.scoreFallback = 'manual'; applyRecordAvailability(); return; }
+    try { recognition.start(); } catch(e){}
+    return;
+  }
+  if (!canRecordAudio()) return;
+  if (await captureStart()) setRecordUI('listening');
 }
-function stopRecording() {
-  stopAttemptCapture();
-  if (recognition && recognizing) { try { recognition.stop(); } catch(e){} }
+
+async function stopRecording() {
+  if (state.scoreFallback === 'webspeech') {
+    if (recognition && recognizing) { try { recognition.stop(); } catch(e){} }
+    return;
+  }
+  if (!_cap.active || _scoring) return;
+  const held = Date.now() - _cap.startedAt;
+  setRecordUI('scoring');
+  const blob = await captureStop();
+  if (!blob || blob.size < 1200 || held < 220) {
+    setRecordUI('idle');
+    if (blob && held >= 220) showToast("Didn't catch that — hold the button while you speak.");
+    return;
+  }
+  // Stash the playable attempt — this exact audio is what gets scored.
+  if (state.attemptURL) URL.revokeObjectURL(state.attemptURL);
+  state.attemptURL = URL.createObjectURL(blob);
+  const w = state.words[state.wordIdx];
+  const view = wordView(w);
+  _scoring = true;
+  try {
+    const spoken = await transcribeBlob(blob, learnLangCode(), view.learnText);
+    showAccuracy(similarity(spoken, view.learnText), spoken, w);
+  } catch (e) {
+    // Server scorer unreachable — degrade for this session, never strand the learner.
+    state.scoreFallback = hasWebSpeech() ? 'webspeech' : 'manual';
+    applyRecordAvailability();
+    showToast(state.scoreFallback === 'webspeech'
+      ? "Couldn't reach the scorer — switched to quick scoring. Try again."
+      : "Couldn't score that attempt — mark it as practiced below.");
+    if (state.scoreFallback === 'manual') $('manualSayBtn').style.display = '';
+  }
+  _scoring = false;
+  setRecordUI('idle');
 }
 
 function showAccuracy(score, spoken, word) {
-  const PASS = 65; // % threshold to pass
+  const PASS = passThreshold(learnLangCode()); // % threshold to pass (extra give for Kikuyu)
   $('accuracyDisplay').style.display = 'flex';
   $('accuracyDisplay').style.flexDirection = 'column';
   $('accuracyDisplay').style.alignItems = 'center';
@@ -1998,36 +2112,62 @@ function renderExamQuestion() {
     const recBtn = document.createElement('button');
     recBtn.className = 'btn-record';
     recBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Hold to Speak`;
-    let examRec = null, examRecognizing = false;
+    let examRec = null, examRecognizing = false, examBusy = false;
 
-    recBtn.addEventListener('mousedown', () => {
-      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SR) return;
-      examRec = new SR();
-      examRec.lang = q.speakLang === 'en-US' ? 'en-US' : state.langData.recognition_lang;
-      examRec.onstart = () => { examRecognizing=true; recBtn.classList.add('recording'); };
-      examRec.onresult = (e) => {
-        const spoken = e.results[0][0].transcript;
-        const score = similarity(spoken, q.answer);
-        q.score = score; q.answered = true; q.correct = score >= 65;
-        const fb = document.createElement('p');
-        fb.style.cssText = `color:${q.correct?'#4ade80':'#f87171'};font-size:.85rem;text-align:center;margin-top:8px;`;
-        fb.textContent = `${score}% accuracy — ${q.correct?'Pass ✓':'Keep trying'}`;
-        wrap.appendChild(fb);
-        $('examNextBtn').disabled = false;
-      };
-      examRec.onerror = () => { examRecognizing=false; recBtn.classList.remove('recording'); };
-      examRec.onend = () => { examRecognizing=false; recBtn.classList.remove('recording'); };
-      try { examRec.start(); } catch(e){}
-    });
-    recBtn.addEventListener('mouseup', () => { if(examRec && examRecognizing) try{examRec.stop();}catch(e){} });
-    recBtn.addEventListener('mouseleave', () => { if(examRec && examRecognizing) try{examRec.stop();}catch(e){} });
-    recBtn.addEventListener('touchstart', (e) => { e.preventDefault(); recBtn.dispatchEvent(new Event('mousedown')); }, {passive:false});
-    recBtn.addEventListener('touchend', (e) => { e.preventDefault(); recBtn.dispatchEvent(new Event('mouseup')); }, {passive:false});
+    // Same record → server-scorer pipeline as the lesson (live recognition only as
+    // fallback), so exams score on every browser and language too.
+    const finishExamSpeak = (spoken) => {
+      const score = similarity(spoken, q.answer);
+      const bar = q.speakLang === 'en-US' ? 65 : passThreshold(state.lang);
+      q.score = score; q.answered = true; q.correct = score >= bar;
+      const fb = document.createElement('p');
+      fb.style.cssText = `color:${q.correct?'#4ade80':'#f87171'};font-size:.85rem;text-align:center;margin-top:8px;`;
+      fb.textContent = `${score}% accuracy — ${q.correct?'Pass ✓':'Keep trying'}`;
+      wrap.appendChild(fb);
+      $('examNextBtn').disabled = false;
+    };
+    const startExamRec = async () => {
+      if (examBusy) return;
+      if (!canRecordAudio()) {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) return;
+        examRec = new SR();
+        examRec.lang = q.speakLang === 'en-US' ? 'en-US' : state.langData.recognition_lang;
+        examRec.onstart = () => { examRecognizing=true; recBtn.classList.add('recording'); };
+        examRec.onresult = (e) => finishExamSpeak(e.results[0][0].transcript);
+        examRec.onerror = () => { examRecognizing=false; recBtn.classList.remove('recording'); };
+        examRec.onend = () => { examRecognizing=false; recBtn.classList.remove('recording'); };
+        try { examRec.start(); } catch(e){}
+        return;
+      }
+      if (await captureStart()) recBtn.classList.add('recording');
+    };
+    const stopExamRec = async () => {
+      if (examRec && examRecognizing) { try{examRec.stop();}catch(e){} return; }
+      if (!_cap.active || examBusy) return;
+      examBusy = true;
+      recBtn.classList.remove('recording');
+      recBtn.disabled = true;
+      const blob = await captureStop();
+      if (blob && blob.size >= 1200) {
+        try {
+          const spoken = await transcribeBlob(blob, q.speakLang === 'en-US' ? 'en' : state.lang, q.answer);
+          finishExamSpeak(spoken);
+        } catch(e) { showToast("Couldn't score that one — try again or skip."); }
+      }
+      recBtn.disabled = false;
+      examBusy = false;
+    };
+    recBtn.addEventListener('mousedown', startExamRec);
+    recBtn.addEventListener('mouseup', stopExamRec);
+    recBtn.addEventListener('mouseleave', stopExamRec);
+    recBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startExamRec(); }, {passive:false});
+    recBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopExamRec(); }, {passive:false});
+    recBtn.addEventListener('touchcancel', (e) => { e.preventDefault(); stopExamRec(); }, {passive:false});
     wrap.appendChild(recBtn);
 
-    // If no speech API, allow manual skip
-    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+    // No way to record OR recognize → don't dead-end the exam
+    if (!canRecordAudio() && !hasWebSpeech()) {
       $('examNextBtn').disabled = false;
       q.score = 0; q.correct = false; q.answered = true;
     }
@@ -2448,6 +2588,8 @@ function cleanUrl() {
 buildLangGrid();
 populateNativeSelect();
 decorateLangGrid();
+// Prefill the remembered email so returning to an account is a single tap.
+try { const e = localStorage.getItem('wad_email'); if (e) $('emailInput').value = e; } catch(e){}
 showScreen('screen-lang');
 (async () => {
   const restored = await restoreSession();
