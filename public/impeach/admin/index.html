@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Impeached · The Professor's Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#0a0a0a;--gold:#ECAA27;--red:#e05252;--deep:#680707;--line:rgba(236,170,39,.22);
+    --mono:'Space Mono',monospace;--serif:'Playfair Display',serif;--sans:'Inter',sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--black);color:#eee;font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding-bottom:80px}
+  ::selection{background:var(--gold);color:#000}
+  .accent-bar{height:4px;background:linear-gradient(90deg,var(--deep),var(--gold),var(--deep))}
+  header{max-width:980px;margin:0 auto;padding:30px 22px 6px;text-align:center}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold)}
+  h1{font-family:var(--serif);font-weight:900;font-size:clamp(26px,5vw,40px);margin:10px 0 6px}
+  h1 .u{color:var(--red);font-style:italic}
+  .sub{font-family:var(--mono);font-size:12px;color:#8f8a80;letter-spacing:.1em}
+  .sub a{color:var(--gold)}
+  main{max-width:980px;margin:0 auto;padding:14px 22px}
+  .btn{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:11px 16px;border-radius:4px;border:1px solid var(--gold);background:var(--gold);color:#000;cursor:pointer;transition:.15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(236,170,39,.28)}
+  .btn.ghost{background:transparent;color:var(--gold)}
+  .btn.red{background:transparent;border-color:var(--red);color:var(--red)}
+  .btn.sm{padding:6px 10px;font-size:10.5px}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+
+  .gate{max-width:460px;margin:60px auto;background:#12100e;border:1px solid var(--line);padding:28px;clip-path:polygon(0 8px,12px 0,100% 3px,calc(100% - 5px) calc(100% - 10px),calc(100% - 16px) 100%,3px calc(100% - 3px))}
+  .gate label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8f8a80;margin-bottom:8px}
+  .gate input{width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:3px;color:#e9e2d4;font-family:var(--mono);font-size:15px;padding:12px;outline:none;margin-bottom:16px}
+  .gate input:focus{border-color:var(--gold)}
+  .gate .err{font-family:var(--mono);font-size:11px;color:var(--red);margin-top:12px;min-height:14px}
+
+  .panel{display:none}
+  .panel.show{display:block}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 22px;justify-content:center}
+  .tab{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border:1px solid var(--line);background:#141210;color:#cfc8bb;cursor:pointer;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+  .tab.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+  .sec{display:none}
+  .sec.show{display:block;animation:pop .25s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .sec-note{font-family:var(--mono);font-size:11.5px;color:#8f8a80;line-height:1.8;margin-bottom:18px;letter-spacing:.02em}
+  .sec-note b{color:var(--gold)}
+
+  .item{background:#12100e;border:1px solid var(--line);border-radius:5px;padding:14px;margin-bottom:12px}
+  .item textarea{width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:3px;color:#e9e2d4;font-family:var(--mono);font-size:13px;line-height:1.6;padding:10px;min-height:64px;resize:vertical;outline:none}
+  .item textarea:focus{border-color:var(--gold)}
+  .item-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+  .item-row select,.item-row input[type=number]{background:#0b0a09;border:1px solid var(--line);border-radius:3px;color:#e9e2d4;font-family:var(--mono);font-size:12px;padding:7px 9px;outline:none}
+  .item-row input[type=number]{width:70px}
+  .item-row .lab{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6a655c}
+  .item-row .spacer{flex:1}
+  .mini{background:none;border:1px solid var(--line);color:#8f8a80;font-family:var(--mono);font-size:11px;padding:6px 9px;border-radius:3px;cursor:pointer}
+  .mini:hover{border-color:var(--gold);color:var(--gold)}
+  .mini.del:hover{border-color:var(--red);color:var(--red)}
+  .canon{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.16em;color:#000;background:var(--gold);padding:2px 7px;border-radius:2px;text-transform:uppercase}
+  .addrow{margin:6px 0 26px}
+
+  .savebar{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.95);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;z-index:20}
+  .savebar .status{font-family:var(--mono);font-size:11px;color:#8f8a80;align-self:center;letter-spacing:.06em}
+  .savebar .status.dirty{color:var(--red)}
+
+  .comment{background:#12100e;border:1px solid var(--line);border-radius:5px;padding:13px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
+  .comment .body{flex:1}
+  .comment .who{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase}
+  .comment .when{font-family:var(--mono);font-size:10px;color:#6a655c;margin-left:8px}
+  .comment .text{font-size:13.5px;line-height:1.6;color:#d8d2c6;margin-top:6px}
+
+  .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#000;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.08em;padding:11px 18px;border-radius:4px;opacity:0;pointer-events:none;transition:.28s;z-index:30}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="accent-bar"></div>
+<header>
+  <div class="eyebrow">The Professor's Desk</div>
+  <h1>A President <span class="u">Is Impeached</span> · Editor</h1>
+  <p class="sub">Edit the openings and the decks — no code, saves live for every player. <a href="../">↩ back to the game</a> · <a href="../present/">🎓 classroom</a></p>
+</header>
+<main>
+  <!-- gate -->
+  <div class="gate" id="gate">
+    <label>Admin key</label>
+    <input id="keyInput" type="password" placeholder="Enter the admin key" autocomplete="current-password">
+    <button class="btn" id="keyGo">Unlock the Desk</button>
+    <div class="err" id="keyErr"></div>
+  </div>
+
+  <!-- editor -->
+  <div class="panel" id="panel">
+    <div class="tabs">
+      <div class="tab on" data-sec="openings">Openings · After the Verdict</div>
+      <div class="tab" data-sec="preOpenings">Openings · Road to Conviction</div>
+      <div class="tab" data-sec="deck">Crisis Deck</div>
+      <div class="tab" data-sec="preDeck">Proceedings Deck</div>
+      <div class="tab" data-sec="comments">Comments</div>
+    </div>
+
+    <div class="sec show" id="sec-openings">
+      <p class="sec-note">Starting scenarios for <b>After the Verdict</b>. The <b>first one</b> is the canonical opening every new player sees — keep your favorite at the top. "Generate an Opening" deals from the rest.</p>
+      <div id="list-openings"></div>
+      <div class="addrow"><button class="btn ghost" data-add="openings">＋ Add an opening</button></div>
+    </div>
+
+    <div class="sec" id="sec-preOpenings">
+      <p class="sec-note">Starting scenarios for <b>Road to Conviction</b> — the first allegation, before any inquiry exists. The first one is the default.</p>
+      <div id="list-preOpenings"></div>
+      <div class="addrow"><button class="btn ghost" data-add="preOpenings">＋ Add an opening</button></div>
+    </div>
+
+    <div class="sec" id="sec-deck">
+      <p class="sec-note">The <b>crisis deck</b> — developments available after conviction. <b>Weight</b> (1–20) is how hard a card pushes the tension meter toward Civil War.</p>
+      <div id="list-deck"></div>
+      <div class="addrow"><button class="btn ghost" data-add="deck">＋ Add a card</button></div>
+    </div>
+
+    <div class="sec" id="sec-preDeck">
+      <p class="sec-note">The <b>proceedings deck</b> — phase-gated cards for Road to Conviction. Each card only appears during its <b>phase</b>: 1 Allegations · 2 House Inquiry · 3 The Articles · 4 House Vote · 5 Senate Trial.</p>
+      <div id="list-preDeck"></div>
+      <div class="addrow"><button class="btn ghost" data-add="preDeck">＋ Add a card</button></div>
+    </div>
+
+    <div class="sec" id="sec-comments">
+      <p class="sec-note">The shared public wall, newest first. Deleting is permanent.</p>
+      <div id="list-comments"></div>
+    </div>
+
+    <div class="savebar">
+      <span class="status" id="status">Loaded</span>
+      <button class="btn" id="saveBtn">💾 Save &amp; Publish</button>
+      <button class="btn red" id="resetBtn">Reset to Original Content</button>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  var API='/impeach/api';
+  var ACTORS=[["pres","The President"],["congress","Congress"],["courts","The Courts"],["mil","The Military"],["states","The States"],["people","The People"],["world","Press & The World"]];
+  var PHASES=["1 · Allegations","2 · House Inquiry","3 · The Articles","4 · House Vote","5 · Senate Trial"];
+  var KEY=sessionStorage.getItem('pip_admin_key')||'';
+  var content=null, dirty=false;
+
+  function $(id){return document.getElementById(id);}
+  var toastTimer;
+  function toast(m){var el=$('toast');el.textContent=m;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},1800);}
+  function api(p,opts){
+    opts=opts||{};
+    return fetch(API+p,{method:opts.method||'GET',headers:{'Content-Type':'application/json','x-admin-key':KEY},body:opts.body?JSON.stringify(opts.body):undefined})
+      .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j;});});
+  }
+  function markDirty(){ dirty=true; $('status').textContent='Unsaved changes'; $('status').classList.add('dirty'); }
+  function markClean(msg){ dirty=false; $('status').textContent=msg||'Saved'; $('status').classList.remove('dirty'); }
+  window.addEventListener('beforeunload',function(e){ if(dirty){ e.preventDefault(); e.returnValue=''; } });
+
+  // ── gate ──
+  function unlock(){
+    var k=$('keyInput').value.trim(); if(!k){$('keyErr').textContent='Enter the key.';return;}
+    KEY=k;
+    api('/admin/check').then(function(){
+      sessionStorage.setItem('pip_admin_key',KEY);
+      $('gate').style.display='none'; $('panel').classList.add('show');
+      loadAll();
+    }).catch(function(e){ $('keyErr').textContent=e.message; });
+  }
+  $('keyGo').onclick=unlock;
+  $('keyInput').addEventListener('keydown',function(e){if(e.key==='Enter')unlock();});
+  if(KEY){ $('keyInput').value=KEY; unlock(); }
+
+  // ── tabs ──
+  document.querySelectorAll('.tab').forEach(function(t){
+    t.onclick=function(){
+      document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on');});
+      document.querySelectorAll('.sec').forEach(function(x){x.classList.remove('show');});
+      t.classList.add('on'); $('sec-'+t.dataset.sec).classList.add('show');
+      if(t.dataset.sec==='comments') loadComments();
+    };
+  });
+
+  // ── string lists (openings) ──
+  function renderStrings(kind){
+    var box=$('list-'+kind); box.innerHTML='';
+    content[kind].forEach(function(s,i){
+      var el=document.createElement('div'); el.className='item';
+      el.innerHTML='<textarea></textarea>'+
+        '<div class="item-row">'+(i===0?'<span class="canon">Canonical · shown first</span>':'')+'<span class="spacer"></span>'+
+        '<button class="mini up">↑</button><button class="mini dn">↓</button><button class="mini del">✕ delete</button></div>';
+      var ta=el.querySelector('textarea'); ta.value=s;
+      ta.addEventListener('input',function(){ content[kind][i]=ta.value; markDirty(); });
+      el.querySelector('.up').onclick=function(){ if(i===0)return; var a=content[kind]; var x=a[i];a[i]=a[i-1];a[i-1]=x; markDirty(); renderStrings(kind); };
+      el.querySelector('.dn').onclick=function(){ var a=content[kind]; if(i>=a.length-1)return; var x=a[i];a[i]=a[i+1];a[i+1]=x; markDirty(); renderStrings(kind); };
+      el.querySelector('.del').onclick=function(){ if(content[kind].length<=1){toast('Keep at least one opening');return;} if(confirm('Delete this opening?')){ content[kind].splice(i,1); markDirty(); renderStrings(kind); } };
+      box.appendChild(el);
+    });
+  }
+
+  // ── card lists (decks) ──
+  function renderCards(kind){
+    var withPhase=(kind==='preDeck');
+    var box=$('list-'+kind); box.innerHTML='';
+    content[kind].forEach(function(c,i){
+      var el=document.createElement('div'); el.className='item';
+      var actorOpts=ACTORS.map(function(a){return '<option value="'+a[0]+'"'+(c.a===a[0]?' selected':'')+'>'+a[1]+'</option>';}).join('');
+      var phaseSel='';
+      if(withPhase){
+        phaseSel='<span class="lab">Phase</span><select class="ph">'+PHASES.map(function(p,pi){return '<option value="'+(pi+1)+'"'+(c.p===pi+1?' selected':'')+'>'+p+'</option>';}).join('')+'</select>';
+      }
+      el.innerHTML='<textarea></textarea>'+
+        '<div class="item-row"><span class="lab">Actor</span><select class="ac">'+actorOpts+'</select>'+
+        phaseSel+
+        '<span class="lab">Weight</span><input type="number" class="wt" min="1" max="20" value="'+c.w+'">'+
+        '<span class="spacer"></span><button class="mini up">↑</button><button class="mini dn">↓</button><button class="mini del">✕ delete</button></div>';
+      var ta=el.querySelector('textarea'); ta.value=c.t;
+      ta.addEventListener('input',function(){ c.t=ta.value; markDirty(); });
+      el.querySelector('.ac').addEventListener('change',function(e){ c.a=e.target.value; markDirty(); });
+      el.querySelector('.wt').addEventListener('change',function(e){ c.w=Math.min(20,Math.max(1,parseInt(e.target.value,10)||10)); e.target.value=c.w; markDirty(); });
+      if(withPhase) el.querySelector('.ph').addEventListener('change',function(e){ c.p=parseInt(e.target.value,10); markDirty(); });
+      el.querySelector('.up').onclick=function(){ if(i===0)return; var a=content[kind]; var x=a[i];a[i]=a[i-1];a[i-1]=x; markDirty(); renderCards(kind); };
+      el.querySelector('.dn').onclick=function(){ var a=content[kind]; if(i>=a.length-1)return; var x=a[i];a[i]=a[i+1];a[i+1]=x; markDirty(); renderCards(kind); };
+      el.querySelector('.del').onclick=function(){ if(content[kind].length<=1){toast('Keep at least one card');return;} if(confirm('Delete this card?')){ content[kind].splice(i,1); markDirty(); renderCards(kind); } };
+      box.appendChild(el);
+    });
+  }
+
+  document.querySelectorAll('[data-add]').forEach(function(b){
+    b.onclick=function(){
+      var kind=b.dataset.add;
+      if(kind==='openings'||kind==='preOpenings') content[kind].push('A new opening scenario. Set the stage in a few sentences, and end on the edge of what happens next. . . .');
+      else if(kind==='deck') content.deck.push({a:'pres',w:10,t:'A new development. What happens, and how far does it go?'});
+      else content.preDeck.push({p:1,a:'congress',w:5,t:'A new development in the proceedings.'});
+      markDirty();
+      (kind==='openings'||kind==='preOpenings')?renderStrings(kind):renderCards(kind);
+      var box=$('list-'+kind); box.lastElementChild.scrollIntoView({behavior:'smooth',block:'center'});
+      box.lastElementChild.querySelector('textarea').focus();
+    };
+  });
+
+  // ── save / reset ──
+  $('saveBtn').onclick=function(){
+    var bad=[];
+    ['openings','preOpenings'].forEach(function(k){ content[k].forEach(function(s,i){ if(s.trim().length<10) bad.push(k+' #'+(i+1)+' is too short'); }); });
+    ['deck','preDeck'].forEach(function(k){ content[k].forEach(function(c,i){ if(c.t.trim().length<5) bad.push(k+' card #'+(i+1)+' is too short'); }); });
+    if(bad.length){ toast(bad[0]); return; }
+    $('saveBtn').disabled=true;
+    api('/content',{method:'PUT',body:{openings:content.openings,preOpenings:content.preOpenings,deck:content.deck,preDeck:content.preDeck}})
+      .then(function(j){ markClean('Published · v'+j.version); toast('Published — live for every player'); })
+      .catch(function(e){ toast(e.message); })
+      .then(function(){ $('saveBtn').disabled=false; });
+  };
+  $('resetBtn').onclick=function(){
+    if(!confirm('Throw away ALL edits and restore the original openings and decks?')) return;
+    api('/content/reset',{method:'POST'}).then(function(){ toast('Restored the originals'); loadAll(); }).catch(function(e){toast(e.message);});
+  };
+
+  // ── comments ──
+  function loadComments(){
+    api('/comments').then(function(j){
+      var box=$('list-comments'); box.innerHTML='';
+      if(!j.comments.length){ box.innerHTML='<p class="sec-note">No comments yet.</p>'; return; }
+      j.comments.forEach(function(c){
+        var el=document.createElement('div'); el.className='comment';
+        el.innerHTML='<div class="body"><span class="who"></span><span class="when"></span><div class="text"></div></div><button class="btn red sm">✕ Delete</button>';
+        el.querySelector('.who').textContent=c.name;
+        el.querySelector('.when').textContent=new Date(c.ts).toLocaleString();
+        el.querySelector('.text').textContent=c.text;
+        el.querySelector('button').onclick=function(){
+          if(!confirm('Delete this comment by '+c.name+'?')) return;
+          api('/comments/'+c.id,{method:'DELETE'}).then(function(){ el.remove(); toast('Deleted'); }).catch(function(e){toast(e.message);});
+        };
+        box.appendChild(el);
+      });
+    }).catch(function(e){ $('list-comments').innerHTML='<p class="sec-note">'+e.message+'</p>'; });
+  }
+
+  function loadAll(){
+    api('/content').then(function(c){
+      content={openings:c.openings,preOpenings:c.preOpenings,deck:c.deck,preDeck:c.preDeck};
+      renderStrings('openings'); renderStrings('preOpenings');
+      renderCards('deck'); renderCards('preDeck');
+      markClean(c.custom?'Loaded · your published edition (v'+c.version+')':'Loaded · original content');
+    }).catch(function(e){ toast(e.message); });
+  }
+})();
+</script>
+</body>
+</html>

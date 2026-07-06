@@ -72,6 +72,8 @@ function writeAnalytics(data) {
 
 app.use(express.json({ limit: '50mb' }));
 
+app.use(require('./impeach-api')({ dataRoot: RUNTIME_DATA_ROOT })); // "A President Is Impeached" API (self-contained router)
+
 // ── Static file serving ──
 app.use('/play', express.static(path.join(__dirname, 'public/7q')));
 app.use('/autobiography', express.static(path.join(__dirname, 'public/autobiography')));

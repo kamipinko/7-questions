@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Impeached · Classroom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#0a0a0a;--gold:#ECAA27;--red:#e05252;--deep:#680707;--line:rgba(236,170,39,.22);
+    --mono:'Space Mono',monospace;--serif:'Playfair Display',serif;--sans:'Inter',sans-serif}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--black);color:#eee;font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;padding-bottom:40px}
+  ::selection{background:var(--gold);color:#000}
+  .accent-bar{height:4px;background:linear-gradient(90deg,var(--deep),var(--gold),var(--deep))}
+  header{max-width:1280px;margin:0 auto;padding:26px 22px 6px;text-align:center}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold)}
+  h1{font-family:var(--serif);font-weight:900;font-size:clamp(24px,4.6vw,38px);margin:10px 0 4px}
+  h1 .u{color:var(--red);font-style:italic}
+  .sub{font-family:var(--mono);font-size:12px;color:#8f8a80;letter-spacing:.1em}
+  .sub a{color:var(--gold)}
+  main{max-width:1280px;margin:0 auto;padding:14px 22px}
+  .btn{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:12px 18px;border-radius:4px;border:1px solid var(--gold);background:var(--gold);color:#000;cursor:pointer;transition:.15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(236,170,39,.28)}
+  .btn.ghost{background:transparent;color:var(--gold)}
+  .btn.red{background:transparent;border-color:var(--red);color:var(--red)}
+  .btn.sm{padding:7px 11px;font-size:10.5px}
+
+  .setup{max-width:560px;margin:40px auto;background:#12100e;border:1px solid var(--line);padding:28px;clip-path:polygon(0 8px,12px 0,100% 3px,calc(100% - 5px) calc(100% - 10px),calc(100% - 16px) 100%,3px calc(100% - 3px))}
+  .setup label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8f8a80;margin:16px 0 8px}
+  .setup input,.setup select{width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:3px;color:#e9e2d4;font-family:var(--mono);font-size:14px;padding:11px 12px;outline:none}
+  .setup input:focus,.setup select:focus{border-color:var(--gold)}
+  .pathpick{display:flex;gap:10px;margin-top:4px}
+  .ppick{flex:1;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:13px 8px;border:1px solid var(--line);background:#141210;color:#cfc8bb;cursor:pointer;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+  .ppick.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+  .setup .row{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+  .setup .err{font-family:var(--mono);font-size:11px;color:var(--red);margin-top:12px;min-height:14px}
+  .setup .or{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:#6a655c;text-align:center;margin:20px 0 4px;text-transform:uppercase}
+  .rejoin{display:flex;gap:10px;margin-top:8px}
+  .rejoin input{text-transform:uppercase;letter-spacing:.4em;text-align:center;font-size:18px}
+
+  .board{display:none}
+  .board.show{display:block}
+  .codebar{display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:wrap;margin:8px 0 26px;padding:18px 24px;background:linear-gradient(180deg,#171310,#0e0d0b);border:1px solid var(--line);clip-path:polygon(0 6px,10px 0,100% 2px,calc(100% - 4px) calc(100% - 8px),calc(100% - 14px) 100%,2px calc(100% - 2px))}
+  .codebar .lab{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#8f8a80}
+  .codebar .code{font-family:var(--mono);font-weight:700;font-size:clamp(38px,7vw,64px);letter-spacing:.35em;color:var(--gold);text-shadow:0 0 26px rgba(236,170,39,.4)}
+  .codebar .url{font-family:var(--mono);font-size:12px;color:#b9b2a6;letter-spacing:.06em}
+  .codebar .url b{color:#fff}
+  .codebar .meta{font-family:var(--mono);font-size:11px;color:#8f8a80;letter-spacing:.1em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+  .gcard{background:#12100e;border:1px solid var(--line);padding:16px 16px 14px;display:flex;flex-direction:column;clip-path:polygon(0 6px,8px 0,100% 2px,calc(100% - 3px) calc(100% - 8px),calc(100% - 12px) 100%,2px calc(100% - 2px))}
+  .gcard .g-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .gcard h3{font-family:var(--serif);font-weight:900;font-size:20px;color:var(--gold)}
+  .gcard .g-band{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+  .gcard .g-members{font-family:var(--mono);font-size:10px;color:#8f8a80;letter-spacing:.04em;flex-basis:100%;line-height:1.6}
+  .gmeter{height:8px;border:1px solid var(--line);border-radius:2px;background:#141210;overflow:hidden;margin:4px 0 10px}
+  .gmeter i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--red),var(--deep));transition:width .5s}
+  .g-phase{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#8f8a80;margin-bottom:8px}
+  .g-phase b{color:var(--gold)}
+  .g-events{flex:1;max-height:300px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--deep) transparent}
+  .g-ev{padding:8px 2px;border-bottom:1px solid rgba(236,170,39,.08);font-family:var(--mono);font-size:11.5px;line-height:1.55;color:#d8d2c6}
+  .g-ev .n{color:var(--gold);font-weight:700;margin-right:6px}
+  .g-ev .a{display:inline-block;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#000;background:var(--gold);padding:1px 5px;border-radius:2px;margin-right:6px;vertical-align:1px}
+  .g-ev .a.mil{background:var(--red);color:#fff}
+  .g-ev .a.people{background:#cfc8bb}
+  .g-ev .by{color:#6a655c;font-size:9.5px;display:block;margin-top:2px}
+  .g-mk{padding:8px 2px 3px;font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--red);text-align:center}
+  .g-empty{font-family:var(--mono);font-size:11px;color:#6a655c;padding:14px 0;text-align:center;line-height:1.7}
+  .g-props{font-family:var(--mono);font-size:10px;color:#8f8a80;border-top:1px dashed rgba(236,170,39,.18);margin-top:8px;padding-top:8px;letter-spacing:.04em}
+  .g-props b{color:var(--red)}
+  .boardbar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#000;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.08em;padding:11px 18px;border-radius:4px;opacity:0;pointer-events:none;transition:.28s;z-index:30}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="accent-bar"></div>
+<header>
+  <div class="eyebrow">Classroom Session</div>
+  <h1>A President <span class="u">Is Impeached</span> · Presenter</h1>
+  <p class="sub">Every group's record, side by side. <a href="../admin/">✎ content editor</a> · <a href="../">↩ the game</a></p>
+</header>
+<main>
+  <!-- setup -->
+  <div class="setup" id="setup">
+    <label>Admin key</label>
+    <input id="keyInput" type="password" placeholder="Enter the admin key" autocomplete="current-password">
+    <label>Path</label>
+    <div class="pathpick">
+      <div class="ppick" data-mode="A">Road to Conviction</div>
+      <div class="ppick on" data-mode="B">After the Verdict</div>
+    </div>
+    <label>Groups</label>
+    <select id="groupCount">
+      <option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option>
+    </select>
+    <div class="row"><button class="btn" id="createBtn" style="flex:1">⚖ Open the Session</button></div>
+    <div class="or">— or watch a running session —</div>
+    <div class="rejoin">
+      <input id="watchCode" maxlength="4" placeholder="····" autocomplete="off">
+      <button class="btn ghost" id="watchBtn">Watch</button>
+    </div>
+    <div class="err" id="setupErr"></div>
+  </div>
+
+  <!-- board -->
+  <div class="board" id="board">
+    <div class="codebar">
+      <div>
+        <div class="lab">Join with code</div>
+        <div class="code" id="bigCode">····</div>
+      </div>
+      <div>
+        <div class="url">at <b>stopandconnect.com/impeach</b> → 🎓 Join a Classroom Session</div>
+        <div class="meta" id="boardMeta"></div>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="boardbar">
+      <button class="btn ghost" id="newBtn">＋ New Session</button>
+      <button class="btn red" id="closeBtn">✕ End This Session</button>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  var API='/impeach/api';
+  var ACTOR_NAME={pres:'President',congress:'Congress',courts:'Courts',mil:'Military',states:'States',people:'People',world:'Press/World'};
+  var PHASES=['Allegations','House Inquiry','The Articles','House Vote','Senate Trial','Convicted — Crisis'];
+  var PHASE_MARKER={2:'Inquiry opens',3:'Articles drafted',4:'House impeaches',5:'Trial begins',6:'CONVICTED'};
+  var BANDS=[[15,"Constitutional Crisis"],[35,"Standoff"],[55,"State of Emergency"],[75,"Martial Law"],[90,"Open Rupture"],[101,"Civil War"]];
+  var PRE_BANDS=[[14,"Rumblings"],[28,"Scandal"],[44,"Firestorm"],[62,"Constitutional Confrontation"],[101,"The Brink"]];
+  var KEY=sessionStorage.getItem('pip_admin_key')||'';
+  var code=null,ver=0,mode='B',pollTimer=null;
+
+  function $(id){return document.getElementById(id);}
+  var toastTimer;
+  function toast(m){var el=$('toast');el.textContent=m;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},1800);}
+  function api(p,opts){
+    opts=opts||{};
+    return fetch(API+p,{method:opts.method||'GET',headers:{'Content-Type':'application/json','x-admin-key':KEY},body:opts.body?JSON.stringify(opts.body):undefined})
+      .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j;});});
+  }
+  function tension(evts){var t=8;(evts||[]).forEach(function(e){if(!e.marker)t+=(e.w||10);});return Math.min(100,t);}
+  function band(t,m,phase){
+    var b=(m==='A'&&phase<6)?PRE_BANDS:BANDS;
+    for(var i=0;i<b.length;i++){if(t<=b[i][0])return b[i][1];}
+    return b[b.length-1][1];
+  }
+  function actorClass(id){if(id==='mil')return ' mil';if(id==='people'||id==='states')return ' people';return '';}
+
+  document.querySelectorAll('.ppick').forEach(function(p){
+    p.onclick=function(){document.querySelectorAll('.ppick').forEach(function(x){x.classList.remove('on');});p.classList.add('on');mode=p.dataset.mode;};
+  });
+  if(KEY)$('keyInput').value=KEY;
+
+  $('createBtn').onclick=function(){
+    KEY=$('keyInput').value.trim();
+    if(!KEY){$('setupErr').textContent='Enter the admin key.';return;}
+    api('/rooms',{method:'POST',body:{groups:parseInt($('groupCount').value,10),mode:mode}}).then(function(j){
+      sessionStorage.setItem('pip_admin_key',KEY);
+      openBoard(j.code);
+      toast('Session '+j.code+' is open');
+    }).catch(function(e){$('setupErr').textContent=e.message;});
+  };
+  $('watchBtn').onclick=function(){
+    var c=$('watchCode').value.trim().toUpperCase();
+    if(c.length!==4){$('setupErr').textContent='Session codes are 4 letters.';return;}
+    api('/rooms/'+c).then(function(){openBoard(c);}).catch(function(e){$('setupErr').textContent=e.message;});
+  };
+  $('watchCode').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+
+  function openBoard(c){
+    code=c;ver=0;
+    $('setup').style.display='none';
+    $('board').classList.add('show');
+    $('bigCode').textContent=c;
+    poll();loop();
+  }
+  function closeBoard(){
+    clearTimeout(pollTimer);code=null;
+    $('board').classList.remove('show');
+    $('setup').style.display='';
+  }
+  $('newBtn').onclick=function(){if(confirm('Leave this board and set up a new session? (The session keeps running.)'))closeBoard();};
+  $('closeBtn').onclick=function(){
+    if(!confirm('End session '+code+' for every group? Their records disappear.'))return;
+    api('/rooms/'+code+'/close',{method:'POST'}).then(function(){toast('Session ended');closeBoard();}).catch(function(e){toast(e.message);});
+  };
+
+  function loop(){
+    clearTimeout(pollTimer);
+    if(!code)return;
+    pollTimer=setTimeout(function(){poll();loop();},2500);
+  }
+  function poll(){
+    if(!code)return;
+    api('/rooms/'+code+'/state?v='+ver).then(function(j){
+      if(!j.changed)return;
+      ver=j.v;render(j);
+    }).catch(function(e){
+      if(/Session ended|No such/.test(e.message)){toast('The session has ended.');closeBoard();}
+    });
+  }
+  function render(j){
+    var total=0;
+    Object.keys(j.members||{}).forEach(function(g){total+=j.members[g].length;});
+    $('boardMeta').textContent=(j.mode==='A'?'Road to Conviction':'After the Verdict')+' · '+Object.keys(j.groups).length+' groups · '+total+' joined';
+    var grid=$('grid');grid.innerHTML='';
+    Object.keys(j.groups).sort(function(a,b){return a-b;}).forEach(function(gid){
+      var g=j.groups[gid];
+      var t=tension(g.events);
+      var card=document.createElement('div');card.className='gcard';
+      var evHtml='',n=0;
+      (g.events||[]).forEach(function(e){
+        if(e.marker){evHtml+='<div class="g-mk">— ★ '+(PHASE_MARKER[e.phase]||'')+' —</div>';return;}
+        n++;
+        evHtml+='<div class="g-ev"><span class="n">'+String(n).padStart(2,'0')+'</span><span class="a'+actorClass(e.actor)+'">'+(ACTOR_NAME[e.actor]||'—')+'</span><span class="t"></span>'+(e.by?'<span class="by">by '+esc(e.by)+'</span>':'')+'</div>';
+      });
+      if(!n&&!evHtml)evHtml='<div class="g-empty">No developments yet.</div>';
+      card.innerHTML=
+        '<div class="g-top"><h3>Group '+gid+'</h3><span class="g-band">'+band(t,g.mode,g.phase)+' · '+t+'/100</span>'+
+        '<span class="g-members">'+esc(((j.members||{})[gid]||[]).join(' · ')||'no one yet')+'</span></div>'+
+        '<div class="gmeter"><i style="width:'+Math.max(6,t)+'%"></i></div>'+
+        (g.mode==='A'?'<div class="g-phase">Phase: <b>'+PHASES[(g.phase||1)-1]+'</b></div>':'')+
+        '<div class="g-events">'+evHtml+'</div>'+
+        ((g.proposals&&g.proposals.length)?'<div class="g-props"><b>'+g.proposals.length+'</b> open proposal'+(g.proposals.length===1?'':'s')+' on the table</div>':'');
+      // event texts set via textContent to stay safe
+      var texts=[];(g.events||[]).forEach(function(e){if(!e.marker)texts.push(e.text);});
+      card.querySelectorAll('.g-ev .t').forEach(function(el,i){el.textContent=' '+texts[i];});
+      grid.appendChild(card);
+      var evBox=card.querySelector('.g-events');evBox.scrollTop=evBox.scrollHeight;
+    });
+  }
+  function esc(s){var d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+})();
+</script>
+</body>
+</html>

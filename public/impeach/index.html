@@ -25,14 +25,37 @@
   .accent-bar{height:4px;width:100%;background:linear-gradient(90deg,var(--deep),var(--gold),var(--deep))}
 
   /* ── header ── */
-  header{max-width:920px;margin:0 auto;padding:38px 22px 10px;text-align:center}
+  header{max-width:920px;margin:0 auto;padding:38px 22px 10px;text-align:center;position:relative}
   .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);opacity:.85}
   h1{font-family:var(--serif);font-weight:900;font-size:clamp(34px,7vw,62px);line-height:1.02;margin:14px 0 8px;letter-spacing:-.01em}
   h1 .u{color:var(--red);font-style:italic}
   .sub{font-size:14.5px;color:#b9b2a6;max-width:560px;margin:0 auto;line-height:1.55}
   .seal{font-size:30px;filter:drop-shadow(0 0 14px rgba(236,170,39,.35))}
+  .tipToggle{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:12px;font-weight:700;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:#141210;color:var(--gold);cursor:pointer;transition:.16s}
+  .tipToggle.on{background:var(--gold);color:#000;box-shadow:0 0 14px rgba(236,170,39,.5)}
 
   main{max-width:920px;margin:0 auto;padding:6px 22px}
+
+  /* ── room bar ── */
+  .roombar{display:none;margin:14px 0 0;padding:10px 14px;border:1px solid var(--red);border-radius:4px;background:linear-gradient(180deg,rgba(104,7,7,.28),rgba(104,7,7,.08));font-family:var(--mono);font-size:12px;letter-spacing:.08em;align-items:center;gap:12px;flex-wrap:wrap;
+    clip-path:polygon(0 0,100% 2px,calc(100% - 8px) 100%,4px calc(100% - 3px))}
+  .roombar.show{display:flex}
+  .roombar b{color:var(--gold);letter-spacing:.2em}
+  .roombar .who{color:#b9b2a6;flex:1;min-width:120px}
+  .roombar button{background:none;border:1px solid var(--red);color:var(--red);font-family:var(--mono);font-size:11px;padding:5px 10px;border-radius:3px;cursor:pointer;letter-spacing:.08em}
+  .roombar button:hover{background:rgba(224,82,82,.12)}
+
+  /* ── proceedings tracker (Path A) ── */
+  .tracker{display:none;margin:24px 0 0}
+  .tracker.show{display:block}
+  .tracker-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#8f8a80;margin-bottom:10px}
+  .steps{display:flex;gap:6px;flex-wrap:wrap;align-items:stretch}
+  .step{flex:1;min-width:96px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:9px 6px;border:1px solid var(--line);color:#6a655c;background:#12100e;position:relative;
+    clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+  .step.done{background:rgba(236,170,39,.14);color:var(--gold);border-color:var(--gold)}
+  .step.now{background:var(--red);border-color:var(--red);color:#fff;font-weight:700;animation:stepPulse 1.6s ease-in-out infinite}
+  @keyframes stepPulse{0%,100%{box-shadow:0 0 0 rgba(224,82,82,.0)}50%{box-shadow:0 0 18px rgba(224,82,82,.55)}}
+  .advance-row{margin-top:12px;text-align:right}
 
   /* ── tension meter ── */
   .meter-wrap{margin:26px 0 30px}
@@ -47,6 +70,7 @@
   .dossier{background:linear-gradient(180deg,#151310,#0e0d0b);border:1px solid var(--line);border-radius:6px;padding:22px 24px;position:relative;box-shadow:0 18px 50px rgba(0,0,0,.5)}
   .dossier::before{content:"OFFICIAL RECORD · 00";position:absolute;top:-9px;left:20px;background:var(--black);padding:0 9px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--gold)}
   .stamp{position:absolute;top:14px;right:16px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--red);border:2px solid var(--red);border-radius:4px;padding:3px 8px;transform:rotate(7deg);opacity:.9}
+  .stamp.inquiry{color:var(--gold);border-color:var(--gold)}
   .dossier textarea{width:100%;background:transparent;border:none;color:#e9e2d4;font-family:var(--mono);font-size:14.5px;line-height:1.7;resize:vertical;min-height:118px;outline:none}
   .dossier textarea::placeholder{color:#6a655c}
 
@@ -77,6 +101,19 @@
   .composer textarea:focus{border-color:var(--gold)}
   .composer-actions{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
 
+  /* ── proposals (classroom) ── */
+  .proposals{display:none;margin-top:34px}
+  .proposals.show{display:block}
+  .proposals-h{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);border-bottom:1px solid rgba(224,82,82,.3);padding-bottom:8px;margin-bottom:4px}
+  .prop{display:flex;gap:12px;align-items:flex-start;padding:14px 4px;border-bottom:1px solid rgba(224,82,82,.12);animation:pop .3s ease}
+  .prop-body{flex:1}
+  .prop .by{font-family:var(--mono);font-size:10px;color:#8f8a80;letter-spacing:.08em;margin-top:6px}
+  .prop-btns{display:flex;flex-direction:column;gap:6px}
+  .prop-btns button{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:7px 10px;border-radius:3px;cursor:pointer;border:1px solid var(--gold);background:var(--gold);color:#000}
+  .prop-btns button.wd{background:none;border-color:#6a655c;color:#8f8a80}
+  .prop-btns button.wd:hover{border-color:var(--red);color:var(--red)}
+  .prop-empty{font-family:var(--mono);font-size:12px;color:#6a655c;padding:16px 0;line-height:1.7}
+
   /* ── record timeline ── */
   .record{margin-top:40px}
   .record-h{display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:6px}
@@ -89,9 +126,34 @@
   .entry-actor.mil{background:var(--red);color:#fff}
   .entry-actor.people{background:#cfc8bb}
   .entry-text{font-family:var(--mono);font-size:14.5px;line-height:1.7;color:#e4ddcf}
+  .entry-by{font-family:var(--mono);font-size:10px;color:#8f8a80;letter-spacing:.08em;margin-top:7px}
   .entry-del{background:none;border:none;color:#6a655c;font-family:var(--mono);font-size:11px;cursor:pointer;margin-top:8px;letter-spacing:.08em}
   .entry-del:hover{color:var(--red)}
+  .divider{display:flex;align-items:center;gap:14px;padding:22px 0 10px;animation:pop .3s ease}
+  .divider .rule{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--red),transparent)}
+  .divider .dtext{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--red);text-align:center}
   .empty{font-family:var(--mono);font-size:13px;color:#6a655c;padding:26px 0;text-align:center;line-height:1.7}
+
+  /* ── comments wall ── */
+  .wall{margin-top:56px;border-top:1px solid var(--line);padding-top:30px}
+  .wall-h{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .wall-h h2{font-family:var(--serif);font-weight:700;font-size:24px}
+  .wall-h .as{font-family:var(--mono);font-size:11px;color:#8f8a80;letter-spacing:.08em}
+  .wall-h .as b{color:var(--gold)}
+  .wall-h .as button{background:none;border:none;color:#6a655c;font-family:var(--mono);font-size:10px;cursor:pointer;text-decoration:underline}
+  .wall-sub{font-family:var(--mono);font-size:11px;color:#6a655c;letter-spacing:.06em;margin-bottom:18px;line-height:1.7}
+  .namegate,.postbox{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+  .namegate input,.postbox textarea{background:#0b0a09;border:1px solid var(--line);border-radius:4px;color:#e9e2d4;font-family:var(--mono);font-size:13px;padding:11px 12px;outline:none}
+  .namegate input:focus,.postbox textarea:focus{border-color:var(--gold)}
+  .namegate input{flex:1;min-width:180px}
+  .postbox{align-items:flex-start}
+  .postbox textarea{flex:1;min-width:200px;min-height:54px;resize:vertical;line-height:1.6}
+  .comment{padding:14px 2px;border-bottom:1px solid rgba(236,170,39,.08)}
+  .comment .c-top{font-family:var(--mono);font-size:11px;letter-spacing:.1em;margin-bottom:6px}
+  .comment .c-top b{color:var(--gold);text-transform:uppercase}
+  .comment .c-top span{color:#6a655c;margin-left:10px;font-size:10px}
+  .comment .c-text{font-size:14px;line-height:1.65;color:#d8d2c6}
+  .wall-off{font-family:var(--mono);font-size:12px;color:#6a655c;padding:14px 0}
 
   /* ── footer bar ── */
   .footer{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:12px 22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;z-index:20}
@@ -99,26 +161,139 @@
   .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gold);color:#000;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.08em;padding:11px 18px;border-radius:4px;opacity:0;pointer-events:none;transition:.28s;z-index:30}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+  /* ── tooltip ── */
+  .tip{position:fixed;z-index:60;max-width:270px;background:#0d0c0a;border:1px solid var(--red);color:#e9e2d4;font-family:var(--mono);font-size:11.5px;line-height:1.6;letter-spacing:.02em;padding:11px 13px;pointer-events:none;opacity:0;transition:opacity .12s;
+    clip-path:polygon(0 0,100% 3px,calc(100% - 6px) 100%,3px calc(100% - 4px));box-shadow:0 12px 34px rgba(0,0,0,.7)}
+  .tip.show{opacity:1}
+  .tip::before{content:"✦";color:var(--red);margin-right:7px}
+
+  /* ── mode select overlay ── */
+  .overlay{position:fixed;inset:0;z-index:50;background:
+    repeating-linear-gradient(-55deg,rgba(104,7,7,.10) 0 2px,transparent 2px 26px),
+    radial-gradient(ellipse at 50% -10%,#1a120a 0%,var(--black) 62%);
+    display:none;overflow-y:auto;padding:44px 20px 60px}
+  .overlay.show{display:block;animation:ovIn .35s ease}
+  @keyframes ovIn{from{opacity:0}to{opacity:1}}
+  .ov-inner{max-width:860px;margin:0 auto;text-align:center}
+  .ov-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.42em;text-transform:uppercase;color:var(--gold)}
+  .ov-title{font-family:var(--serif);font-weight:900;font-size:clamp(28px,5.6vw,46px);margin:12px 0 6px}
+  .ov-title .u{color:var(--red);font-style:italic}
+  .ov-sub{font-family:var(--mono);font-size:12px;color:#8f8a80;letter-spacing:.14em;text-transform:uppercase;margin-bottom:34px}
+  .paths{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  .path{flex:1;min-width:270px;max-width:390px;text-align:left;background:linear-gradient(165deg,#171310,#0d0c0a);border:1px solid var(--line);padding:26px 24px 22px;cursor:pointer;position:relative;transition:.18s;
+    clip-path:polygon(0 10px,14px 0,100% 4px,calc(100% - 6px) calc(100% - 12px),calc(100% - 18px) 100%,4px calc(100% - 4px))}
+  .path:hover{transform:translateY(-4px) rotate(-.4deg);border-color:var(--gold);box-shadow:0 22px 55px rgba(0,0,0,.6),0 0 26px rgba(236,170,39,.14)}
+  .path.pb:hover{border-color:var(--red);box-shadow:0 22px 55px rgba(0,0,0,.6),0 0 26px rgba(224,82,82,.16)}
+  .path .p-tag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#000;background:var(--gold);display:inline-block;padding:4px 9px;margin-bottom:14px;clip-path:polygon(0 0,100% 2px,calc(100% - 4px) 100%,2px calc(100% - 2px))}
+  .path.pb .p-tag{background:var(--red);color:#fff}
+  .path h3{font-family:var(--serif);font-weight:900;font-size:26px;line-height:1.08;margin-bottom:10px}
+  .path .p-desc{font-family:var(--mono);font-size:12px;line-height:1.75;color:#b9b2a6}
+  .path .p-foot{margin-top:16px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#6a655c}
+  .path .p-foot b{color:var(--gold)} .path.pb .p-foot b{color:var(--red)}
+  .classroom{margin:26px auto 0;max-width:798px;background:#100e0c;border:1px dashed var(--line);padding:16px 20px;font-family:var(--mono);cursor:pointer;transition:.18s;text-align:left;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    clip-path:polygon(6px 0,100% 3px,calc(100% - 10px) 100%,0 calc(100% - 5px))}
+  .classroom:hover{border-color:var(--gold)}
+  .classroom .c-icon{font-size:22px}
+  .classroom .c-main{flex:1;min-width:200px}
+  .classroom .c-t{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+  .classroom .c-d{font-size:11px;color:#8f8a80;margin-top:4px;letter-spacing:.04em}
+  .joinbox{display:none;margin:22px auto 0;max-width:520px;background:#12100e;border:1px solid var(--line);padding:22px;text-align:left;clip-path:polygon(0 6px,10px 0,100% 2px,calc(100% - 4px) calc(100% - 8px),calc(100% - 14px) 100%,2px calc(100% - 2px))}
+  .joinbox.show{display:block;animation:pop .25s ease}
+  .joinbox label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#8f8a80;margin:14px 0 6px}
+  .joinbox input{width:100%;background:#0b0a09;border:1px solid var(--line);border-radius:3px;color:#e9e2d4;font-family:var(--mono);font-size:15px;padding:11px 12px;outline:none;letter-spacing:.1em}
+  .joinbox input:focus{border-color:var(--gold)}
+  .joinbox input.code{text-transform:uppercase;letter-spacing:.5em;font-size:20px;text-align:center}
+  .grouppick{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .gbtn{font-family:var(--mono);font-size:11px;padding:9px 13px;border:1px solid var(--line);background:#141210;color:#cfc8bb;cursor:pointer;letter-spacing:.06em;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+  .gbtn.on{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+  .join-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .join-err{font-family:var(--mono);font-size:11px;color:var(--red);margin-top:12px;min-height:14px;letter-spacing:.04em}
+  .ov-note{margin-top:30px;font-family:var(--mono);font-size:10px;color:#5c574f;letter-spacing:.1em;line-height:1.8}
+
   @media(max-width:560px){
     .entry-num{font-size:20px;min-width:34px}
     .btn{padding:12px 15px;font-size:12px}
     .footer .btn{flex:1;min-width:0}
+    .step{min-width:44%}
   }
 </style>
 </head>
 <body>
 <div class="accent-bar"></div>
 
+<!-- ── mode select ── -->
+<div class="overlay" id="modeSelect">
+  <div class="ov-inner">
+    <div class="ov-eyebrow">A Game of Political Fiction</div>
+    <div class="ov-title">A President <span class="u">Is Impeached</span></div>
+    <div class="ov-sub">— How does the story begin? —</div>
+    <div class="paths">
+      <div class="path" id="pathA" role="button" tabindex="0">
+        <span class="p-tag">Path A · Build the Case</span>
+        <h3>Road to<br>Conviction</h3>
+        <div class="p-desc">Start at the first allegation. Push the machinery forward — inquiry, Articles, the House vote, the Senate trial — one development at a time, until the verdict falls.</div>
+        <div class="p-foot"><b>▸</b> Phase-gated deck · proceedings tracker</div>
+      </div>
+      <div class="path pb" id="pathB" role="button" tabindex="0">
+        <span class="p-tag">Path B · Face the Fallout</span>
+        <h3>After the<br>Verdict</h3>
+        <div class="p-desc">The House has impeached. The Senate has convicted. Now the republic bends. Develop the crisis forward — until it holds, or breaks.</div>
+        <div class="p-foot"><b>▸</b> The original game · full crisis deck</div>
+      </div>
+    </div>
+    <div class="classroom" id="classroomBtn" role="button" tabindex="0">
+      <span class="c-icon">🎓</span>
+      <div class="c-main">
+        <div class="c-t">Join a Classroom Session</div>
+        <div class="c-d">Your professor gives you a 4-letter code. Your group builds one record together.</div>
+      </div>
+      <span style="color:var(--gold);font-size:18px">→</span>
+    </div>
+    <div class="joinbox" id="joinBox">
+      <label>Your name</label>
+      <input id="joinName" maxlength="24" placeholder="e.g. Jordan W.">
+      <label>Session code</label>
+      <input id="joinCode" class="code" maxlength="4" placeholder="····" autocomplete="off">
+      <div id="groupWrap" style="display:none">
+        <label>Your group</label>
+        <div class="grouppick" id="groupPick"></div>
+      </div>
+      <div class="join-actions">
+        <button class="btn" id="joinGo">Find Session</button>
+        <button class="btn red" id="joinCancel">Back</button>
+      </div>
+      <div class="join-err" id="joinErr"></div>
+    </div>
+    <div class="ov-note">A work of fiction and imagination for tabletop-style play.<br>Not affiliated with any government, office, or real person.</div>
+  </div>
+</div>
+
 <header>
+  <button class="tipToggle" id="tipToggle" data-tip="Inspect mode: while lit, tap any control to see what it does instead of triggering it. Tap again to turn off.">ⓘ</button>
   <div class="seal">🏛️</div>
   <div class="eyebrow">A Game of Political Fiction</div>
   <h1>A President <span class="u">Is Impeached</span></h1>
-  <p class="sub">The House has impeached. The Senate has convicted. Now the republic bends. Draw a development, elaborate it, and build the crisis one move at a time — until it holds, or breaks.</p>
+  <p class="sub" id="subline">The House has impeached. The Senate has convicted. Now the republic bends. Draw a development, elaborate it, and build the crisis one move at a time — until it holds, or breaks.</p>
 </header>
 
 <main>
+  <!-- classroom bar -->
+  <div class="roombar" id="roombar">
+    <b id="rbCode">····</b>
+    <span id="rbGroup">GROUP —</span>
+    <span class="who" id="rbWho"></span>
+    <button id="leaveBtn">✕ Leave</button>
+  </div>
+
+  <!-- proceedings tracker (Path A) -->
+  <div class="tracker" id="tracker">
+    <div class="tracker-label" data-tip="The stage of the impeachment proceedings. Each phase unlocks its own deck of developments.">The Proceedings</div>
+    <div class="steps" id="steps"></div>
+    <div class="advance-row"><button class="btn red" id="advanceBtn" data-tip="Move the proceedings to their next stage. New developments unlock with each phase — and there is no going back.">Open the Inquiry →</button></div>
+  </div>
+
   <!-- tension meter -->
-  <div class="meter-wrap">
+  <div class="meter-wrap" data-tip="How close the republic is to breaking. Every committed development raises the tension — heavier moves raise it faster.">
     <div class="meter-top">
       <span>Tension</span>
       <span class="meter-band" id="band">Constitutional Crisis</span>
@@ -131,7 +306,7 @@
 
   <!-- seed dossier -->
   <div class="dossier">
-    <span class="stamp">CONVICTED</span>
+    <span class="stamp" id="stamp">CONVICTED</span>
     <textarea id="seed" spellcheck="false"></textarea>
   </div>
 
@@ -140,8 +315,8 @@
     <div class="ctl-label">Who acts next?</div>
     <div class="chips" id="chips"></div>
     <div class="draw-row">
-      <button class="btn" id="drawBtn">⚡ Draw a Development</button>
-      <button class="btn ghost" id="writeBtn">✎ Write Your Own</button>
+      <button class="btn" id="drawBtn" data-tip="Deal a development from the deck — filtered to whichever actor you pick above. You can rewrite it before it enters the Record.">⚡ Draw a Development</button>
+      <button class="btn ghost" id="writeBtn" data-tip="Skip the deck and author the next development yourself.">✎ Write Your Own</button>
     </div>
   </div>
 
@@ -152,9 +327,15 @@
     <textarea id="composerText" spellcheck="false" placeholder="Elaborate. What exactly happens? Who reacts, and how far does it go?"></textarea>
     <div class="composer-actions">
       <button class="btn" id="commitBtn">＋ Add to the Record</button>
-      <button class="btn ghost" id="rerollBtn">🎲 Draw Another</button>
+      <button class="btn ghost" id="rerollBtn" data-tip="Discard this card and deal another from the same pool.">🎲 Draw Another</button>
       <button class="btn red" id="cancelBtn">Cancel</button>
     </div>
+  </div>
+
+  <!-- group proposals (classroom) -->
+  <div class="proposals" id="proposals">
+    <div class="proposals-h" data-tip="Developments your group has drafted but not yet made official. Anyone in the group can commit or withdraw one.">⚖ Group Proposals — commit one to make it official</div>
+    <div id="propList"></div>
   </div>
 
   <!-- record -->
@@ -167,33 +348,45 @@
   </div>
 
   <p class="disc">A work of fiction and imagination for tabletop-style play. Not affiliated with any government, office, or real person. No prediction, endorsement, or instruction — only a story you invent together.</p>
+
+  <!-- comments wall -->
+  <div class="wall" id="wall">
+    <div class="wall-h">
+      <h2>Public Comment</h2>
+      <span class="as" id="wallAs"></span>
+    </div>
+    <div class="wall-sub">One wall, shared by everyone who plays. Reflections, verdicts, alternate endings — enter them into the public record.</div>
+    <div id="wallBody"><div class="wall-off">Loading the wall…</div></div>
+  </div>
 </main>
 
 <div class="footer">
-  <button class="btn ghost" id="copyBtn">📋 Copy the Record</button>
-  <button class="btn ghost" id="shuffleSeed">🎲 Generate an Opening</button>
-  <button class="btn red" id="clearBtn">🗑 Start Over</button>
+  <button class="btn ghost" id="copyBtn" data-tip="Export the whole chronicle as text — opening, every development, and the final tension reading.">📋 Copy the Record</button>
+  <button class="btn ghost" id="shuffleSeed" data-tip="Deal a different opening scenario for this path. Your record stays.">🎲 Generate an Opening</button>
+  <button class="btn red" id="clearBtn" data-tip="Wipe the Record and choose your path again.">🗑 Start Over</button>
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="tip" id="tip"></div>
 
 <script>
 (function(){
   "use strict";
-  var LS='pip_record_v1';
+  var LS='pip_record_v2', LS_OLD='pip_record_v1', LS_ID='pip_id_v1', LS_ROOM='pip_room_v1';
+  var API='/impeach/api';
 
   var ACTORS=[
-    {id:'pres',   name:'The President'},
-    {id:'congress',name:'Congress'},
-    {id:'courts', name:'The Courts'},
-    {id:'mil',    name:'The Military'},
-    {id:'states', name:'The States'},
-    {id:'people', name:'The People'},
-    {id:'world',  name:'Press & The World'}
+    {id:'pres',    name:'The President',    tip:'The Executive: the President and the loyalists still holding the levers — orders, pardons, emergency powers.'},
+    {id:'congress',name:'Congress',         tip:'The Legislature: the House and Senate — votes, subpoenas, warrants, funding, and the line of succession.'},
+    {id:'courts',  name:'The Courts',       tip:'The Judiciary: rulings on what is lawful — and the open question of whether anyone obeys them.'},
+    {id:'mil',     name:'The Military',     tip:'The armed forces: the deciding weight. Whoever they obey wins — if they can agree on whom to obey.'},
+    {id:'states',  name:'The States',       tip:'Governors, legislatures, and National Guards: fifty capitals deciding whether to comply.'},
+    {id:'people',  name:'The People',       tip:'Crowds, strikes, vigils, militias: power in the street.'},
+    {id:'world',   name:'Press & The World',tip:'What is known and who believes it — leaks, broadcasts, markets, borders, foreign recognition.'}
   ];
   var ACTOR_NAME={}; ACTORS.forEach(function(a){ACTOR_NAME[a.id]=a.name;});
 
-  // weight = how much it escalates the crisis
+  // ── default content (overridden by the professor's edits via the API) ──
   var DECK=[
     {a:'pres',w:14,t:"The President declares martial law and orders the arrest of the congressional leaders who voted to convict."},
     {a:'pres',w:12,t:"The President invokes the Insurrection Act and orders federal troops into the streets of the capital."},
@@ -202,39 +395,61 @@
     {a:'pres',w:12,t:"The President seizes the national broadcast networks and addresses the country over every channel at once."},
     {a:'pres',w:13,t:"The President suspends habeas corpus and refuses to vacate the White House."},
     {a:'pres',w:10,t:"The President orders the Treasury to freeze the accounts of every state that defies the order."},
-
     {a:'congress',w:11,t:"Congress reconvenes in a secret location and declares the Senate's conviction stands: the President is removed, and the line of succession is invoked."},
     {a:'congress',w:10,t:"The Speaker of the House declares themselves Acting President and is sworn in over the phone."},
     {a:'congress',w:9,t:"Congress issues federal warrants for the President's arrest and cuts off all executive funding."},
     {a:'congress',w:8,t:"A bloc of senators defects to the President's side, splitting the legislature into two rival bodies."},
-
     {a:'courts',w:9,t:"The Supreme Court rules the martial law order unconstitutional in an emergency 5–4 decision."},
     {a:'courts',w:8,t:"The Chief Justice quietly administers the oath of office to the Vice President in an undisclosed chamber."},
     {a:'courts',w:10,t:"Federal judges are placed under house arrest; the lower courts go dark."},
     {a:'courts',w:9,t:"Two Supreme Courts now claim authority — one loyal to the President, one to Congress."},
-
     {a:'mil',w:15,t:"The Joint Chiefs issue a joint statement: the armed forces will not carry out unlawful orders against citizens."},
     {a:'mil',w:16,t:"A four-star general begins marching an armored column toward the capital — no one knows for which side."},
     {a:'mil',w:14,t:"The Pacific Fleet declares neutrality and sails to open water, refusing all orders."},
     {a:'mil',w:13,t:"At a checkpoint, soldiers lower their weapons and refuse to fire on the crowd. The video is everywhere within minutes."},
     {a:'mil',w:16,t:"The chain of command fractures: two Pentagons, two sets of orders, one army."},
-
     {a:'states',w:13,t:"Twelve governors announce their National Guards will not comply with any federal order."},
     {a:'states',w:12,t:"California, Texas, and New York form an emergency compact and pledge mutual defense."},
     {a:'states',w:15,t:"A state legislature votes to suspend its ties to the federal government 'until constitutional order is restored.'"},
     {a:'states',w:11,t:"Governors order state police to seize the federal buildings within their borders."},
-
     {a:'people',w:12,t:"Millions fill the streets of every major city at once. The capital is a sea of bodies."},
     {a:'people',w:13,t:"A general strike shuts down the ports, the rails, and the power grid in three states."},
     {a:'people',w:14,t:"Rival militias mobilize on both sides; the first checkpoints go up on interstate highways."},
     {a:'people',w:11,t:"The internet goes dark nationwide. People begin organizing by ham radio and word of mouth."},
-
     {a:'world',w:9,t:"A foreign power formally recognizes the rival government and recalls its ambassador."},
     {a:'world',w:11,t:"Markets collapse 40% in a single session; the currency is in free fall by nightfall."},
     {a:'world',w:12,t:"A leaked recording surfaces that changes which side the country believes — overnight."},
     {a:'world',w:8,t:"Neighboring nations close their borders and mass troops, 'for stability.'"}
   ];
-
+  var PRE_DECK=[
+    {p:1,a:'world',w:4,t:"A second newspaper independently confirms the story — and adds a name the first one didn't have."},
+    {p:1,a:'pres',w:5,t:"The President denies everything in a 2 a.m. statement that contradicts the official record released hours earlier."},
+    {p:1,a:'people',w:4,t:"A crowd gathers outside the federal building holding printouts of the leaked documents. It doubles by nightfall."},
+    {p:1,a:'world',w:5,t:"The whistleblower's identity leaks. Their lawyer announces they are 'safe, for now, and have more.'"},
+    {p:1,a:'congress',w:5,t:"The ranking members of two committees issue a rare joint letter demanding the administration preserve all records."},
+    {p:1,a:'pres',w:6,t:"A cabinet secretary resigns 'to spend time with family' — and is photographed that evening entering a grand jury annex."},
+    {p:2,a:'congress',w:5,t:"The House opens a formal impeachment inquiry. Subpoenas go out to the chief of staff, the counsel's office, and the President's private accountant."},
+    {p:2,a:'pres',w:6,t:"The White House orders every subpoenaed official to refuse to appear, claiming 'absolute immunity.'"},
+    {p:2,a:'world',w:5,t:"A career diplomat testifies behind closed doors for nine hours. Leaving, she says only: 'I told the truth.'"},
+    {p:2,a:'courts',w:6,t:"A federal judge rules the subpoenas valid and gives the White House one week to comply."},
+    {p:2,a:'congress',w:6,t:"The House votes to hold the chief of staff in contempt. He is photographed at dinner with the President that night."},
+    {p:2,a:'people',w:5,t:"Town halls turn hostile in swing districts. Three representatives who called the inquiry 'a circus' stop holding them."},
+    {p:3,a:'congress',w:6,t:"The Judiciary Committee drafts three Articles of Impeachment: abuse of power, obstruction of Congress, and war-making without authorization."},
+    {p:3,a:'world',w:7,t:"A witness the committee didn't know existed walks in with a lawyer and a locked briefcase."},
+    {p:3,a:'pres',w:6,t:"The President's allies introduce a resolution to censure instead — 'accountability without chaos.' It fails by four votes."},
+    {p:3,a:'pres',w:7,t:"A co-conspirator flips. His plea agreement mentions 'Individual-1' fourteen times."},
+    {p:3,a:'congress',w:5,t:"The markup session runs past midnight, on live television, to the largest audience in the network's history."},
+    {p:4,a:'congress',w:7,t:"The floor debate opens. The Speaker's gavel cracks; the chamber is full for the first time in years."},
+    {p:4,a:'congress',w:8,t:"Five members of the President's own party announce they will vote to impeach. One reads a resignation letter from the well."},
+    {p:4,a:'people',w:6,t:"Overnight vigils form outside the Capitol — candles on one side of the barricades, flags on the other."},
+    {p:4,a:'congress',w:8,t:"The House votes to impeach. The Speaker signs the Articles at a desk once used to sign a declaration of war."},
+    {p:4,a:'pres',w:7,t:"Minutes after the vote, the President tells a rally: 'They have not removed me. They have declared war on you.'"},
+    {p:5,a:'courts',w:7,t:"The Chief Justice is sworn in to preside, and administers an oath of impartial justice to one hundred senators. Several look at their shoes."},
+    {p:5,a:'congress',w:8,t:"The Senate votes 51–49 to call witnesses. The President's counsel objects for two full hours."},
+    {p:5,a:'world',w:8,t:"A witness produces the recording. The chamber hears the President's own voice give the order."},
+    {p:5,a:'pres',w:8,t:"The President's lawyers rest on a single argument: even if true, none of it is impeachable. The gallery audibly reacts."},
+    {p:5,a:'congress',w:9,t:"Closing arguments end. The Senate goes into closed deliberation. Outside, the plaza holds its breath."}
+  ];
   var OPENINGS=[
     "The President is impeached by the House and convicted by the Senate — high crimes and misdemeanors: self-dealing, violation of the Emoluments Clause, and war-making without the advice and consent of Congress. The President declares martial law and arrests the congressional leaders who led the vote. . . .",
     "By a two-thirds majority the Senate votes to convict. Within the hour the President appears on live television to announce that the vote is 'null, illegitimate, and an act of insurrection' — and that the Republic is now under emergency executive authority. . . .",
@@ -247,93 +462,191 @@
     "Guilty on all counts. The President accepts the verdict — then announces that, as their 'final lawful act,' they have pardoned themselves, dissolved the special counsel, and ordered the Treasury sealed. The Speaker calls it treason. . . .",
     "The Senate convicts. The President's approval, somehow, climbs ten points overnight. Millions call the trial a stitch-up. By noon, rival rallies fill the same square in the capital, and the police have quietly gone home. . . ."
   ];
-  function randomOpening(prev){
-    var o=OPENINGS[Math.floor(Math.random()*OPENINGS.length)];
-    if(OPENINGS.length>1){ while(o===prev){ o=OPENINGS[Math.floor(Math.random()*OPENINGS.length)]; } }
-    return o;
-  }
+  var PRE_OPENINGS=[
+    "It begins with a courier who never arrives. A whistleblower inside the Treasury walks a sealed envelope to a newspaper instead of a shredder: wire transfers, a foreign registry, and the President's own initials in the margin. By morning the word 'impeachment' is said aloud on the House floor for the first time. . . .",
+    "A deputy national security adviser resigns without explanation on a Tuesday. On Thursday her lawyer releases a nine-page memo describing an order she refused to carry out. The White House calls it fiction. The House Judiciary Committee calls it Exhibit A. . . .",
+    "The videotape is grainy, time-stamped, and unmistakable. Within an hour of its release, three cabinet secretaries are 'unreachable,' the President's counsel resigns, and the Speaker of the House stands at a podium and says the word everyone has been avoiding. . . .",
+    "An audit no one ordered surfaces in a committee mailbox: the war was funded before it was authorized, and the money moved through accounts bearing the President's family name. The White House press office cancels the daily briefing. It does not resume. . . ."
+  ];
 
-  var state={seed:OPENINGS[0], events:[], filter:null, drawn:null};
+  var PHASES=['Allegations','House Inquiry','The Articles','House Vote','Senate Trial','Convicted'];
+  var PHASE_MARKER={
+    2:'The House opens a formal impeachment inquiry',
+    3:'Articles of impeachment are drafted',
+    4:'The House moves to a floor vote — the President is impeached',
+    5:'The Senate trial begins',
+    6:'The Senate votes to convict — the President is removed'
+  };
+  var ADVANCE_LABEL={1:'Open the Inquiry →',2:'Draft the Articles →',3:'Call the House Vote →',4:'Begin the Trial →',5:'⚖ Render the Verdict'};
+  var SUB_A="An allegation surfaces. Build the case one development at a time — through the inquiry, the Articles, the vote, and the trial — until the Senate renders its verdict. Then survive what follows.";
+  var SUB_B="The House has impeached. The Senate has convicted. Now the republic bends. Draw a development, elaborate it, and build the crisis one move at a time — until it holds, or breaks.";
+
+  var BANDS=[
+    {max:15,label:"Constitutional Crisis"},{max:35,label:"Standoff"},{max:55,label:"State of Emergency"},
+    {max:75,label:"Martial Law"},{max:90,label:"Open Rupture"},{max:101,label:"Civil War"}
+  ];
+  var PRE_BANDS=[
+    {max:14,label:"Rumblings"},{max:28,label:"Scandal"},{max:44,label:"Firestorm"},
+    {max:62,label:"Constitutional Confrontation"},{max:101,label:"The Brink"}
+  ];
+
+  // mode: 'A' builds toward conviction (phase 1–5, then 6 = crisis); 'B' starts convicted (phase 6)
+  var state={mode:'B', phase:6, seed:OPENINGS[0], events:[], filter:null, drawn:null};
+  var ident=null;              // {token,name}
+  var room=null;               // {code,group,mode,v,groups,members} while in a classroom session
+  var pollTimer=null, seedPushTimer=null;
+
+  function $(id){return document.getElementById(id);}
+
+  // ── api helper ──
+  function api(pathname,opts){
+    opts=opts||{};
+    var headers={'Content-Type':'application/json'};
+    if(ident) headers['x-impeach-token']=ident.token;
+    return fetch(API+pathname,{
+      method:opts.method||'GET',
+      headers:headers,
+      body:opts.body?JSON.stringify(opts.body):undefined
+    }).then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||('HTTP '+r.status)); return j; }); });
+  }
 
   // ── persistence ──
-  function save(){ try{localStorage.setItem(LS,JSON.stringify({seed:state.seed,events:state.events}));}catch(e){} }
+  function save(){
+    if(room) return; // classroom games live on the server
+    try{localStorage.setItem(LS,JSON.stringify({mode:state.mode,phase:state.phase,seed:state.seed,events:state.events}));}catch(e){}
+  }
   function load(){ // resume only a genuine in-progress game (has developments on the record)
-    try{var r=JSON.parse(localStorage.getItem(LS)); if(r&&r.events&&r.events.length){state.seed=r.seed||state.seed; state.events=r.events; return true;}}catch(e){}
+    try{
+      var r=JSON.parse(localStorage.getItem(LS));
+      if(!r){ // migrate a v1 save (pre-modes) as Path B
+        var o=JSON.parse(localStorage.getItem(LS_OLD));
+        if(o&&o.events&&o.events.length){ r={mode:'B',phase:6,seed:o.seed,events:o.events}; }
+      }
+      if(r&&r.events&&r.events.length){
+        state.mode=r.mode==='A'?'A':'B';
+        state.phase=(state.mode==='A')?Math.min(6,Math.max(1,r.phase||1)):6;
+        state.seed=r.seed||state.seed; state.events=r.events; return true;
+      }
+    }catch(e){}
     return false;
   }
+  function loadIdent(){ try{var i=JSON.parse(localStorage.getItem(LS_ID)); if(i&&i.token&&i.name) ident=i;}catch(e){} }
+  function saveIdent(){ try{localStorage.setItem(LS_ID,JSON.stringify(ident));}catch(e){} }
 
   // ── tension ──
-  var BANDS=[
-    {max:15,label:"Constitutional Crisis"},
-    {max:35,label:"Standoff"},
-    {max:55,label:"State of Emergency"},
-    {max:75,label:"Martial Law"},
-    {max:90,label:"Open Rupture"},
-    {max:101,label:"Civil War"}
-  ];
+  function realEvents(){ return state.events.filter(function(e){return !e.marker;}); }
   function tension(){
-    var t=8; state.events.forEach(function(e){t+=(e.w||10);}); return Math.min(100,t);
+    var t=8; realEvents().forEach(function(e){t+=(e.w||10);}); return Math.min(100,t);
   }
   function renderMeter(){
     var t=tension();
-    document.getElementById('fill').style.width=Math.max(6,t)+'%';
-    var band=BANDS[0].label;
-    for(var i=0;i<BANDS.length;i++){ if(t<=BANDS[i].max){band=BANDS[i].label;break;} }
-    document.getElementById('band').textContent=band;
+    $('fill').style.width=Math.max(6,t)+'%';
+    var bands=(state.mode==='A'&&state.phase<6)?PRE_BANDS:BANDS;
+    var band=bands[0].label;
+    for(var i=0;i<bands.length;i++){ if(t<=bands[i].max){band=bands[i].label;break;} }
+    $('band').textContent=band;
+  }
+
+  // ── proceedings tracker ──
+  function renderTracker(){
+    var showing=(state.mode==='A');
+    $('tracker').classList.toggle('show',showing);
+    $('subline').textContent=(state.mode==='A')?SUB_A:SUB_B;
+    var stamp=$('stamp');
+    if(state.mode==='A'&&state.phase<6){ stamp.textContent='UNDER INQUIRY'; stamp.classList.add('inquiry'); }
+    else{ stamp.textContent='CONVICTED'; stamp.classList.remove('inquiry'); }
+    if(!showing) return;
+    var box=$('steps'); box.innerHTML='';
+    PHASES.forEach(function(name,i){
+      var p=i+1, el=document.createElement('div');
+      el.className='step'+(p<state.phase?' done':(p===state.phase?' now':''));
+      el.textContent=(p<state.phase?'✓ ':'')+name;
+      el.setAttribute('data-tip', p===6?'The verdict. Reaching it unlocks the full crisis deck — the game becomes After the Verdict.':'Phase '+p+' of the proceedings: '+name+'. Its own developments activate while you are here.');
+      box.appendChild(el);
+    });
+    var adv=$('advanceBtn');
+    if(state.phase>=6){ adv.style.display='none'; }
+    else{ adv.style.display=''; adv.textContent=ADVANCE_LABEL[state.phase]; }
+  }
+  function advancePhase(){
+    if(state.mode!=='A'||state.phase>=6) return;
+    if(room){ roomPost('/phase',{}); return; }
+    state.phase++;
+    state.events.push({marker:true,phase:state.phase});
+    renderAll(); save();
+    toast(state.phase>=6?'The Senate convicts. The crisis begins.':'The proceedings advance');
   }
 
   // ── chips ──
   function renderChips(){
-    var c=document.getElementById('chips'); c.innerHTML='';
+    var c=$('chips'); c.innerHTML='';
     var all=document.createElement('div'); all.className='chip'+(state.filter===null?' on':''); all.textContent='Any';
+    all.setAttribute('data-tip','No filter — draw from every actor currently in play.');
     all.onclick=function(){state.filter=null;renderChips();}; c.appendChild(all);
     ACTORS.forEach(function(a){
       var el=document.createElement('div'); el.className='chip'+(state.filter===a.id?' on':''); el.textContent=a.name;
+      el.setAttribute('data-tip',a.tip);
       el.onclick=function(){state.filter=(state.filter===a.id?null:a.id);renderChips();};
       c.appendChild(el);
     });
   }
 
-  // ── actor select in composer ──
   function fillActorSelect(sel){
-    var s=document.getElementById('actorSel'); s.innerHTML='';
+    var s=$('actorSel'); s.innerHTML='';
     ACTORS.forEach(function(a){
       var o=document.createElement('option'); o.value=a.id; o.textContent=a.name; if(a.id===sel)o.selected=true; s.appendChild(o);
     });
   }
 
   // ── draw ──
+  function activeDeck(){
+    if(state.mode==='A'&&state.phase<6){
+      return PRE_DECK.filter(function(d){return d.p===state.phase;});
+    }
+    return DECK;
+  }
   function pool(){
-    if(!state.filter) return DECK;
-    var p=DECK.filter(function(d){return d.a===state.filter;});
-    return p.length?p:DECK;
+    var deck=activeDeck();
+    if(!state.filter) return deck;
+    var p=deck.filter(function(d){return d.a===state.filter;});
+    return p.length?p:deck;
   }
   function draw(){
     var p=pool();
+    if(!p.length){toast('No cards in this phase');return;}
     var card=p[Math.floor(Math.random()*p.length)];
     openComposer(card,'⚡ Drawn development');
   }
   function openComposer(card,label){
     state.drawn=card;
-    document.getElementById('composer').classList.add('show');
-    document.getElementById('drawnLabel').textContent=label;
+    $('composer').classList.add('show');
+    $('drawnLabel').textContent=label;
+    $('commitBtn').textContent=room?'⚖ Propose to the Group':'＋ Add to the Record';
     fillActorSelect(card?card.a:(state.filter||'pres'));
-    var ta=document.getElementById('composerText');
+    var ta=$('composerText');
     ta.value=card?card.t:'';
     ta.focus();
-    document.getElementById('composer').scrollIntoView({behavior:'smooth',block:'center'});
+    $('composer').scrollIntoView({behavior:'smooth',block:'center'});
   }
 
   // ── commit ──
   function commit(){
-    var txt=document.getElementById('composerText').value.trim();
+    var txt=$('composerText').value.trim();
     if(!txt){toast('Write something first');return;}
-    var actor=document.getElementById('actorSel').value;
-    var w=(state.drawn&&state.drawn.t===txt)?state.drawn.w:11; // custom / heavily-edited => baseline
-    state.events.push({actor:actor,text:txt,w:w});
+    var actor=$('actorSel').value;
+    var baseline=(state.mode==='A'&&state.phase<6)?6:11;
+    var w=(state.drawn&&state.drawn.t===txt)?state.drawn.w:baseline; // custom / heavily-edited => baseline
+    if(room){
+      roomPost('/propose',{text:txt,actor:actor,w:w},function(){
+        $('composer').classList.remove('show'); $('composerText').value=''; state.drawn=null;
+        toast('Proposed to the group');
+      });
+      return;
+    }
+    state.events.push({actor:actor,text:txt,w:w,phase:state.phase});
     state.drawn=null;
-    document.getElementById('composer').classList.remove('show');
-    document.getElementById('composerText').value='';
+    $('composer').classList.remove('show');
+    $('composerText').value='';
     renderAll(); save();
     toast('Added to the record');
   }
@@ -341,37 +654,88 @@
   // ── entries ──
   function actorClass(id){ if(id==='mil')return 'mil'; if(id==='people'||id==='states')return 'people'; return ''; }
   function renderEntries(){
-    var box=document.getElementById('entries'); box.innerHTML='';
+    var box=$('entries'); box.innerHTML='';
     if(!state.events.length){
       box.innerHTML='<div class="empty">The record is empty.<br>Draw a development, or write the first move yourself.</div>';
     }
+    var n=0;
     state.events.forEach(function(e,i){
+      if(e.marker){
+        var d=document.createElement('div'); d.className='divider';
+        d.innerHTML='<span class="rule"></span><span class="dtext"></span><span class="rule"></span>';
+        d.querySelector('.dtext').textContent='★ '+(PHASE_MARKER[e.phase]||'The proceedings advance');
+        box.appendChild(d);
+        return;
+      }
+      n++;
       var row=document.createElement('div'); row.className='entry';
-      var num=String(i+1).padStart(2,'0');
+      var num=String(n).padStart(2,'0');
       row.innerHTML=
         '<div class="entry-num">'+num+'</div>'+
         '<div class="entry-body">'+
           '<span class="entry-actor '+actorClass(e.actor)+'">'+(ACTOR_NAME[e.actor]||'—')+'</span>'+
           '<div class="entry-text"></div>'+
+          (e.by?'<div class="entry-by"></div>':'')+
           '<button class="entry-del">✕ remove</button>'+
         '</div>';
       row.querySelector('.entry-text').textContent=e.text;
-      row.querySelector('.entry-del').onclick=function(){ state.events.splice(i,1); renderAll(); save(); };
+      if(e.by) row.querySelector('.entry-by').textContent='proposed by '+e.by+(e.committedBy&&e.committedBy!==e.by?' · committed by '+e.committedBy:'');
+      row.querySelector('.entry-del').onclick=function(){
+        if(room){ roomPost('/remove-event',{index:i}); return; }
+        state.events.splice(i,1); renderAll(); save();
+      };
       box.appendChild(row);
     });
-    document.getElementById('count').textContent=state.events.length+' development'+(state.events.length===1?'':'s');
+    $('count').textContent=n+' development'+(n===1?'':'s');
   }
 
-  function renderAll(){ document.getElementById('seed').value=state.seed; renderEntries(); renderMeter(); }
+  // ── proposals (classroom) ──
+  function renderProposals(){
+    var wrap=$('proposals');
+    if(!room){ wrap.classList.remove('show'); return; }
+    wrap.classList.add('show');
+    var g=room.groups&&room.groups[room.group];
+    var list=$('propList'); list.innerHTML='';
+    var props=(g&&g.proposals)||[];
+    if(!props.length){
+      list.innerHTML='<div class="prop-empty">No open proposals. Draw a development or write your own, then propose it — the group decides what becomes official.</div>';
+      return;
+    }
+    props.forEach(function(p){
+      var row=document.createElement('div'); row.className='prop';
+      row.innerHTML=
+        '<div class="prop-body">'+
+          '<span class="entry-actor '+actorClass(p.actor)+'">'+(ACTOR_NAME[p.actor]||'—')+'</span>'+
+          '<div class="entry-text"></div>'+
+          '<div class="by"></div>'+
+        '</div>'+
+        '<div class="prop-btns"><button class="cm">✔ Commit</button><button class="wd">✕ Withdraw</button></div>';
+      row.querySelector('.entry-text').textContent=p.text;
+      row.querySelector('.by').textContent='proposed by '+p.name;
+      row.querySelector('.cm').onclick=function(){ roomPost('/commit',{pid:p.id}); };
+      row.querySelector('.wd').onclick=function(){ roomPost('/withdraw',{pid:p.id}); };
+      list.appendChild(row);
+    });
+  }
+
+  function renderAll(){
+    if(document.activeElement!==$('seed')) $('seed').value=state.seed;
+    renderTracker(); renderEntries(); renderProposals(); renderMeter();
+  }
 
   // ── copy ──
   function copyRecord(){
-    var lines=['A PRESIDENT IS IMPEACHED','','OPENING:',state.seed,''];
-    state.events.forEach(function(e,i){
-      lines.push('['+String(i+1).padStart(2,'0')+'] '+(ACTOR_NAME[e.actor]||'').toUpperCase());
+    var lines=['A PRESIDENT IS IMPEACHED','',(state.mode==='A'?'PATH: ROAD TO CONVICTION':'PATH: AFTER THE VERDICT')];
+    if(room) lines.push('CLASSROOM SESSION '+room.code+' · GROUP '+room.group);
+    lines.push('','OPENING:',state.seed,'');
+    var n=0;
+    state.events.forEach(function(e){
+      if(e.marker){ lines.push('— ★ '+(PHASE_MARKER[e.phase]||'').toUpperCase()+' —'); lines.push(''); return; }
+      n++;
+      lines.push('['+String(n).padStart(2,'0')+'] '+(ACTOR_NAME[e.actor]||'').toUpperCase()+(e.by?' · by '+e.by:''));
       lines.push(e.text); lines.push('');
     });
-    lines.push('— Tension: '+tension()+'/100 · '+document.getElementById('band').textContent);
+    lines.push('— Tension: '+tension()+'/100 · '+$('band').textContent);
     var text=lines.join('\n');
     if(navigator.clipboard&&navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(function(){toast('Record copied');},function(){fallbackCopy(text);});
@@ -386,32 +750,288 @@
   // ── toast ──
   var toastTimer;
   function toast(msg){
-    var el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
+    var el=$('toast'); el.textContent=msg; el.classList.add('show');
     clearTimeout(toastTimer); toastTimer=setTimeout(function(){el.classList.remove('show');},1700);
   }
 
+  // ── tooltips ──
+  var tipMode=false, tipEl=$('tip');
+  function showTip(target){
+    var text=target.getAttribute('data-tip'); if(!text) return;
+    tipEl.textContent=text;
+    tipEl.classList.add('show');
+    var r=target.getBoundingClientRect();
+    tipEl.style.left='0px'; tipEl.style.top='0px'; // reset so measurement is clean
+    var tw=tipEl.offsetWidth, th=tipEl.offsetHeight;
+    var x=Math.min(Math.max(8,r.left+r.width/2-tw/2),window.innerWidth-tw-8);
+    var y=r.top-th-10; if(y<8) y=r.bottom+10;
+    tipEl.style.left=x+'px'; tipEl.style.top=y+'px';
+  }
+  function hideTip(){ tipEl.classList.remove('show'); }
+  document.addEventListener('mouseover',function(e){
+    var t=e.target.closest('[data-tip]'); if(t) showTip(t);
+  });
+  document.addEventListener('mouseout',function(e){
+    if(e.target.closest('[data-tip]')) hideTip();
+  });
+  document.addEventListener('scroll',hideTip,true);
+  // touch: ⓘ inspect mode — taps show the explanation instead of acting
+  $('tipToggle').addEventListener('click',function(e){
+    tipMode=!tipMode; this.classList.toggle('on',tipMode); hideTip();
+    toast(tipMode?'Inspect mode on — tap anything to see what it does':'Inspect mode off');
+    e.stopPropagation();
+  });
+  document.addEventListener('click',function(e){
+    if(!tipMode) return;
+    if(e.target.closest('#tipToggle')) return;
+    var t=e.target.closest('[data-tip]');
+    if(t){ e.preventDefault(); e.stopPropagation(); showTip(t); }
+    else hideTip();
+  },true);
+
+  // ── comments wall ──
+  var wallReady=false;
+  function renderWallAs(){
+    $('wallAs').innerHTML=ident?('signing as <b></b> <button id="renameBtn">change</button>'):'';
+    if(ident){
+      $('wallAs').querySelector('b').textContent=ident.name;
+      $('renameBtn').onclick=function(){ ident=null; try{localStorage.removeItem(LS_ID);}catch(e){} renderWall(); };
+    }
+  }
+  function renderWall(comments){
+    renderWallAs();
+    var body=$('wallBody'); body.innerHTML='';
+    if(!wallReady){ body.innerHTML='<div class="wall-off">The wall is unreachable right now — the game still works. Try again later.</div>'; return; }
+    if(!ident){
+      var gate=document.createElement('div'); gate.className='namegate';
+      gate.innerHTML='<input id="nameInput" maxlength="24" placeholder="Sign your name to speak (2–24 characters)"><button class="btn" id="nameGo">Sign In</button>';
+      body.appendChild(gate);
+      gate.querySelector('#nameGo').onclick=function(){
+        var n=gate.querySelector('#nameInput').value.trim();
+        if(n.length<2){toast('Give a longer name');return;}
+        api('/hello',{method:'POST',body:{name:n}}).then(function(j){
+          ident={token:j.token,name:j.name}; saveIdent(); refreshWall(); toast('Signed in as '+j.name);
+        }).catch(function(e){toast(e.message);});
+      };
+      gate.querySelector('#nameInput').addEventListener('keydown',function(e){ if(e.key==='Enter') gate.querySelector('#nameGo').click(); });
+    } else {
+      var post=document.createElement('div'); post.className='postbox';
+      post.innerHTML='<textarea id="commentText" maxlength="500" placeholder="Enter a statement into the public record…"></textarea><button class="btn" id="postGo">Post</button>';
+      body.appendChild(post);
+      post.querySelector('#postGo').onclick=function(){
+        var t=post.querySelector('#commentText').value.trim();
+        if(t.length<2){toast('Write something first');return;}
+        api('/comments',{method:'POST',body:{text:t}}).then(function(){
+          post.querySelector('#commentText').value=''; refreshWall(); toast('Entered into the record');
+        }).catch(function(e){toast(e.message);});
+      };
+      post.querySelector('#commentText').addEventListener('keydown',function(e){ if((e.metaKey||e.ctrlKey)&&e.key==='Enter') post.querySelector('#postGo').click(); });
+    }
+    (comments||[]).forEach(function(c){
+      var el=document.createElement('div'); el.className='comment';
+      el.innerHTML='<div class="c-top"><b></b><span></span></div><div class="c-text"></div>';
+      el.querySelector('b').textContent=c.name;
+      el.querySelector('span').textContent=new Date(c.ts).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+      el.querySelector('.c-text').textContent=c.text;
+      body.appendChild(el);
+    });
+    if(wallReady&&(!comments||!comments.length)){
+      var e0=document.createElement('div'); e0.className='wall-off'; e0.textContent='No statements yet. Yours can be the first.';
+      body.appendChild(e0);
+    }
+  }
+  function refreshWall(){
+    api('/comments').then(function(j){ wallReady=true; renderWall(j.comments); })
+      .catch(function(){ wallReady=false; renderWall([]); });
+  }
+
+  // ── remote content (professor's edits) ──
+  function loadContent(){
+    return api('/content').then(function(c){
+      if(c.openings&&c.openings.length) OPENINGS=c.openings;
+      if(c.preOpenings&&c.preOpenings.length) PRE_OPENINGS=c.preOpenings;
+      if(c.deck&&c.deck.length) DECK=c.deck;
+      if(c.preDeck&&c.preDeck.length) PRE_DECK=c.preDeck;
+    }).catch(function(){ /* offline / static hosting: built-ins stand */ });
+  }
+
+  // ── classroom ──
+  function roomPost(pathname,body,onOk){
+    if(!room) return;
+    api('/rooms/'+room.code+pathname,{method:'POST',body:body||{}})
+      .then(function(){ pollNow(); if(onOk) onOk(); })
+      .catch(function(e){ toast(e.message); pollNow(); });
+  }
+  function applyRoomState(j){
+    if(!room) return;
+    room.v=j.v; room.groups=j.groups; room.members=j.members;
+    var g=j.groups[room.group];
+    if(!g){ leaveRoom('Your group is gone — the session may have been reset.'); return; }
+    state.mode=g.mode; state.phase=g.phase; state.seed=g.seed; state.events=g.events;
+    var names=(j.members&&j.members[room.group])||[];
+    $('rbWho').textContent=names.join(' · ');
+    renderAll();
+  }
+  function pollNow(){
+    if(!room) return;
+    api('/rooms/'+room.code+'/state?v=0').then(applyRoomState)
+      .catch(function(e){ if(/Session ended/.test(e.message)) leaveRoom('The session has ended.'); });
+  }
+  function pollLoop(){
+    clearTimeout(pollTimer);
+    if(!room) return;
+    pollTimer=setTimeout(function(){
+      api('/rooms/'+room.code+'/state?v='+(room.v||0)).then(function(j){
+        if(j.changed) applyRoomState(j);
+        pollLoop();
+      }).catch(function(e){
+        if(/Session ended/.test(e.message)){ leaveRoom('The session has ended.'); return; }
+        pollLoop(); // transient network hiccup — keep trying
+      });
+    },2500);
+  }
+  function enterRoom(code,group,mode){
+    room={code:code,group:group,mode:mode,v:0,groups:null,members:null};
+    try{localStorage.setItem(LS_ROOM,JSON.stringify({code:code,group:group}));}catch(e){}
+    $('roombar').classList.add('show');
+    $('rbCode').textContent='SESSION '+code;
+    $('rbGroup').textContent='GROUP '+group;
+    $('shuffleSeed').style.display='none';
+    $('clearBtn').style.display='none';
+    $('modeSelect').classList.remove('show');
+    pollNow(); pollLoop();
+  }
+  function leaveRoom(msg){
+    room=null; clearTimeout(pollTimer);
+    try{localStorage.removeItem(LS_ROOM);}catch(e){}
+    $('roombar').classList.remove('show');
+    $('shuffleSeed').style.display='';
+    $('clearBtn').style.display='';
+    state={mode:'B',phase:6,seed:OPENINGS[0],events:[],filter:null,drawn:null};
+    renderChips(); renderAll();
+    if(msg) toast(msg);
+    $('modeSelect').classList.add('show');
+  }
+
+  // join flow (inside the mode-select overlay)
+  var joinMeta=null, joinGroup=null;
+  function resetJoin(){
+    joinMeta=null; joinGroup=null;
+    $('groupWrap').style.display='none'; $('groupPick').innerHTML='';
+    $('joinGo').textContent='Find Session'; $('joinErr').textContent='';
+  }
+  $('classroomBtn').onclick=function(){
+    var jb=$('joinBox'); jb.classList.toggle('show');
+    if(jb.classList.contains('show')){ resetJoin(); if(ident) $('joinName').value=ident.name; $('joinCode').focus(); }
+  };
+  $('joinCancel').onclick=function(){ $('joinBox').classList.remove('show'); resetJoin(); };
+  $('joinGo').onclick=function(){
+    var err=$('joinErr'); err.textContent='';
+    var name=$('joinName').value.trim(), code=$('joinCode').value.trim().toUpperCase();
+    if(name.length<2){ err.textContent='Give a name (2–24 characters).'; return; }
+    if(code.length!==4){ err.textContent='Session codes are 4 letters.'; return; }
+    if(!joinMeta){
+      api('/rooms/'+code).then(function(j){
+        joinMeta=j;
+        var pick=$('groupPick'); pick.innerHTML='';
+        j.groups.forEach(function(g){
+          var b=document.createElement('button'); b.className='gbtn';
+          b.textContent='Group '+g+((j.memberCounts&&j.memberCounts[g])?' · '+j.memberCounts[g]:'');
+          b.onclick=function(){ joinGroup=g; pick.querySelectorAll('.gbtn').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); };
+          pick.appendChild(b);
+        });
+        $('groupWrap').style.display='';
+        $('joinGo').textContent='Join';
+      }).catch(function(e){ err.textContent=e.message; });
+      return;
+    }
+    var start=(ident&&ident.name===name)?Promise.resolve():api('/hello',{method:'POST',body:{name:name}}).then(function(j){ ident={token:j.token,name:j.name}; saveIdent(); });
+    start.then(function(){
+      return api('/rooms/'+code+'/join',{method:'POST',body:{group:joinGroup}});
+    }).then(function(j){
+      $('joinBox').classList.remove('show'); resetJoin();
+      enterRoom(j.code,j.group,j.mode);
+      renderWallAs();
+      toast('Joined group '+j.group);
+    }).catch(function(e){ err.textContent=e.message; });
+  };
+  $('joinCode').addEventListener('input',function(){ this.value=this.value.toUpperCase(); resetJoinIfCodeChanged(); });
+  function resetJoinIfCodeChanged(){ if(joinMeta&&$('joinCode').value.toUpperCase()!==joinMeta.code){ resetJoin(); } }
+
+  // ── mode select ──
+  function startMode(mode){
+    state={mode:mode,phase:mode==='A'?1:6,seed:mode==='A'?PRE_OPENINGS[0]:OPENINGS[0],events:[],filter:null,drawn:null};
+    $('modeSelect').classList.remove('show');
+    renderChips(); renderAll(); save();
+    toast(mode==='A'?'The story begins with an allegation':'The verdict is in');
+  }
+  $('pathA').onclick=function(){ startMode('A'); };
+  $('pathB').onclick=function(){ startMode('B'); };
+  [$('pathA'),$('pathB')].forEach(function(el){
+    el.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
+  });
+
   // ── wire ──
-  document.getElementById('drawBtn').onclick=draw;
-  document.getElementById('rerollBtn').onclick=draw;
-  document.getElementById('writeBtn').onclick=function(){ openComposer(null,'✎ Your own development'); };
-  document.getElementById('commitBtn').onclick=commit;
-  document.getElementById('cancelBtn').onclick=function(){ document.getElementById('composer').classList.remove('show'); state.drawn=null; };
-  document.getElementById('copyBtn').onclick=copyRecord;
-  document.getElementById('clearBtn').onclick=function(){
-    if(confirm('Clear the entire record and start over?')){ state.events=[]; state.seed=OPENINGS[0]; renderAll(); save(); toast('Back to the original opening'); }
+  $('drawBtn').onclick=draw;
+  $('rerollBtn').onclick=draw;
+  $('writeBtn').onclick=function(){ openComposer(null,'✎ Your own development'); };
+  $('commitBtn').onclick=commit;
+  $('cancelBtn').onclick=function(){ $('composer').classList.remove('show'); state.drawn=null; };
+  $('copyBtn').onclick=copyRecord;
+  $('advanceBtn').onclick=function(){
+    var last=(state.mode==='A'&&state.phase===5);
+    if(last&&!confirm('Render the verdict? The Senate convicts, and the crisis deck unlocks. There is no going back.')) return;
+    advancePhase();
   };
-  document.getElementById('shuffleSeed').onclick=function(){
-    state.seed=randomOpening(state.seed); document.getElementById('seed').value=state.seed; save(); toast('New opening generated');
+  $('clearBtn').onclick=function(){
+    if(confirm('Clear the entire record and choose your path again?')){
+      state.events=[]; state.phase=(state.mode==='A')?1:6; save();
+      $('modeSelect').classList.add('show');
+    }
   };
-  document.getElementById('seed').addEventListener('input',function(e){ state.seed=e.target.value; save(); });
-  document.getElementById('composerText').addEventListener('keydown',function(e){
+  $('shuffleSeed').onclick=function(){
+    var poolArr=(state.mode==='A'&&state.phase<6)?PRE_OPENINGS:OPENINGS;
+    var o=poolArr[Math.floor(Math.random()*poolArr.length)];
+    if(poolArr.length>1){ while(o===state.seed){ o=poolArr[Math.floor(Math.random()*poolArr.length)]; } }
+    state.seed=o; $('seed').value=o; save(); toast('New opening generated');
+  };
+  $('leaveBtn').onclick=function(){ if(confirm('Leave this classroom session?')) leaveRoom('You left the session'); };
+  $('seed').addEventListener('input',function(e){
+    state.seed=e.target.value;
+    if(room){
+      clearTimeout(seedPushTimer);
+      seedPushTimer=setTimeout(function(){ roomPost('/seed',{seed:state.seed}); },900);
+    } else save();
+  });
+  $('composerText').addEventListener('keydown',function(e){
     if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){ commit(); }
   });
 
   // ── boot ──
-  var resumed=load();                              // resume an in-progress game if one exists
-  if(!resumed){ state.seed=OPENINGS[0]; }          // the canonical original opening is the default on every load
-  renderChips(); renderAll();
+  loadIdent();
+  renderChips();
+  loadContent().then(function(){
+    var savedRoom=null;
+    try{savedRoom=JSON.parse(localStorage.getItem(LS_ROOM));}catch(e){}
+    if(savedRoom&&savedRoom.code&&ident){
+      // try to rejoin the classroom session this device was in
+      api('/rooms/'+savedRoom.code+'/join',{method:'POST',body:{group:savedRoom.group}}).then(function(j){
+        enterRoom(j.code,j.group,j.mode);
+      }).catch(function(){
+        try{localStorage.removeItem(LS_ROOM);}catch(e){}
+        bootSolo();
+      });
+    } else bootSolo();
+    refreshWall();
+  });
+  function bootSolo(){
+    var resumed=load();          // resume an in-progress game if one exists
+    if(!resumed){
+      state.seed=OPENINGS[0];    // canonical original opening stays the default
+      renderAll();
+      $('modeSelect').classList.add('show');
+    } else renderAll();
+  }
 })();
 </script>
 </body>
