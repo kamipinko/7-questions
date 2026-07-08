@@ -594,6 +594,26 @@ function showToast(msg, ms=2800) {
   t._to = setTimeout(() => t.classList.add('hidden'), ms);
 }
 
+// "Back-in" spot line: turn the server's `resume` snapshot ({ lang: {tier, week,
+// day, streak, lastStudied} }) into e.g. "Spanish — Tier 1 · Week 2 · Day 3 · 🔥 5-day streak".
+// Prefers the active language, else the most recently studied one. '' if no progress.
+function resumeSpotLine(resume, preferLang) {
+  if (!resume || typeof resume !== 'object') return '';
+  let lang = (preferLang && resume[preferLang]) ? preferLang : null;
+  if (!lang) {
+    for (const [l, s] of Object.entries(resume)) {
+      if (!s) continue;
+      if (!lang || String(s.lastStudied || '') > String(resume[lang].lastStudied || '')) lang = l;
+    }
+  }
+  const s = lang && resume[lang];
+  if (!s) return '';
+  const meta = LANGS.find(x => x.code === lang);
+  let line = `${meta ? meta.name : lang} — Tier ${s.tier} · Week ${s.week} · Day ${s.day}`;
+  if (s.streak > 0) line += ` · 🔥 ${s.streak}-day streak`;
+  return line;
+}
+
 function levenshtein(a, b) {
   const m=a.length, n=b.length;
   const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
@@ -1120,7 +1140,11 @@ $('requestLinkBtn').addEventListener('click', async () => {
     if (res.ok && data.authToken) {
       onLoggedIn(data.authToken, data.account);
       await syncNativeLanguage();
-      showToast(data.returning ? 'Welcome back! 👋' : "Account created — you're in! 🎉");
+      // Welcome-back spot: show exactly where this account is picking up from.
+      const spot = data.returning ? resumeSpotLine(data.resume, state.lang) : '';
+      showToast(data.returning
+        ? ('Welcome back! 👋' + (spot ? ' ' + spot : ''))
+        : "Account created — you're in! 🎉");
       if (state.lang) { await startLanguageForAccount(state.lang); }
       else { showScreen('screen-lang'); }
     } else if (res.status === 404) {
@@ -2519,7 +2543,9 @@ async function checkResume() {
       await loadProgress();
       localStorage.setItem(`wad_token_${state.lang}`, token);
       await loadLangData();
-      showToast('Welcome back! 👋');
+      // Legacy progress carries its own tier/week/day/streak — same spot format.
+      const spot = resumeSpotLine({ [state.lang]: state.progress }, state.lang);
+      showToast('Welcome back! 👋' + (spot ? ' ' + spot : ''));
       gotoLesson();
     } catch(e) {
       showToast('Could not find your session. Starting fresh.');
@@ -2571,7 +2597,11 @@ async function restoreSession() {
     onLoggedIn(authToken, data.account);
     populateNativeSelect();
     decorateLangGrid();
-    if (urlAuth) showToast('Logged in! 👋');
+    // Welcome-back spot on session restore — guests (anon accounts) get it too,
+    // since /auth/me returns `resume` for every account type.
+    const spot = resumeSpotLine(data.resume, state.lang);
+    if (spot) showToast('Welcome back! 👋 ' + spot);
+    else if (urlAuth) showToast('Logged in! 👋');
     return true;
   } catch(e) {
     return false; // network error — keep token, restore on the next load

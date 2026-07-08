@@ -95,11 +95,12 @@ app.get('/word-a-day/resume', (req, res) => res.redirect(`/word-a-day?token=${re
 // Magic-link login: validate single-use login token, mint a long-lived authToken, redirect into the app logged in
 app.get('/word-a-day/login', (req, res) => {
   const lt = String(req.query.lt || '');
-  const authToken = wadConsumeLoginToken(lt);
-  if (!authToken) {
+  const result = wadConsumeLoginToken(lt);
+  if (!result) {
     return res.redirect('/word-a-day?login_error=expired');
   }
-  res.redirect(`/word-a-day?auth=${authToken}`);
+  wadLogRegister(result.event, result.user, req); // back-in register: 'login' | 'register'
+  res.redirect(`/word-a-day?auth=${result.authToken}`);
 });
 
 // ════════════════════════════════════════
@@ -297,10 +298,11 @@ function wadCreateAnonUser() {
 // possible (no such session, already has an email, or email already taken by someone).
 function wadAttachEmail(attachFromToken, email) {
   if (!attachFromToken) return null;
-  const idx = wadReadJson(WAD_AUTH_INDEX, {});
-  const uid = idx[attachFromToken];
-  if (!uid) return null;
-  const user = wadReadUser(uid);
+  // Resolve the session like every other endpoint does (signed w2 tokens AND legacy
+  // index tokens). The old lookup only consulted the legacy _authIndex.json, which
+  // signed tokens never enter — so guest→email upgrades silently created a brand-new
+  // empty account and the guest's progress was left behind.
+  const user = wadUserByAuth(attachFromToken);
   if (!user || user.email) return null; // only emailless anon accounts can be upgraded
   const e = wadNormEmail(email);
   const emailIdx = wadReadJson(WAD_EMAIL_INDEX, {});
@@ -388,7 +390,9 @@ function wadCreateLoginToken(email) {
   wadWriteJson(WAD_LOGIN_TOKENS, tokens);
   return { loginToken, code };
 }
-// Validate + consume a login token (by link). Returns a freshly minted authToken or null.
+// Validate + consume a login token (by link). Returns { authToken, user, event } or null.
+// event = 'login' (existing email account returning) or 'register' (brand-new email),
+// so the caller can feed the back-in register.
 function wadConsumeLoginToken(loginToken) {
   if (!loginToken) return null;
   const tokens = wadReadJson(WAD_LOGIN_TOKENS, {});
@@ -396,12 +400,15 @@ function wadConsumeLoginToken(loginToken) {
   if (!rec || rec.used || rec.expires < Date.now()) return null;
   rec.used = true;
   wadWriteJson(WAD_LOGIN_TOKENS, tokens);
+  const existed = !!wadUserIdForEmail(rec.email, false);
   const user = wadGetOrCreateUser(rec.email);
-  return wadMintAuthToken(user);
+  return { authToken: wadMintAuthToken(user), user, event: existed ? 'login' : 'register' };
 }
-// Validate + consume by email + 6-digit code. Returns authToken or null.
+// Validate + consume by email + 6-digit code. Returns { authToken, user, event } or null.
 // If attachFromToken is an anonymous session, the email is attached to that account
 // (preserving its progress) instead of spinning up a fresh one.
+// event = 'login' (returning email), 'guest_upgrade' (anon session attached this
+// email), or 'register' (brand-new email, no guest session to carry over).
 function wadConsumeLoginCode(email, code, attachFromToken) {
   const e = wadNormEmail(email);
   const c = String(code || '').trim();
@@ -415,8 +422,72 @@ function wadConsumeLoginCode(email, code, attachFromToken) {
   if (!matchKey) return null;
   tokens[matchKey].used = true;
   wadWriteJson(WAD_LOGIN_TOKENS, tokens);
-  const user = wadAttachEmail(attachFromToken, e) || wadGetOrCreateUser(e);
-  return wadMintAuthToken(user);
+  let user, event;
+  if (wadUserIdForEmail(e, false)) {
+    user = wadGetOrCreateUser(e); event = 'login';           // returning email account
+  } else {
+    const upgraded = wadAttachEmail(attachFromToken, e);      // guest keeps its progress
+    if (upgraded) { user = upgraded; event = 'guest_upgrade'; }
+    else { user = wadGetOrCreateUser(e); event = 'register'; }
+  }
+  return { authToken: wadMintAuthToken(user), user, event };
+}
+
+// ── "Back-in register" — server-side login/guest event ledger ──
+// Pinko's ask: when someone loses their localStorage and logs back in (or a guest
+// device returns), the event must be LOGGED with the exact spot their progress is
+// at, so we can track from the back-in. One JSON line per event in _register.jsonl
+// plus a per-user loginHistory trail (survives even if the JSONL is lost).
+const WAD_REGISTER_PATH = path.join(WAD_USERS_DIR, '_register.jsonl');
+// Compact per-language snapshot of where the user's progress sits right now.
+function wadSpotSnapshot(user) {
+  const spot = {};
+  for (const [lang, p] of Object.entries((user && user.languages) || {})) {
+    if (!p || typeof p !== 'object') continue;
+    spot[lang] = {
+      tier: p.tier || 1, week: p.week || 1, day: p.day || 1,
+      streak: p.streak || 0, lastStudied: p.lastStudied || null,
+    };
+  }
+  return spot;
+}
+// Append one register event. Logging must NEVER break auth — everything is wrapped.
+// NEVER log auth tokens, login tokens, or codes here.
+function wadLogRegister(event, user, req, extra) {
+  try {
+    if (!user || !user.userId) return;
+    const entry = {
+      ts: new Date().toISOString(),
+      event,
+      userId: user.userId,
+      email: user.email || null,
+      anon: !user.email,
+      spot: wadSpotSnapshot(user),
+      ua: String((req && req.headers && req.headers['user-agent']) || '').slice(0, 120),
+      ip: (req && req.ip) || null,
+      ...(extra || {}),
+    };
+    fs.appendFileSync(WAD_REGISTER_PATH, JSON.stringify(entry) + '\n');
+    // Per-user back-in trail: each account carries its own history (last 100).
+    try {
+      if (!Array.isArray(user.loginHistory)) user.loginHistory = [];
+      user.loginHistory.push({ ts: entry.ts, event, spot: entry.spot });
+      if (user.loginHistory.length > 100) user.loginHistory = user.loginHistory.slice(-100);
+      wadWriteUser(user);
+    } catch (e) { console.error('[wad register] loginHistory:', e.message); }
+  } catch (e) { console.error('[wad register]', e.message); }
+}
+// Newest-first read of the ledger; tolerates corrupt/partial lines.
+function wadReadRegister(limit) {
+  let lines = [];
+  try { lines = fs.readFileSync(WAD_REGISTER_PATH, 'utf8').split('\n'); } catch { return []; }
+  const out = [];
+  for (let i = lines.length - 1; i >= 0 && out.length < limit; i--) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    try { out.push(JSON.parse(line)); } catch {} // corrupt line — skip
+  }
+  return out;
 }
 
 // ── Public-safe account view (never leak authTokens) ──
@@ -607,10 +678,11 @@ app.post('/api/wad/auth/verify-code', (req, res) => {
   if (!wadValidEmail(email) || !/^\d{6}$/.test(code)) {
     return res.status(400).json({ error: 'Email and 6-digit code required' });
   }
-  const authToken = wadConsumeLoginCode(email, code, attachFromToken);
-  if (!authToken) return res.status(401).json({ error: 'Invalid or expired code' });
-  const user = wadUserByAuth(authToken);
-  res.json({ ok: true, authToken, account: wadPublicAccount(user) });
+  const result = wadConsumeLoginCode(email, code, attachFromToken);
+  if (!result) return res.status(401).json({ error: 'Invalid or expired code' });
+  const user = wadUserByAuth(result.authToken);
+  wadLogRegister(result.event, user, req); // back-in register: 'login' | 'register' | 'guest_upgrade'
+  res.json({ ok: true, authToken: result.authToken, account: wadPublicAccount(user), resume: wadSpotSnapshot(user) });
 });
 
 // POST /api/wad/auth/email-login {email, authToken?} — frictionless email login.
@@ -624,12 +696,18 @@ app.post('/api/wad/auth/email-login', (req, res) => {
   if (!wadValidEmail(email)) return res.status(400).json({ error: 'A valid email is required' });
   const attachFromToken = (req.body && req.body.authToken) || null;
   const existingId = wadUserIdForEmail(email, false);
-  const user = existingId
-    ? wadGetOrCreateUser(email)                                   // known email → their account
-    : (wadAttachEmail(attachFromToken, email) || wadGetOrCreateUser(email)); // new email → upgrade guest or create
+  let user, regEvent;
+  if (existingId) {
+    user = wadGetOrCreateUser(email); regEvent = 'login';         // known email → their account, returning
+  } else {
+    const upgraded = wadAttachEmail(attachFromToken, email);       // new email → upgrade guest (progress carries) …
+    if (upgraded) { user = upgraded; regEvent = 'guest_upgrade'; }
+    else { user = wadGetOrCreateUser(email); regEvent = 'register'; } // … or brand-new account
+  }
   const authToken = wadMintAuthToken(user);
   console.log(`[wad auth] email-login ${email} (${existingId ? 'returning' : 'new'})`);
-  res.json({ ok: true, authToken, account: wadPublicAccount(user), returning: !!existingId });
+  wadLogRegister(regEvent, user, req); // back-in register
+  res.json({ ok: true, authToken, account: wadPublicAccount(user), returning: !!existingId, resume: wadSpotSnapshot(user) });
 });
 
 // POST /api/wad/auth/anon — create an emailless, device-local account so the user can
@@ -639,20 +717,30 @@ app.post('/api/wad/auth/anon', (req, res) => {
   const user = wadCreateAnonUser();
   const authToken = wadMintAuthToken(user);
   console.log(`[wad auth] anonymous account created ${user.userId}`);
+  wadLogRegister('guest_start', user, req); // back-in register: guest tracking starts here
   res.json({ ok: true, authToken, account: wadPublicAccount(user) });
 });
 
-// POST /api/wad/auth/me {authToken} — restore session
+// POST /api/wad/auth/me {authToken} — restore session.
+// Logged as 'session_restore' for BOTH email users and guests — this is the guest
+// tracking: a returning device that still has its token gets registered every time
+// it comes back, spot snapshot included.
 app.post('/api/wad/auth/me', (req, res) => {
   const user = wadUserByAuth(req.body && req.body.authToken);
   if (!user) return res.status(401).json({ error: 'Not authenticated' });
-  res.json({ ok: true, account: wadPublicAccount(user) });
+  wadLogRegister('session_restore', user, req); // back-in register
+  res.json({ ok: true, account: wadPublicAccount(user), resume: wadSpotSnapshot(user) });
 });
 
 // POST /api/wad/auth/logout {authToken}
 app.post('/api/wad/auth/logout', (req, res) => {
   const authToken = req.body && req.body.authToken;
+  // Resolve the user BEFORE revoking (a revoked token no longer resolves), but log
+  // from a FRESH read AFTER the revoke so the loginHistory write can't clobber the
+  // just-written revokedTokens list.
+  const user = authToken ? wadUserByAuth(authToken) : null;
   if (authToken) wadRevokeAuthToken(authToken);
+  if (user) wadLogRegister('logout', wadReadUser(user.userId) || user, req); // back-in register
   res.json({ ok: true });
 });
 
@@ -667,6 +755,58 @@ app.post('/api/wad/auth/native', (req, res) => {
   user.nativeLanguage = nl;
   wadWriteUser(user);
   res.json({ ok: true, account: wadPublicAccount(user) });
+});
+
+// ── Back-in register: admin views (same ADMIN_KEY pattern as /admin) ──
+// GET /api/wad/register?key=...&limit=200 — newest-first JSON ledger
+app.get('/api/wad/register', (req, res) => {
+  const key = process.env.ADMIN_KEY || 'admin';
+  if (req.query.key !== key) return res.status(403).json({ error: 'Forbidden' });
+  const limit = Math.max(1, Math.min(2000, parseInt(req.query.limit, 10) || 200));
+  const entries = wadReadRegister(limit);
+  res.json({ ok: true, count: entries.length, entries });
+});
+
+// GET /word-a-day/register?key=... — minimal dark-theme HTML table of the ledger
+app.get('/word-a-day/register', (req, res) => {
+  const key = process.env.ADMIN_KEY || 'admin';
+  if (req.query.key !== key) return res.status(403).send('<h2>403 Forbidden — add ?key=YOUR_ADMIN_KEY</h2>');
+  const limit = Math.max(1, Math.min(2000, parseInt(req.query.limit, 10) || 200));
+  const entries = wadReadRegister(limit);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  const spotSummary = (spot) => Object.entries(spot || {})
+    .map(([lang, s]) => `${lang} T${s.tier} W${s.week} D${s.day}${s.streak ? ` x${s.streak}` : ''}`)
+    .join(' · ') || '—';
+  const rows = entries.map(e => `<tr>
+      <td>${esc((e.ts || '').replace('T', ' ').slice(0, 19))}</td>
+      <td>${esc(e.email || `Guest ${String(e.userId || '').slice(0, 8)}`)}</td>
+      <td><span class="ev ev-${esc(e.event)}">${esc(e.event)}</span></td>
+      <td>${esc(spotSummary(e.spot))}</td>
+    </tr>`).join('\n');
+  res.send(`<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Word-a-Day — Back-In Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body{background:#0d0d10;color:#e8e2d0;font-family:'Consolas','Menlo',monospace;font-size:13px;margin:24px;}
+  h1{color:#d4af37;font-size:16px;letter-spacing:.12em;text-transform:uppercase;}
+  .sub{color:#8a8578;font-size:11px;margin-bottom:16px;}
+  table{border-collapse:collapse;width:100%;}
+  th,td{border-bottom:1px solid #2a2a30;padding:6px 12px;text-align:left;vertical-align:top;}
+  th{color:#d4af37;font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
+  tr:hover td{background:#16161c;}
+  .ev{padding:1px 7px;border-radius:3px;font-size:11px;border:1px solid #3a3a42;}
+  .ev-login{color:#4ade80;border-color:#1e5c38;}
+  .ev-register{color:#60a5fa;border-color:#1e3a5c;}
+  .ev-guest_start{color:#a78bfa;border-color:#3b2d5c;}
+  .ev-guest_upgrade{color:#facc15;border-color:#5c521e;}
+  .ev-session_restore{color:#8a8578;border-color:#3a3a42;}
+  .ev-logout{color:#f87171;border-color:#5c1e1e;}
+</style></head><body>
+<h1>Back-In Register</h1>
+<div class="sub">${entries.length} event(s), newest first · Word-a-Day login/guest ledger</div>
+<table><thead><tr><th>Time (UTC)</th><th>Who</th><th>Event</th><th>Spot</th></tr></thead>
+<tbody>${rows || '<tr><td colspan="4">No events yet.</td></tr>'}</tbody></table>
+</body></html>`);
 });
 
 // POST /api/wad/set-focus {authToken+language | token, focus} — set the learning DIRECTION
