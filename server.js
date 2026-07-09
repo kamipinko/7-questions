@@ -508,6 +508,13 @@ function wadApplyCompleteWord(p, wordId, accuracy) {
   if (!wordId) return;
   if (!Array.isArray(p.completedWords)) p.completedWords = [];
   if (!p.completedWords.includes(wordId)) p.completedWords.push(wordId);
+  // Per-day ledger: exactly which words were studied on each calendar date. Powers the
+  // Review calendar. Additive & idempotent; pre-existing accounts reconstruct older days
+  // from wordStats[id].lastSeen on the client.
+  const dstr = new Date().toISOString().slice(0, 10);
+  if (!p.dayLog || typeof p.dayLog !== 'object' || Array.isArray(p.dayLog)) p.dayLog = {};
+  if (!Array.isArray(p.dayLog[dstr])) p.dayLog[dstr] = [];
+  if (!p.dayLog[dstr].includes(wordId)) p.dayLog[dstr].push(wordId);
   const acc = Number(accuracy);
   if (!isNaN(acc) && accuracy !== null && accuracy !== undefined && accuracy !== '') {
     const clamped = Math.max(0, Math.min(100, Math.round(acc)));

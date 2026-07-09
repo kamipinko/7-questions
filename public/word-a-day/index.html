@@ -289,6 +289,52 @@
       #progBtn{padding:6px 9px;}
     }
 
+    /* ══ Review & Calendar screen ══ */
+    .cal-card{background:var(--surface);border:1px solid var(--border-dim);border-radius:16px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:12px;}
+    .cal-head{display:flex;align-items:center;justify-content:space-between;}
+    .cal-month{font-family:var(--font-serif);font-size:1.05rem;color:var(--gold);}
+    .cal-nav{width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:none;border:1px solid var(--border-dim);border-radius:8px;color:var(--gold);font-size:1.2rem;line-height:1;cursor:pointer;transition:background .15s ease-out,border-color .15s ease-out;}
+    .cal-nav:hover:not(:disabled){background:rgba(236,170,39,.1);border-color:var(--gold);}
+    .cal-nav:disabled{opacity:.3;cursor:default;}
+    .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+    .cal-dow span{text-align:center;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.05em;color:var(--text-sub);text-transform:uppercase;}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+    .cal-cell{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:9px;font-size:.82rem;color:var(--text-body);border:1px solid transparent;}
+    .cal-cell.empty{visibility:hidden;}
+    .cal-cell .cal-num{line-height:1;}
+    .cal-cell.today{border-color:var(--border-dim);}
+    .cal-cell.studied{background:rgba(236,170,39,.1);color:var(--gold);font-weight:600;cursor:pointer;transition:background .15s ease-out,transform .12s ease-out;}
+    .cal-cell.studied:hover{background:rgba(236,170,39,.22);transform:translateY(-1px);}
+    .cal-cell.selected{background:var(--gold);color:#000;}
+    .cal-dot{position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:var(--gold);}
+    .cal-cell.selected .cal-dot{background:#000;}
+    .cal-legend{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:.6rem;color:var(--text-sub);text-transform:uppercase;letter-spacing:.05em;}
+    .cal-legend .cal-dot{position:static;}
+
+    .rv-detail{background:var(--surface);border:1px solid var(--border-dim);border-left:3px solid var(--gold);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:14px;}
+    .rv-detail-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+    .rv-date{font-family:var(--font-serif);font-size:1rem;color:var(--gold);}
+    .rv-count{font-family:var(--font-mono);font-size:.66rem;color:var(--text-sub);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+    .rv-phrases{display:flex;flex-direction:column;gap:8px;}
+    .rv-phrase{display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(236,170,39,.05);border:1px solid var(--border-dim);border-radius:10px;padding:10px 12px;}
+    .rv-phrase-main{display:flex;flex-direction:column;gap:2px;min-width:0;}
+    .rv-phrase-word{font-size:.98rem;color:var(--text-body);font-weight:600;}
+    .rv-phrase-trans{font-size:.76rem;color:var(--text-sub);}
+    .rv-phrase-phon{font-family:var(--font-mono);font-size:.68rem;color:var(--text-sub);opacity:.85;}
+    .rv-phrase-listen{flex-shrink:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(236,170,39,.1);border:1px solid var(--border-dim);border-radius:9px;font-size:1rem;cursor:pointer;transition:background .15s ease-out,transform .12s ease-out;}
+    .rv-phrase-listen:hover{background:rgba(236,170,39,.22);transform:scale(1.06);}
+    .rv-phrase-listen.playing{background:var(--gold);}
+
+    .rv-lessons{display:flex;flex-direction:column;gap:10px;}
+    .rv-lessons-head{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-sub);}
+    .rv-lesson{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--border-dim);border-radius:12px;padding:13px 16px;}
+    .rv-lesson-info{display:flex;flex-direction:column;gap:3px;min-width:0;}
+    .rv-lesson-title{font-family:var(--font-serif);font-size:.98rem;color:var(--gold);}
+    .rv-lesson-sub{font-size:.72rem;color:var(--text-sub);}
+    .rv-lesson-btn{flex-shrink:0;padding:9px 14px;background:rgba(236,170,39,.1);color:var(--gold);border:1px solid var(--border-dim);border-radius:8px;font-family:var(--font-mono);font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background .15s ease-out,border-color .15s ease-out,transform .12s ease-out;}
+    .rv-lesson-btn:hover{background:rgba(236,170,39,.22);border-color:var(--gold);transform:translateY(-1px);}
+    .rv-empty{font-size:.82rem;color:var(--text-sub);text-align:center;padding:18px;border:1px dashed var(--border-dim);border-radius:12px;}
+
     /* ── Respect reduced-motion preference ── */
     @media(prefers-reduced-motion:reduce){
       *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}
@@ -565,7 +611,47 @@
 
       <div class="tier-cards" id="tierCards"></div>
       <button class="btn-primary" id="continueStudyingBtn">Continue Studying →</button>
+      <button class="btn-ghost" id="openReviewBtn">📅 Review Calendar &amp; Past Days</button>
       <button class="btn-ghost" id="switchLangBtn">Switch Language</button>
+    </div>
+
+    <!-- ── SCREEN: Review & Calendar ── -->
+    <div class="screen" id="screen-review">
+      <div class="screen-header">
+        <p class="screen-eyebrow">Review</p>
+        <h1 class="screen-title" id="reviewTitle">Your study calendar</h1>
+        <p class="screen-sub">Tap any studied day to see its phrases, then practice them again.</p>
+      </div>
+
+      <!-- Month calendar -->
+      <div class="cal-card">
+        <div class="cal-head">
+          <button class="cal-nav" id="calPrev" aria-label="Previous month">‹</button>
+          <span class="cal-month" id="calMonth">Month</span>
+          <button class="cal-nav" id="calNext" aria-label="Next month">›</button>
+        </div>
+        <div class="cal-dow"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-legend"><span class="cal-dot"></span> Days you studied</div>
+      </div>
+
+      <!-- Selected-day detail -->
+      <div class="rv-detail" id="dayDetail" style="display:none;">
+        <div class="rv-detail-head">
+          <span class="rv-date" id="dayDetailDate"></span>
+          <span class="rv-count" id="dayDetailCount"></span>
+        </div>
+        <div class="rv-phrases" id="dayPhraseList"></div>
+        <button class="btn-primary" id="practiceDayBtn">🔁 Practice this day</button>
+      </div>
+
+      <!-- Lessons browser -->
+      <div class="rv-lessons">
+        <div class="rv-lessons-head">Previous lessons</div>
+        <div class="rv-lessons" id="lessonList" style="gap:10px;"></div>
+      </div>
+
+      <button class="btn-ghost" id="reviewBackBtn">← Back to Progress</button>
     </div>
 
   </div><!-- /shell -->
@@ -893,9 +979,14 @@ let state = {
   exam: null,         // exam session
   examIdx: 0,
   reviewMode: false,  // true while running a spaced-repetition review session
+  practiceMode: false,// true while re-practicing a past day/lesson from the calendar
+  practiceLabel: '',  // human label for the practice session (badge + toast)
+  practiceDayWords: [], // words shown in the selected calendar-day detail
+  selectedDate: null, // YYYY-MM-DD currently opened in the calendar
   sessionScores: [],  // accuracy of each word completed this session (for celebration)
   wordAttempts: 0,    // failed attempts on the current word (adaptive difficulty)
 };
+let calYear = null, calMonth = null; // calendar view state (calMonth is 0-based)
 
 // Build a request body for study endpoints — account-bound when logged in, else legacy token.
 function studyBody(extra) {
@@ -1320,7 +1411,9 @@ function renderLesson() {
   state.wordAttempts = 0;  // fresh word — reset adaptive attempt counter
 
   // Badge
-  if (state.reviewMode) {
+  if (state.practiceMode) {
+    $('lessonBadge').textContent = `📅 ${state.practiceLabel || 'Practice'} · ${n} phrase${n!==1?'s':''}`;
+  } else if (state.reviewMode) {
     $('lessonBadge').textContent = `🔁 Review · ${n} word${n!==1?'s':''}`;
   } else {
     const tierName = ['','Survival','Communicate','Vocabulary'][p.tier];
@@ -1786,6 +1879,10 @@ $('nextWordBtn').addEventListener('click', async () => {
 
   state.wordIdx++;
   if (state.wordIdx >= state.words.length) {
+    if (state.practiceMode) {
+      finishPractice();
+      return;
+    }
     if (state.reviewMode) {
       finishReview();
       return;
@@ -2522,6 +2619,215 @@ function showProgressScreen() {
 
   showScreen('screen-progress');
 }
+
+// ══════════════════════════════════════════════════════════
+// REVIEW & CALENDAR
+//   Revisit any past study day (from a per-day ledger, with a lastSeen
+//   fallback for accounts older than the ledger) or any completed lesson,
+//   and re-practice its phrases via the existing practice engine.
+// ══════════════════════════════════════════════════════════
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+    { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]
+  ));
+}
+
+// wordId → the word object in the loaded dataset (null if not present).
+function wordById(id) {
+  if (!state.langData || !state.langData.words) return null;
+  return state.langData.words.find(w => w.id === id) || null;
+}
+
+// Words studied on a given date. Prefers the server day-ledger; merges in the
+// lastSeen reconstruction so pre-ledger history still shows up.
+function wordsForDate(dateStr) {
+  const p = state.progress; if (!p) return [];
+  const ids = [];
+  if (p.dayLog && Array.isArray(p.dayLog[dateStr])) {
+    p.dayLog[dateStr].forEach(id => { if (!ids.includes(id)) ids.push(id); });
+  }
+  const stats = p.wordStats || {};
+  Object.keys(stats).forEach(id => {
+    if (stats[id] && stats[id].lastSeen === dateStr && !ids.includes(id)) ids.push(id);
+  });
+  return ids.map(wordById).filter(Boolean);
+}
+
+// Every date with any recorded activity (completed a day, or touched any word).
+function studiedDatesSet() {
+  const p = state.progress; const set = new Set();
+  if (!p) return set;
+  (p.studyDays || []).forEach(d => set.add(d));
+  if (p.dayLog) Object.keys(p.dayLog).forEach(d => { if ((p.dayLog[d] || []).length) set.add(d); });
+  const stats = p.wordStats || {};
+  Object.keys(stats).forEach(id => { if (stats[id] && stats[id].lastSeen) set.add(stats[id].lastSeen); });
+  return set;
+}
+
+const CAL_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function renderCalendar() {
+  const now = new Date();
+  if (calYear == null) { calYear = now.getFullYear(); calMonth = now.getMonth(); }
+  $('calMonth').textContent = `${CAL_MONTHS[calMonth]} ${calYear}`;
+  const startDow = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const studied = studiedDatesSet();
+  const todayStr = today();
+  const grid = $('calGrid'); grid.innerHTML = '';
+  for (let i = 0; i < startDow; i++) {
+    const e = document.createElement('div'); e.className = 'cal-cell empty'; grid.appendChild(e);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell';
+    const isStudied = studied.has(ds);
+    if (isStudied) cell.classList.add('studied');
+    if (ds === todayStr) cell.classList.add('today');
+    if (ds === state.selectedDate) cell.classList.add('selected');
+    cell.innerHTML = `<span class="cal-num">${d}</span>${isStudied ? '<span class="cal-dot"></span>' : ''}`;
+    if (isStudied) cell.addEventListener('click', () => selectDay(ds));
+    grid.appendChild(cell);
+  }
+  // Don't let the user page into future months with nothing to show.
+  const atCurrent = (calYear > now.getFullYear()) || (calYear === now.getFullYear() && calMonth >= now.getMonth());
+  $('calNext').disabled = atCurrent;
+}
+
+function calShift(delta) {
+  calMonth += delta;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  else if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+// One row in the day-detail: the learned phrase, its meaning, a listen button.
+function phraseRow(w) {
+  const view = wordView(w);
+  const row = document.createElement('div');
+  row.className = 'rv-phrase';
+  row.innerHTML = `
+    <div class="rv-phrase-main">
+      <span class="rv-phrase-word">${escHtml(view.bigText)}</span>
+      <span class="rv-phrase-trans">${escHtml(view.topText)}</span>
+      ${view.phonetic ? `<span class="rv-phrase-phon">/ ${escHtml(view.phonetic)} /</span>` : ''}
+    </div>
+    <button class="rv-phrase-listen" aria-label="Listen">🔊</button>`;
+  const btn = row.querySelector('.rv-phrase-listen');
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    btn.classList.add('playing');
+    speak(view.learnText, { lang: view.ttsLang, onend: () => btn.classList.remove('playing'), onerror: () => btn.classList.remove('playing') });
+  });
+  return row;
+}
+
+function selectDay(ds) {
+  state.selectedDate = ds;
+  const words = wordsForDate(ds);
+  state.practiceDayWords = words;
+  const d = new Date(ds + 'T00:00:00');
+  $('dayDetailDate').textContent = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  $('dayDetailCount').textContent = `${words.length} phrase${words.length !== 1 ? 's' : ''}`;
+  const list = $('dayPhraseList'); list.innerHTML = '';
+  words.forEach(w => list.appendChild(phraseRow(w)));
+  $('practiceDayBtn').style.display = words.length ? '' : 'none';
+  $('dayDetail').style.display = 'flex';
+  renderCalendar();
+  $('dayDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Completed lessons, grouped by curriculum (tier / global week / day), newest first.
+function renderLessonList() {
+  const p = state.progress;
+  const list = $('lessonList'); list.innerHTML = '';
+  const completed = (p && p.completedWords) || [];
+  if (!completed.length) {
+    list.innerHTML = '<div class="rv-empty">No lessons yet — study your first word and it shows up here.</div>';
+    return;
+  }
+  const groups = {};
+  completed.forEach(id => {
+    const wi = parseWordId(id);
+    if (!wi.tier || !wi.week || !wi.day) return;
+    const key = `${wi.tier}|${wi.week}|${wi.day}`;
+    (groups[key] = groups[key] || []).push(id);
+  });
+  const keys = Object.keys(groups).sort((a, b) => {
+    const [t1, w1, d1] = a.split('|').map(Number), [t2, w2, d2] = b.split('|').map(Number);
+    return (w2 - w1) || (d2 - d1) || (t2 - t1);
+  });
+  const tierNames = ['', 'Survival', 'Communicate', 'Vocabulary'];
+  if (!keys.length) {
+    list.innerHTML = '<div class="rv-empty">No lessons yet — study your first word and it shows up here.</div>';
+    return;
+  }
+  keys.forEach(key => {
+    const [t, gw, d] = key.split('|').map(Number);
+    const words = groups[key].map(wordById).filter(Boolean);
+    if (!words.length) return;
+    const item = document.createElement('div');
+    item.className = 'rv-lesson';
+    item.innerHTML = `
+      <div class="rv-lesson-info">
+        <span class="rv-lesson-title">Week ${gw} · Day ${d}</span>
+        <span class="rv-lesson-sub">${tierNames[t] || ('Tier ' + t)} · ${words.length} phrase${words.length !== 1 ? 's' : ''}</span>
+      </div>
+      <button class="rv-lesson-btn">Practice →</button>`;
+    item.querySelector('.rv-lesson-btn').addEventListener('click', () => practiceWords(words, `Week ${gw} · Day ${d}`));
+    list.appendChild(item);
+  });
+}
+
+function renderReviewScreen() {
+  state.selectedDate = null;
+  $('dayDetail').style.display = 'none';
+  const l = LANGS.find(x => x.code === state.lang);
+  $('reviewTitle').textContent = l ? `${l.flag} ${l.name} · Review` : 'Your study calendar';
+  const now = new Date(); calYear = now.getFullYear(); calMonth = now.getMonth();
+  renderCalendar();
+  renderLessonList();
+}
+
+// Re-practice an arbitrary set of words. Reuses the review engine so it never
+// advances the curriculum or streak; returns to the calendar when done.
+function practiceWords(words, label) {
+  if (!words || !words.length) { showToast('No phrases to practice here yet.'); return; }
+  state.reviewMode = true;
+  state.practiceMode = true;
+  state.practiceLabel = label || 'Practice';
+  state.words = words.slice();
+  state.wordIdx = 0;
+  state.listenedOnce = false;
+  state.accuracy = null;
+  state.sessionScores = [];
+  state.wordAttempts = 0;
+  renderLesson();
+  showScreen('screen-lesson');
+  updateNavTitle();
+}
+
+function finishPractice() {
+  const scores = state.sessionScores.slice();
+  const n = scores.length;
+  const avg = n ? Math.round(scores.reduce((a, b) => a + b, 0) / n) : 0;
+  state.reviewMode = false;
+  state.practiceMode = false;
+  showToast(`Practiced ${n} phrase${n !== 1 ? 's' : ''} · avg ${avg}% 🌟`, 3200);
+  renderReviewScreen();
+  showScreen('screen-review');
+}
+
+// ── Review screen wiring ──
+$('openReviewBtn').addEventListener('click', () => { renderReviewScreen(); showScreen('screen-review'); });
+$('reviewBackBtn').addEventListener('click', () => { showProgressScreen(); });
+$('calPrev').addEventListener('click', () => calShift(-1));
+$('calNext').addEventListener('click', () => { if (!$('calNext').disabled) calShift(1); });
+$('practiceDayBtn').addEventListener('click', () => {
+  const label = state.selectedDate ? new Date(state.selectedDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Practice';
+  practiceWords(state.practiceDayWords, label);
+});
 
 // ══════════════════════════════════════════════════════════
 // ADVANCE DAY (called when day's words not found — shouldn't normally happen)
