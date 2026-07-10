@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Manga Studio — Stop &amp; Connect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="manga.css">
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <div class="brand"><span class="brand-manga">MANGA</span> STUDIO</div>
+    <div class="top-controls">
+      <label class="ctl">Page
+        <select id="pagePreset">
+          <option value="2480x3508" selected>A4 print · 2480×3508 (300dpi)</option>
+          <option value="3035x4299">B4 manga · 3035×4299 (300dpi)</option>
+          <option value="2550x3300">US Letter · 2550×3300 (300dpi)</option>
+          <option value="2048x2732">iPad Pro · 2048×2732</option>
+          <option value="1080x1920">Vertical / webtoon card · 1080×1920</option>
+          <option value="2048x2048">Square · 2048×2048</option>
+        </select>
+      </label>
+      <button id="btnUndo" title="Undo (Ctrl+Z)">↩ Undo</button>
+      <button id="btnRedo" title="Redo (Ctrl+Y)">↪ Redo</button>
+      <button id="btnNew" title="Blank page">🗑 New</button>
+      <span class="spacer"></span>
+      <button id="btnPng" class="primary">⬇ PNG page</button>
+      <button id="btnPngFrames">⬇ PNG frames only</button>
+      <button id="btnPsd" class="primary">⬇ PSD (layers → Procreate)</button>
+    </div>
+  </header>
+
+  <div id="main">
+    <aside id="tools">
+      <div class="tool-group">
+        <div class="tg-title">TOOLS</div>
+        <button class="tool active" data-tool="select" title="Select / move (V)">➤ Select</button>
+        <button class="tool" data-tool="split" title="Split panels (S)">✂ Split panel</button>
+      </div>
+      <div class="tool-group" id="splitOpts" style="display:none">
+        <div class="tg-title">CUT ANGLE</div>
+        <div class="btn-row">
+          <button class="mini ang" data-ang="0">─</button>
+          <button class="mini ang" data-ang="90">│</button>
+          <button class="mini ang" data-ang="-10">⟋</button>
+          <button class="mini ang" data-ang="10">⟍</button>
+        </div>
+        <input type="range" id="angSlider" min="-45" max="135" value="0" step="1">
+        <div class="hint" id="angVal">0° — scroll wheel also rotates</div>
+      </div>
+      <div class="tool-group">
+        <div class="tg-title">ADD TEXT</div>
+        <button class="tool bub" data-bub="speech">💬 Speech bubble</button>
+        <button class="tool bub" data-bub="thought">💭 Thought cloud</button>
+        <button class="tool bub" data-bub="shout">💥 Shout burst</button>
+        <button class="tool bub" data-bub="caption">▭ Caption box</button>
+        <button class="tool bub" data-bub="text">A Plain text / SFX</button>
+      </div>
+      <div class="tool-group">
+        <div class="tg-title">PAGE</div>
+        <label class="slider-lbl">Gutter <span id="gutterVal"></span>
+          <input type="range" id="gutter" min="0" max="80" value="28"></label>
+        <label class="slider-lbl">Frame line <span id="borderVal"></span>
+          <input type="range" id="border" min="2" max="30" value="10"></label>
+        <label class="slider-lbl">Margin <span id="marginVal"></span>
+          <input type="range" id="margin" min="0" max="240" value="90"></label>
+      </div>
+      <div class="font-note" id="fontNote">Font: checking…</div>
+    </aside>
+
+    <div id="stage"><canvas id="cv"></canvas></div>
+
+    <aside id="side">
+      <div class="tg-title">TEMPLATES</div>
+      <div id="templates"></div>
+      <div id="inspector" style="display:none">
+        <div class="tg-title">SELECTED BUBBLE</div>
+        <textarea id="bubText" rows="4" placeholder="Type dialogue…"></textarea>
+        <label class="slider-lbl">Font size <span id="fsVal"></span>
+          <input type="range" id="fontSize" min="18" max="220" value="64"></label>
+        <div class="btn-row">
+          <button class="mini" id="btnFront">⬆ Front</button>
+          <button class="mini" id="btnBack">⬇ Back</button>
+          <button class="mini danger" id="btnDelBub">✕ Delete</button>
+        </div>
+        <div class="hint">Drag the ◆ handle to aim the tail. Drag corners to resize.</div>
+      </div>
+      <div id="panelInspector" style="display:none">
+        <div class="tg-title">SELECTED PANEL</div>
+        <div class="btn-row">
+          <button class="mini" id="btnPanelBorder">Toggle frame</button>
+          <button class="mini danger" id="btnDelPanel">✕ Remove</button>
+        </div>
+        <div class="hint">Removing a panel leaves open white space (borderless beat).</div>
+      </div>
+    </aside>
+  </div>
+</div>
+<script src="vendor/ag-psd.js"></script>
+<script src="manga.js"></script>
+</body>
+</html>

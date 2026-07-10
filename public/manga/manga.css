@@ -1,0 +1,123 @@
+/* Manga Studio — Stop & Connect */
+@font-face {
+  font-family: 'MangaLocal';
+  src: local('Manga Regular'), local('Manga');
+  font-display: swap;
+}
+:root {
+  --ink: #111;
+  --paper: #fff;
+  --chrome: #1b1b1f;
+  --chrome2: #26262c;
+  --edge: #3a3a42;
+  --accent: #e60023;
+  --txt: #e8e8ea;
+  --muted: #9a9aa4;
+  --manga-stack: 'MangaLocal', 'Comic Neue', 'Comic Sans MS', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--chrome);
+  color: var(--txt);
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+#app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+
+/* ---- top bar ---- */
+#topbar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 8px 14px;
+  background: var(--ink);
+  border-bottom: 3px solid var(--accent);
+  flex-wrap: wrap;
+}
+.brand {
+  font-family: 'Bangers', var(--manga-stack);
+  font-size: 26px; letter-spacing: 2px; color: #fff;
+  text-shadow: 3px 3px 0 var(--accent);
+  white-space: nowrap;
+}
+.brand-manga { color: var(--accent); text-shadow: 2px 2px 0 #fff; }
+.top-controls { display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap; }
+.spacer { flex: 1; }
+.ctl { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+select {
+  background: var(--chrome2); color: var(--txt);
+  border: 1px solid var(--edge); border-radius: 6px; padding: 6px 8px; font-size: 13px;
+}
+button {
+  background: var(--chrome2); color: var(--txt);
+  border: 1px solid var(--edge); border-radius: 8px;
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+  touch-action: manipulation;
+}
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+button.primary:hover { filter: brightness(1.15); }
+button.danger { color: #ff6b6b; }
+button:disabled { opacity: .4; cursor: default; }
+
+/* ---- layout ---- */
+#main { display: flex; flex: 1; min-height: 0; }
+#tools, #side {
+  width: 200px; padding: 12px; overflow-y: auto;
+  background: var(--chrome); flex-shrink: 0;
+}
+#tools { border-right: 1px solid var(--edge); }
+#side { width: 216px; border-left: 1px solid var(--edge); }
+.tool-group { margin-bottom: 18px; }
+.tg-title {
+  font-size: 11px; letter-spacing: 2px; color: var(--muted);
+  margin-bottom: 8px; font-weight: 700;
+}
+.tool {
+  display: block; width: 100%; text-align: left; margin-bottom: 6px; padding: 9px 10px;
+}
+.tool.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+.btn-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.mini { padding: 6px 9px; font-size: 13px; flex: 1; }
+.mini.ang.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.slider-lbl { display: block; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.slider-lbl span { color: var(--txt); float: right; }
+.hint { font-size: 11px; color: var(--muted); line-height: 1.4; margin-top: 6px; }
+.font-note { font-size: 11px; color: var(--muted); border-top: 1px solid var(--edge); padding-top: 10px; }
+.font-note.ok { color: #6fd36f; }
+.font-note.warn { color: #e6b800; }
+
+/* ---- stage ---- */
+#stage {
+  flex: 1; min-width: 0; position: relative;
+  background:
+    radial-gradient(circle, #33333b 1px, transparent 1px) 0 0 / 22px 22px,
+    #202024;
+}
+#cv { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; display: block; }
+
+/* ---- templates ---- */
+#templates { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+.tpl {
+  background: #fff; border: 2px solid var(--edge); border-radius: 6px;
+  cursor: pointer; padding: 4px; aspect-ratio: 3 / 4;
+}
+.tpl:hover { border-color: var(--accent); }
+.tpl svg { width: 100%; height: 100%; display: block; }
+
+/* ---- inspector ---- */
+#bubText {
+  width: 100%; resize: vertical; margin-bottom: 10px;
+  background: #fff; color: #111; border: 2px solid var(--edge); border-radius: 6px;
+  padding: 8px; font-size: 16px;
+  font-family: var(--manga-stack);
+  -webkit-user-select: text; user-select: text;
+}
+
+/* ---- small screens (iPad portrait / phone) ---- */
+@media (max-width: 900px) {
+  #tools, #side { width: 160px; padding: 8px; }
+  .brand { font-size: 20px; }
+}
