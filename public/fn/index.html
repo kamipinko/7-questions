@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>FN Line — Setup</title>
+<style>
+:root{
+  --bg:#101418; --panel:#171d23; --ink:#e8eef2; --muted:#8fa0ab;
+  --line:#2a343d; --accent:#ff9d2e; --accent-ink:#181004;
+  --code-bg:#0b0f13; --code-ink:#d7e3ea; --good:#4fc47f;
+}
+@media (prefers-color-scheme: light){:root{
+  --bg:#f4f2ee; --panel:#ffffff; --ink:#1d2429; --muted:#5c6b74;
+  --line:#dcd7ce; --accent:#d97706; --accent-ink:#ffffff;
+  --code-bg:#14181c; --code-ink:#d7e3ea; --good:#1d8a4e;
+}}
+:root[data-theme="light"]{
+  --bg:#f4f2ee; --panel:#ffffff; --ink:#1d2429; --muted:#5c6b74;
+  --line:#dcd7ce; --accent:#d97706; --accent-ink:#ffffff;
+  --code-bg:#14181c; --code-ink:#d7e3ea; --good:#1d8a4e;
+}
+:root[data-theme="dark"]{
+  --bg:#101418; --panel:#171d23; --ink:#e8eef2; --muted:#8fa0ab;
+  --line:#2a343d; --accent:#ff9d2e; --accent-ink:#181004;
+  --code-bg:#0b0f13; --code-ink:#d7e3ea; --good:#4fc47f;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 "Segoe UI",system-ui,-apple-system,sans-serif;margin:0;padding:0}
+.wrap{max-width:680px;margin:0 auto;padding:40px 20px 80px}
+h1{font-size:1.9rem;margin:0 0 4px;letter-spacing:-.02em;text-wrap:balance}
+.sub{color:var(--muted);margin:0 0 34px}
+h2{font-size:1.05rem;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+.stepnum{background:var(--accent);color:var(--accent-ink);font-weight:700;width:26px;height:26px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:.9rem;flex:none}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin-bottom:22px}
+.card p{margin:8px 0;color:var(--ink)}
+.card p.note{color:var(--muted);font-size:.92rem}
+a{color:var(--accent)}
+.pick{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.pick button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 14px;border-radius:999px;cursor:pointer;font:600 .9rem "Segoe UI",system-ui,sans-serif}
+.pick button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.pick button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.codebox{position:relative;margin-top:14px}
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:16px 16px 14px;margin:0;font:14px/1.6 ui-monospace,Consolas,Menlo,monospace;overflow-x:auto}
+.copy{position:absolute;top:8px;right:8px;border:0;background:var(--accent);color:var(--accent-ink);font:700 .8rem "Segoe UI",system-ui,sans-serif;padding:6px 12px;border-radius:6px;cursor:pointer}
+.copy:focus-visible{outline:2px solid var(--code-ink);outline-offset:2px}
+.copy.done{background:var(--good);color:#fff}
+ul{margin:8px 0;padding-left:20px}
+li{margin:6px 0}
+.folders{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:.95rem;margin-top:10px}
+.folders code{font:600 .88rem ui-monospace,Consolas,monospace;color:var(--accent)}
+.trouble dt{font-weight:600;margin-top:12px}
+.trouble dd{margin:2px 0 0;color:var(--muted)}
+.badge{display:inline-block;border:1px solid var(--line);color:var(--muted);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 10px;border-radius:999px;margin-bottom:14px}
+</style>
+<div class="wrap">
+<span class="badge">Team internal · works only on the FN network</span>
+<h1>Get on the FN Line</h1>
+<p class="sub">One paste sets up your FN folder. After that: drag files in, work comes back, tools install themselves.</p>
+
+<div class="card">
+<h2><span class="stepnum">1</span> Be on the network (once, ever)</h2>
+<p>Install <a href="https://tailscale.com/download" rel="noopener">Tailscale</a> on your computer and sign in with the team account. Gabe approves your device.</p>
+<p class="note">Already see "Connected" in the Tailscale menu? Skip to step 2.</p>
+</div>
+
+<div class="card">
+<h2><span class="stepnum">2</span> Pick who you are + your computer</h2>
+<div class="pick" id="who" role="group" aria-label="Your FN username"></div>
+<div class="pick"><input id="other" placeholder="someone new? type your FN username" style="flex:1;min-width:220px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 14px;border-radius:999px;font:.9rem 'Segoe UI',system-ui,sans-serif" aria-label="Custom FN username"></div>
+<div class="pick" id="os" role="group" aria-label="Your computer">
+<button aria-pressed="true" data-os="mac">Mac</button>
+<button aria-pressed="false" data-os="win">Windows</button>
+</div>
+<p>Open <b id="termname">Terminal</b>, hit <b>Copy</b>, paste the whole block, press Enter, answer any prompt.</p>
+<div class="codebox">
+<button class="copy" id="copybtn" type="button">Copy</button>
+<pre id="block"></pre>
+</div>
+<p class="note" id="larrynote" hidden>Larry: your account exists but your mailboxes may not yet — your drops land in the team slot until Gabe finishes your lane. Everything still works.</p>
+</div>
+
+<div class="card">
+<h2><span class="stepnum">3</span> That's it — meet your FN folder</h2>
+<p>A folder named <b>FN</b> appears in your home folder (shortcut on the Desktop):</p>
+<div class="folders">
+<code>outbox</code><span>drop anything here → it's on FN in seconds, no commands</span>
+<code>sent</code><span>where drops move once FN has them — your receipt</span>
+<code>inbox</code><span>finished work for you lands here by itself</span>
+<code>tools</code><span>anything you need for the work arrives here automatically</span>
+</div>
+</div>
+
+<div class="card">
+<h2>If something fights you</h2>
+<dl class="trouble">
+<dt>"Could not resolve hostname" / connection refused</dt>
+<dd>You're not on the network yet — do step 1, make sure Tailscale says Connected, and ask Gabe to approve your device.</dd>
+<dt>"parse error" or weird broken lines</dt>
+<dd>The paste got mangled. Always use the Copy button on this page — don't copy from a chat or text message.</dd>
+<dt>Dropped a file and it's still sitting in outbox</dt>
+<dd>Give it a minute, check Tailscale is Connected. If it stays, tell Thuku.</dd>
+</dl>
+</div>
+</div>
+<script>
+(function(){
+/* ROSTER — auto-maintained; the nightly sentry rewrites this line from the FN box */
+var ROSTER=[["gabriel_hillman","Gabe"],["larry","Larry"],["ben","Ben"],["cody","Cody"],["gugi","Gugi"],["thuku","Thuku"]];
+var u="ben", os="mac";
+var who=document.getElementById("who");
+ROSTER.forEach(function(r){
+var b=document.createElement("button");
+b.setAttribute("data-u",r[0]); b.textContent=r[1];
+b.setAttribute("aria-pressed", r[0]===u ? "true":"false");
+who.appendChild(b);
+});
+document.getElementById("other").addEventListener("input",function(){
+var v=this.value.trim().toLowerCase().replace(/[^a-z0-9_.-]/g,"");
+if(!v)return;
+u=v;
+who.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed","false");});
+render();
+});
+var blocks={
+mac:function(u){return ["cd ~","u="+u,"S=100.89.151.62","T=/var/fn_shared/team_outbox/toolkit","scp $u@$S:$T/fn-setup.sh .","bash fn-setup.sh $u"].join("\n");},
+win:function(u){return ["cd ~","$u=\""+u+"\"","$S=\"100.89.151.62\"","$T=\"/var/fn_shared/team_outbox/toolkit\"","scp ${u}@${S}:$T/fn-setup.ps1 .","powershell -ep bypass -File fn-setup.ps1 $u"].join("\n");}
+};
+function render(){
+document.getElementById("block").textContent=blocks[os](u);
+document.getElementById("termname").textContent=(os==="mac"?"Terminal":"PowerShell");
+document.getElementById("larrynote").hidden=(u!=="larry");
+}
+function wire(id,attr,cb){
+var g=document.getElementById(id);
+g.addEventListener("click",function(e){
+var b=e.target.closest("button"); if(!b)return;
+g.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed","false");});
+b.setAttribute("aria-pressed","true"); cb(b.getAttribute(attr)); render();
+});
+}
+wire("who","data-u",function(v){u=v;});
+wire("os","data-os",function(v){os=v;});
+document.getElementById("copybtn").addEventListener("click",function(){
+var t=document.getElementById("block").textContent;
+navigator.clipboard.writeText(t).then(function(){
+var b=document.getElementById("copybtn");
+b.textContent="Copied ✓"; b.classList.add("done");
+setTimeout(function(){b.textContent="Copy";b.classList.remove("done");},1800);
+});
+});
+render();
+})();
+</script>
+
+</body>
+</html>

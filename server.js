@@ -90,6 +90,8 @@ app.get('/autobiography', (req, res) => res.sendFile(path.join(__dirname, 'publi
 app.get('/autobiography/feedback', (req, res) => res.sendFile(path.join(__dirname, 'public/autobiography/feedback.html')));
 app.get('/thumbnails', (req, res) => res.sendFile(path.join(__dirname, 'public/thumbnails/index.html')));
 app.get('/contact', (req, res) => res.sendFile(path.join(__dirname, 'public/contact.html')));
+// FN Line setup — unlisted (no homepage/nav link, like /impeach); read from disk per request so a redeploy refreshes it
+app.get(['/fn', '/fn-setup'], (req, res) => res.sendFile(path.join(__dirname, 'public/fn/index.html')));
 app.get('/word-a-day', (req, res) => res.sendFile(path.join(__dirname, 'public/word-a-day/index.html')));
 app.get('/word-a-day/resume', (req, res) => res.redirect(`/word-a-day?token=${req.query.token}`));
 // Magic-link login: validate single-use login token, mint a long-lived authToken, redirect into the app logged in
